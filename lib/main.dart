@@ -6,6 +6,7 @@ import 'package:pendaki_local_guide_app/screens/auth/login_email_screen.dart';
 import 'package:pendaki_local_guide_app/screens/auth/register_screen.dart';
 import 'package:pendaki_local_guide_app/screens/auth/registration_success_screen.dart';
 import 'package:pendaki_local_guide_app/screens/auth/reset_password_screen.dart';
+import 'package:pendaki_local_guide_app/screens/dashboard/dashboard_screen.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/auth/auth_gate_screen.dart';
@@ -52,6 +53,8 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const ForgotPasswordScreen());
           case '/reset-password':
             return _fadeRoute(const ResetPasswordScreen());
+          case '/dashboard':
+            return _fadeRoute(const DashboardScreen());
           default:
             return null;
         }
