@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:pendaki_local_guide_app/screens/auth/auth_gate_screen.dart';
+import 'package:pendaki_local_guide_app/screens/auth/email_verification_screen.dart';
+import 'package:pendaki_local_guide_app/screens/auth/forgot_password_screen.dart';
+import 'package:pendaki_local_guide_app/screens/auth/login_email_screen.dart';
+import 'package:pendaki_local_guide_app/screens/auth/register_screen.dart';
+import 'package:pendaki_local_guide_app/screens/auth/registration_success_screen.dart';
+import 'package:pendaki_local_guide_app/screens/auth/reset_password_screen.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
+import 'screens/auth/auth_gate_screen.dart';
 
 void main() {
   // Nanti kalau ada inisialisasi SharedPreferences, taruh di sini
@@ -11,14 +19,14 @@ void main() {
 class LocalGuideApp extends StatelessWidget {
   const LocalGuideApp({super.key});
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Local Guide',
       theme: ThemeData(
         // Kita set warna dasarnya (bisa disesuaikan nanti dengan warna figma)
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF007A52)), 
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF007A52)),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
       ),
@@ -30,6 +38,20 @@ class LocalGuideApp extends StatelessWidget {
           case '/onboarding':
             return _fadeRoute(const OnboardingScreen());
           // Nanti kita tambah route login, register, dll di sini
+          case '/login':
+            return _fadeRoute(const AuthGateScreen());
+          case '/register':
+            return _fadeRoute(const RegisterScreen());
+          case '/register-success':
+            return _fadeRoute(const RegistrationSuccessScreen());
+          case '/verify-email':
+            return _fadeRoute(const EmailVerificationScreen());
+          case '/login-email':
+            return _fadeRoute(const LoginEmailScreen());
+          case '/forgot-password':
+            return _fadeRoute(const ForgotPasswordScreen());
+          case '/reset-password':
+            return _fadeRoute(const ResetPasswordScreen());
           default:
             return null;
         }
