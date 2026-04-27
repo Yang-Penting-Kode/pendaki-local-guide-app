@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pendaki_local_guide_app/components/filter_modal.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -44,7 +45,14 @@ class SearchScreen extends StatelessWidget {
               ),
               child: IconButton(
                 icon: const Icon(Icons.tune, color: primaryColor),
-                onPressed: () {},
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const FilterModal(),
+                  );
+                },
               ),
             ),
           ],
@@ -121,6 +129,7 @@ class SearchScreen extends StatelessWidget {
                   imageUrl:
                       'https://images.unsplash.com/photo-1525811902-f23426213fd0?q=80&w=400',
                 ),
+                const SizedBox(height: 12),
               ],
             ),
           ),

@@ -46,26 +46,33 @@ class HomeScreen extends StatelessWidget {
             // 2. Search Bar
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(99),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 24,
-                      offset: const Offset(0, 12),
+              child: GestureDetector(
+                // 🚀 Navigasi ke halaman pencarian gunung
+                onTap: () => Navigator.pushNamed(context, '/mountain-search'),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(99),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: const TextField(
+                    enabled:
+                        false, // Supaya tidak bisa diketik langsung di sini
+                    decoration: InputDecoration(
+                      hintText: 'Cari gunung atau jalur pendakian...',
+                      hintStyle:
+                          TextStyle(color: Color(0xFF6F7A6A), fontSize: 14),
+                      prefixIcon: Icon(Icons.search, color: Color(0xFF6F7A6A)),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 16),
                     ),
-                  ],
-                ),
-                child: const TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Cari gunung atau jalur pendakian...',
-                    hintStyle: TextStyle(color: outlineColor, fontSize: 14),
-                    prefixIcon: Icon(Icons.search, color: outlineColor),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
               ),
@@ -144,7 +151,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Horizontal Scrollable Mountain Cards
+            // 6. Horizontal Scrollable Mountain Cards
             SizedBox(
               height: 300,
               child: ListView(
@@ -152,6 +159,9 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 24, right: 8, bottom: 20),
                 children: [
                   _buildMountainCard(
+                    context, // Oper context untuk navigasi
+                    onTap: () => Navigator.pushNamed(context,
+                        '/basecamp-partners'), // Navigasi ke peta mitra
                     title: 'Gunung Prau',
                     location: 'Wonosobo, Jawa Tengah',
                     elevation: '2,565 mdpl',
@@ -162,6 +172,9 @@ class HomeScreen extends StatelessWidget {
                         'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=400',
                   ),
                   _buildMountainCard(
+                    context,
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/basecamp-partners'),
                     title: 'Gunung Bromo',
                     location: 'Probolinggo, Jatim',
                     elevation: '2,329 mdpl',
@@ -243,7 +256,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMountainCard({
+  Widget _buildMountainCard(
+    BuildContext context, {
+    // Tambahkan BuildContext
+    required VoidCallback onTap, // Tambahkan callback navigasi
     required String title,
     required String location,
     required String elevation,
@@ -252,124 +268,137 @@ class HomeScreen extends StatelessWidget {
     required String tag,
     required String imageUrl,
   }) {
-    return Container(
-      width: 240,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Image.network(
-                  imageUrl,
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  // 🛡️ Penanganan jika gambar gagal dimuat
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 160,
-                      color: Colors.grey.shade200,
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.broken_image,
-                              color: Colors.grey, size: 40),
-                          SizedBox(height: 8),
-                          Text('Gambar Gagal Dimuat',
-                              style:
-                                  TextStyle(fontSize: 10, color: Colors.grey)),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Positioned(
-                top: 12,
-                right: 12,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(99),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.orange, size: 14),
-                      const SizedBox(width: 4),
-                      Text(rating,
-                          style: const TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      // Gunakan GestureDetector agar bisa diklik
+      onTap: onTap,
+      child: Container(
+        width: 240,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: Column(
+          children: [
+            Stack(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(title,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                          color: const Color(0xFF006C0C).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(99)),
-                      child: Text(tag,
-                          style: const TextStyle(
-                              color: Color(0xFF006C0C),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold)),
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: Image.network(
+                    imageUrl,
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    // 🛡️ Penanganan jika gambar gagal dimuat
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 160,
+                        color: Colors.grey.shade200,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.broken_image,
+                                color: Colors.grey, size: 40),
+                            SizedBox(height: 8),
+                            Text('Gambar Gagal Dimuat',
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.grey)),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(99),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, color: Colors.grey, size: 14),
-                    const SizedBox(width: 4),
-                    Text(location,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 11)),
-                  ],
-                ),
-                const Divider(height: 24),
-                Row(
-                  children: [
-                    const Icon(Icons.landscape,
-                        color: Color(0xFF006C0C), size: 16),
-                    const SizedBox(width: 4),
-                    Text(elevation,
-                        style: const TextStyle(
-                            fontSize: 11, fontWeight: FontWeight.w500)),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.timer, color: Color(0xFF006C0C), size: 16),
-                    const SizedBox(width: 4),
-                    Text(duration,
-                        style: const TextStyle(
-                            fontSize: 11, fontWeight: FontWeight.w500)),
-                  ],
+                    child: Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.orange, size: 14),
+                        const SizedBox(width: 4),
+                        Text(rating,
+                            style: const TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(title,
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFF006C0C).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(99)),
+                        child: Text(tag,
+                            style: const TextStyle(
+                                color: Color(0xFF006C0C),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          color: Colors.grey, size: 14),
+                      const SizedBox(width: 4),
+                      Text(location,
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 11)),
+                    ],
+                  ),
+                  const Divider(height: 24),
+                  Row(
+                    children: [
+                      const Icon(Icons.landscape,
+                          color: Color(0xFF006C0C), size: 16),
+                      const SizedBox(width: 4),
+                      Text(elevation,
+                          style: const TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.w500)),
+                      const SizedBox(width: 12),
+                      const Icon(Icons.timer,
+                          color: Color(0xFF006C0C), size: 16),
+                      const SizedBox(width: 4),
+                      Text(duration,
+                          style: const TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

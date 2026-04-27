@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -161,17 +162,12 @@ class _HistoryScreenState extends State<HistoryScreen>
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  imageUrl,
+                // 🚀 PERBAIKAN: Gunakan CustomNetworkImage
+                child: CustomNetworkImage(
+                  imageUrl: imageUrl,
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    width: 80,
-                    height: 80,
-                    color: Colors.grey.shade100,
-                    child: const Icon(Icons.broken_image),
-                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -208,7 +204,14 @@ class _HistoryScreenState extends State<HistoryScreen>
                 ],
               ),
               OutlinedButton(
-                onPressed: () {},
+                // 🚀 PERBAIKAN: Logika Navigasi Dinamis
+                onPressed: () {
+                  if (buttonLabel == 'Beri Ulasan') {
+                    Navigator.pushNamed(context, '/review');
+                  } else if (buttonLabel == 'Lihat Ulasan') {
+                    Navigator.pushNamed(context, '/my-reviews');
+                  }
+                },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: primaryColor,
                   side: const BorderSide(color: primaryColor),
