@@ -13,16 +13,14 @@ class LiveTrackingScreen extends StatelessWidget {
     const Color secondaryContainer = Color(0xFFC5ECD4);
     const Color onSurfaceVariant = Color(0xFF3E4942);
 
-    // Koordinat simulasi (Area Malang/Bandung sesuai konteks)
     const LatLng courierPos = LatLng(-6.9147, 107.6098);
     const LatLng userPos = LatLng(-6.9247, 107.6298);
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // 1. Top App Bar
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.8),
-        elevation: 0.5,
+        elevation: 0, // Dibuat lebih flat sesuai gaya Alpine
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: primaryContainer),
           onPressed: () => Navigator.pop(context),
@@ -35,7 +33,6 @@ class LiveTrackingScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // 2. Main Canvas: Map View
           FlutterMap(
             options: const MapOptions(
               initialCenter: LatLng(-6.9197, 107.6198),
@@ -46,7 +43,6 @@ class LiveTrackingScreen extends StatelessWidget {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.localguide.app',
               ),
-              // Route Line Simulation
               PolylineLayer(
                 polylines: [
                   Polyline(
@@ -59,13 +55,11 @@ class LiveTrackingScreen extends StatelessWidget {
               ),
               MarkerLayer(
                 markers: [
-                  // User Marker
                   const Marker(
                     point: userPos,
                     child: Icon(Icons.person_pin,
                         color: primaryContainer, size: 40),
                   ),
-                  // Courier Marker
                   Marker(
                     point: courierPos,
                     child: Container(
@@ -84,8 +78,6 @@ class LiveTrackingScreen extends StatelessWidget {
               ),
             ],
           ),
-
-          // 3. Floating Info Overlay (Top Center)
           Positioned(
             top: 20,
             left: 20,
@@ -122,8 +114,6 @@ class LiveTrackingScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // 4. Live Status Card (Floating Bottom Sheet)
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -140,7 +130,6 @@ class LiveTrackingScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Courier Info
                   Row(
                     children: [
                       const CircleAvatar(
@@ -156,7 +145,11 @@ class LiveTrackingScreen extends StatelessWidget {
                             const Text('Budi Santoso',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18)),
-                            Row(
+                            // 🚀 FIX OVERFLOW: Menggunakan Wrap agar fleksibel
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 8,
+                              runSpacing: 4,
                               children: [
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -170,13 +163,17 @@ class LiveTrackingScreen extends StatelessWidget {
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold)),
                                 ),
-                                const SizedBox(width: 8),
-                                const Icon(Icons.star,
-                                    color: Colors.amber, size: 14),
-                                const Text(' 4.8',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12)),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.star,
+                                        color: Colors.amber, size: 14),
+                                    const Text(' 4.8',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12)),
+                                  ],
+                                ),
                               ],
                             ),
                           ],
@@ -196,7 +193,6 @@ class LiveTrackingScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  // Status Detail
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -229,7 +225,6 @@ class LiveTrackingScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Action Buttons
                   Row(
                     children: [
                       Expanded(

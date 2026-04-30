@@ -9,8 +9,8 @@ class RegistrationSuccessScreen extends StatelessWidget {
     // Definisi warna dari Tailwind
     const Color primaryColor = Color(0xFF006C0C);
     const Color primaryGradientEnd = Color(0xFF1C871E);
-    const Color secondaryColor = Color(0xFF904D00);
-    const Color secondaryGradientEnd = Color(0xFFFD8B00);
+    const Color secondaryColor = Color(0xFF006C0C);
+    const Color secondaryGradientEnd = Color(0xFF006C0C);
     const Color surfaceColor = Color(0xFFF9F9F9);
     const Color onSurfaceVariant = Color(0xFF3F4A3B);
 
@@ -87,7 +87,8 @@ class RegistrationSuccessScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.white.withOpacity(0.3)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.3)),
                           ),
                           child: Row(
                             children: [
@@ -98,7 +99,8 @@ class RegistrationSuccessScreen extends StatelessWidget {
                                   color: primaryColor,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.shopping_cart_checkout, color: Colors.white, size: 24),
+                                child: const Icon(Icons.shopping_cart_checkout,
+                                    color: Colors.white, size: 24),
                               ),
                               const SizedBox(width: 16),
                               Column(
@@ -108,12 +110,19 @@ class RegistrationSuccessScreen extends StatelessWidget {
                                     opacity: 0.8,
                                     child: Text(
                                       'INFO SISTEM',
-                                      style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1.5),
                                     ),
                                   ),
                                   const Text(
                                     'Pemesanan Berhasil',
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
                                   ),
                                 ],
                               ),
@@ -158,7 +167,10 @@ class RegistrationSuccessScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.grey.withOpacity(0.1)),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 15, offset: const Offset(0, 5))
+                  BoxShadow(
+                      color: Colors.black.withOpacity(0.02),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5))
                 ],
               ),
               child: Row(
@@ -167,13 +179,21 @@ class RegistrationSuccessScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('STATUS AKUN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: primaryColor, letterSpacing: 1.2)),
+                        const Text('STATUS AKUN',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor,
+                                letterSpacing: 1.2)),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Text('Aktif', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            const Text('Aktif',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
                             const SizedBox(width: 4),
-                            const Icon(Icons.verified, color: primaryColor, size: 16),
+                            const Icon(Icons.verified,
+                                color: primaryColor, size: 16),
                           ],
                         ),
                       ],
@@ -183,9 +203,18 @@ class RegistrationSuccessScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('ID PENDAKI', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: onSurfaceVariant, letterSpacing: 1.2)),
+                        const Text('ID PENDAKI',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: onSurfaceVariant,
+                                letterSpacing: 1.2)),
                         const SizedBox(height: 4),
-                        const Text('GUIDE-99218', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+                        const Text('GUIDE-99218',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'monospace')),
                       ],
                     ),
                   ),
@@ -206,23 +235,30 @@ class RegistrationSuccessScreen extends StatelessWidget {
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
-                  BoxShadow(color: secondaryColor.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
+                  BoxShadow(
+                      color: secondaryColor.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8))
                 ],
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Navigasi ke Dashboard Utama
-                  debugPrint('Buka Dashboard');
+                  Navigator.pushNamed(context, '/tutorial');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(99)),
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Buka Dashboard Utama', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text('Tutorial Dulu',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)),
                     SizedBox(width: 12),
                     Icon(Icons.arrow_forward, color: Colors.white),
                   ],
@@ -234,7 +270,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
               child: Opacity(
                 opacity: 0.5,
                 child: Text(
-                  'Ketuk tombol untuk melihat detail perlengkapan\ndan lokasi pengambilan.',
+                  'Ketuk tombol lanjut ke tutorial dulu sebelum ke menggunakan aplikasi.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                 ),

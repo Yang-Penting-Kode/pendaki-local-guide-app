@@ -110,7 +110,7 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildQuickAction(Icons.qr_code_scanner, 'Scan Ambil Alat'),
+                  _buildQuickAction(Icons.qr_code_scanner, 'QR Ambil Alat'),
                   _buildQuickAction(Icons.category, 'Kategori Alat'),
                   _buildQuickAction(Icons.history, 'Riwayat'),
                 ],
