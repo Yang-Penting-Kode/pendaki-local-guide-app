@@ -8,20 +8,49 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  // 1. Controller untuk animasi masuk (Bouncy Logo & Fade Text)
+  late AnimationController _entranceController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+
+  // 2. Controller untuk icon loading yang berputar terus
+  late AnimationController _spinController;
 
   @override
   void initState() {
     super.initState();
-    
-    // Inisialisasi animasi untuk icon loading (progress_activity)
-    _controller = AnimationController(
+
+    // Setup Animasi Masuk (Durasi 2 detik)
+    _entranceController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    // Efek Bouncy (Memantul) untuk Logo
+    _scaleAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve:
+          const Interval(0.0, 0.6, curve: Curves.elasticOut), // Spring physics
+    );
+
+    // Efek Fade In lambat untuk Teks agar elegan
+    _fadeAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.4, 1.0, curve: Curves.easeIn),
+    );
+
+    // Jalankan animasi masuk 1 kali
+    _entranceController.forward();
+
+    // Setup Animasi Spinning (Berulang)[cite: 6]
+    _spinController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
 
-    // Timer 3 detik lalu pindah ke Onboarding
+    // Timer 3 detik lalu pindah ke Onboarding[cite: 6]
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/onboarding');
@@ -31,18 +60,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   void dispose() {
-    _controller.dispose();
+    _entranceController.dispose();
+    _spinController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Definisi warna dari Tailwind Config
-    const Color primaryColor = Color(0xFF006C0C); 
+    const Color primaryColor = Color(0xFF006C0C);
     const Color onPrimaryColor = Color(0xFFFFFFFF);
 
     return Scaffold(
-      backgroundColor: primaryColor, // bg-primary
+      backgroundColor: primaryColor,
       body: Stack(
         children: [
           // Ambient background layer (Gradient)
@@ -52,75 +81,86 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  const Color(0xFF1C871E).withOpacity(0.2), // primary-container/20
+                  const Color(0xFF1C871E).withOpacity(0.2),
                   Colors.transparent,
                 ],
               ),
             ),
           ),
-          
+
           // Main Content (Logo & Title)
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Icon Container dengan Backdrop Blur effect (Simulated)
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: onPrimaryColor.withOpacity(0.1), // on-primary/10
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.person_pin, // person_pin icon
-                    size: 80,
-                    color: onPrimaryColor,
+                // 🚀 ANIMASI: Logo memantul (ScaleTransition)
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: onPrimaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.person_pin,
+                      size: 80,
+                      color: onPrimaryColor,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
-                const Text(
-                  'Local Guide',
-                  style: TextStyle(
-                    color: onPrimaryColor,
-                    fontSize: 48,
-                    fontWeight: FontWeight.w800, // font-extrabold
-                    letterSpacing: -1.5,
-                    fontFamily: 'Manrope', // font-display
+
+                // 🚀 ANIMASI: Teks muncul perlahan (FadeTransition)
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: const Text(
+                    'Local Guide',
+                    style: TextStyle(
+                      color: onPrimaryColor,
+                      fontSize: 48,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -1.5,
+                      fontFamily: 'Manrope',
+                    ),
                   ),
                 ),
               ],
             ),
           ),
 
-          // Footer (Loading & Tagline)
+          // Footer (Loading & Tagline)[cite: 6]
           Positioned(
-            bottom: 64, // pb-16
+            bottom: 64,
             left: 0,
             right: 0,
-            child: Column(
-              children: [
-                // Animated Loading Icon (progress_activity)
-                RotationTransition(
-                  turns: _controller,
-                  child: Icon(
-                    Icons.refresh, // progress_activity equivalent
-                    color: onPrimaryColor.withOpacity(0.8),
-                    size: 28,
+            child: FadeTransition(
+              opacity: _fadeAnimation, // Tagline ikut fade-in bareng teks utama
+              child: Column(
+                children: [
+                  // Animated Loading Icon (progress_activity)
+                  RotationTransition(
+                    turns: _spinController,
+                    child: Icon(
+                      Icons.refresh,
+                      color: onPrimaryColor.withOpacity(0.8),
+                      size: 28,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  'MARKETPLACE RENTAL ALAT OUTDOOR',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: onPrimaryColor.withOpacity(0.7),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 4.0, // tracking-[0.25em]
-                    fontFamily: 'Inter', // font-label
+                  const SizedBox(height: 32),
+                  Text(
+                    'MARKETPLACE RENTAL ALAT OUTDOOR',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: onPrimaryColor.withOpacity(0.7),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 4.0,
+                      fontFamily: 'Inter',
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

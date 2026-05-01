@@ -39,12 +39,14 @@ import 'package:pendaki_local_guide_app/screens/settings/security_privacy_screen
 import 'package:pendaki_local_guide_app/screens/settings/terms_conditions_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/wishlist_screen.dart';
 import 'package:pendaki_local_guide_app/screens/tutorial/tutorial_screen.dart';
+import 'package:pendaki_local_guide_app/services/storage_services.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 
-void main() {
-  // Nanti kalau ada inisialisasi SharedPreferences, taruh di sini
+void main() async {
+  // Inisialisasi wajib untuk Flutter & SharedPreferences
   WidgetsFlutterBinding.ensureInitialized();
+  await StorageService.init(); // 🚀 Inisialisasi storage
   runApp(const LocalGuideApp());
 }
 
@@ -57,7 +59,6 @@ class LocalGuideApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Local Guide',
       theme: ThemeData(
-        // Kita set warna dasarnya (bisa disesuaikan nanti dengan warna figma)
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF007A52)),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
@@ -157,7 +158,7 @@ class LocalGuideApp extends StatelessWidget {
     );
   }
 
-  // 🔄 Fungsi transisi Fade halus antar halaman (diambil dari Rasa App)
+  // 🔄 Fungsi transisi Fade halus antar halaman[cite: 6]
   PageRouteBuilder _fadeRoute(Widget page) {
     return PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 700),

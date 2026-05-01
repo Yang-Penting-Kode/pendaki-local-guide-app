@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({super.key});
@@ -8,9 +9,12 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  // 🚀 Logic: Controller untuk Image Slider & State Counter
+  // 🚀 Logic: Controller untuk Image Slider & State Counter[cite: 6]
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  // 🚀 STATE: Untuk status tombol wishlist
+  bool _isWishlisted = false;
 
   final List<String> _productImages = [
     'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=800',
@@ -25,6 +29,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Color(0xFF007A52),
+      ),
+    );
+  }
+
+  // 🚀 FUNGSI: Toggle state wishlist
+  void _toggleWishlist() {
+    setState(() {
+      _isWishlisted = !_isWishlisted;
+    });
+
+    // Opsional: Tampilkan feedback ke pengguna
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(_isWishlisted
+            ? 'Ditambahkan ke Wishlist'
+            : 'Dihapus dari Wishlist'),
+        duration: const Duration(milliseconds: 1500),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color(0xFF007A52),
       ),
     );
   }
@@ -53,6 +76,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           IconButton(
               icon: const Icon(Icons.share, color: Colors.grey),
               onPressed: () {}),
+          // 🚀 ADDED: Ikon Love untuk Wishlist[cite: 6]
+          IconButton(
+            icon: Icon(
+              _isWishlisted ? Icons.favorite : Icons.favorite_border,
+              color: _isWishlisted ? Colors.red : Colors.grey,
+            ),
+            onPressed: _toggleWishlist,
+          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -69,7 +100,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🚀 REVISI: Product Image Slider
+            // Product Image Slider[cite: 6]
             AspectRatio(
               aspectRatio: 4 / 3,
               child: Stack(
@@ -115,7 +146,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Info Utama Alat
+                  // Info Utama Alat[cite: 6]
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -163,12 +194,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Partner Card
+                  // Partner Card[cite: 6]
                   _buildPartnerCard(context, primaryContainer),
 
                   const SizedBox(height: 32),
 
-                  // Deskripsi & Spesifikasi
+                  // Deskripsi & Spesifikasi[cite: 6]
                   const _SectionTitle(title: 'DESKRIPSI PRODUK'),
                   const SizedBox(height: 12),
                   const Text(
@@ -187,7 +218,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   const SizedBox(height: 32),
 
-                  // Aturan Sewa & Jaminan
+                  // Aturan Sewa & Jaminan[cite: 6]
                   const _SectionTitle(title: 'ATURAN SEWA & JAMINAN'),
                   const SizedBox(height: 16),
                   _buildRuleItem(Icons.badge,
@@ -199,7 +230,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   const SizedBox(height: 32),
 
-                  // 🚀 REVISI: Review Section
+                  // Review Section[cite: 6]
                   const _SectionTitle(title: 'REVIEW PENDAKI'),
                   const SizedBox(height: 16),
                   _buildReviewItem(
@@ -225,7 +256,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ],
         ),
       ),
-      // Sticky Footer
+      // Sticky Footer[cite: 6]
       bottomSheet: _buildStickyFooter(primaryContainer),
     );
   }
