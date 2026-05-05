@@ -37,32 +37,47 @@ class _BookingScreenState extends State<BookingScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 80, height: 80,
-                decoration: const BoxDecoration(color: Color(0xFFF0F9F4), shape: BoxShape.circle),
-                child: const Icon(Icons.schedule, color: Color(0xFF007A52), size: 40),
+                width: 80,
+                height: 80,
+                decoration: const BoxDecoration(
+                    color: Color(0xFFF0F9F4), shape: BoxShape.circle),
+                child: const Icon(Icons.schedule,
+                    color: Color(0xFF007A52), size: 40),
               ),
               const SizedBox(height: 24),
-              const Text('Menunggu Konfirmasi', textAlign: TextAlign.center,
+              const Text('Menunggu Konfirmasi',
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              const Text('Permintaan sewa Anda telah terkirim. Mohon tunggu konfirmasi dari Mitra dalam waktu maksimal 30 menit.',
-                  textAlign: TextAlign.center, style: TextStyle(color: Colors.grey, height: 1.5)),
+              const Text(
+                  'Permintaan sewa Anda telah terkirim. Mohon tunggu konfirmasi dari Mitra dalam waktu maksimal 30 menit.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey, height: 1.5)),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    // 🚀 FIX: Tutup modal dulu sebelum pindah halaman[cite: 6]
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/waiting-confirmation');
+                  },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF007A52),
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99))),
-                  child: const Text('Lihat Detail Pesanan', style: TextStyle(fontWeight: FontWeight.bold)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(99))),
+                  child: const Text('Lihat Detail Pesanan',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
               TextButton(
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false),
-                child: const Text('Kembali ke Beranda', style: TextStyle(color: Color(0xFF007A52), fontWeight: FontWeight.bold)),
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                    context, '/dashboard', (route) => false),
+                child: const Text('Kembali ke Beranda',
+                    style: TextStyle(
+                        color: Color(0xFF007A52), fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -84,32 +99,48 @@ class _BookingScreenState extends State<BookingScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 80, height: 80,
-                decoration: BoxDecoration(color: Colors.grey.shade50, shape: BoxShape.circle),
-                child: const Icon(Icons.cancel_outlined, color: Colors.grey, size: 48),
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                    color: Colors.grey.shade50, shape: BoxShape.circle),
+                child: const Icon(Icons.cancel_outlined,
+                    color: Colors.grey, size: 48),
               ),
               const SizedBox(height: 24),
-              const Text('Pesanan Dibatalkan', textAlign: TextAlign.center,
+              const Text('Pesanan Dibatalkan',
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              const Text('Maaf, pesanan Anda telah dibatalkan. Jika ini adalah kesalahan, silakan hubungi pusat bantuan kami.',
-                  textAlign: TextAlign.center, style: TextStyle(color: Colors.grey, fontSize: 14, height: 1.5)),
+              const Text(
+                  'Maaf, pesanan Anda telah dibatalkan. Jika ini adalah kesalahan, silakan hubungi pusat bantuan kami.',
+                  textAlign: TextAlign.center,
+                  style:
+                      TextStyle(color: Colors.grey, fontSize: 14, height: 1.5)),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    // 🚀 FIX: Tutup modal dulu sebelum pindah halaman[cite: 6]
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/order-cancelled');
+                  },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF007A52),
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99))),
-                  child: const Text('Lihat Riwayat Pesanan', style: TextStyle(fontWeight: FontWeight.bold)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(99))),
+                  child: const Text('Lihat Riwayat Pesanan',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
               TextButton(
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false),
-                child: const Text('Kembali ke Beranda', style: TextStyle(color: Color(0xFF007A52), fontWeight: FontWeight.bold)),
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                    context, '/dashboard', (route) => false),
+                child: const Text('Kembali ke Beranda',
+                    style: TextStyle(
+                        color: Color(0xFF007A52), fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -144,7 +175,8 @@ class _BookingScreenState extends State<BookingScreen>
           unselectedLabelColor: Colors.grey,
           indicatorColor: primaryColor,
           indicatorWeight: 3,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          labelStyle:
+              const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           tabs: const [
             Tab(text: 'Aktif'),
             Tab(text: 'Riwayat'),
@@ -157,7 +189,6 @@ class _BookingScreenState extends State<BookingScreen>
           ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // 🚀 Menunggu Konfirmasi -> Muncul Modal Waiting
               _buildOrderCard(
                 context: context,
                 title: 'Tenda Eiger 4P',
@@ -166,11 +197,11 @@ class _BookingScreenState extends State<BookingScreen>
                 status: 'Menunggu Konfirmasi',
                 statusBg: const Color.fromARGB(255, 255, 252, 216),
                 statusText: const Color.fromARGB(255, 184, 181, 0),
-                imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-                onTap: () => _showWaitingModal(context),    
+                imageUrl:
+                    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+                onTap: () => _showWaitingModal(context),
               ),
               const SizedBox(height: 12),
-              // 🚀 Sedang Diantar -> Navigasi ke Live Tracking
               _buildOrderCard(
                 context: context,
                 title: 'Carrier Osprey 65L',
@@ -179,11 +210,11 @@ class _BookingScreenState extends State<BookingScreen>
                 status: 'Sedang Diantar',
                 statusBg: const Color(0xFFC5ECD4),
                 statusText: const Color(0xFF005F3F),
-                imageUrl: 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
+                imageUrl:
+                    'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
                 onTap: () => Navigator.pushNamed(context, '/live-tracking'),
               ),
               const SizedBox(height: 12),
-              // 🚀 Dibatalkan -> Muncul Modal Cancelled
               _buildOrderCard(
                 context: context,
                 title: 'Carrier Osprey 65L',
@@ -192,7 +223,8 @@ class _BookingScreenState extends State<BookingScreen>
                 status: 'Dibatalkan',
                 statusBg: const Color(0xFFFFDAD8),
                 statusText: const Color.fromARGB(255, 197, 70, 53),
-                imageUrl: 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
+                imageUrl:
+                    'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
                 onTap: () => _showCancelledModal(context),
               ),
             ],
@@ -255,33 +287,45 @@ class _BookingScreenState extends State<BookingScreen>
                       Expanded(
                         child: Text(
                           title,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(4)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: statusBg,
+                            borderRadius: BorderRadius.circular(4)),
                         child: Text(
                           status,
-                          style: TextStyle(color: statusText, fontSize: 9, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: statusText,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(store, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  Text(store,
+                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey),
+                      const Icon(Icons.calendar_today_outlined,
+                          size: 14, color: Colors.grey),
                       const SizedBox(width: 6),
-                      Text(date, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                      Text(date,
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 11)),
                       if (onTap != null) ...[
                         const Spacer(),
-                        const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                        const Icon(Icons.chevron_right,
+                            size: 16, color: Colors.grey),
                       ]
                     ],
                   ),

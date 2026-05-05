@@ -1,34 +1,27 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart'; // 🚀 Import Lottie
+import '../../core/constants/app_colors.dart'; // 🚀 Gunakan warna global
+import '../../widgets/primary_button.dart'; // 🚀 Gunakan button bouncy global
 
 class RegistrationSuccessScreen extends StatelessWidget {
   const RegistrationSuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Definisi warna dari Tailwind
-    const Color primaryColor = Color(0xFF006C0C);
-    const Color primaryGradientEnd = Color(0xFF1C871E);
-    const Color secondaryColor = Color(0xFF006C0C);
-    const Color secondaryGradientEnd = Color(0xFF006C0C);
-    const Color surfaceColor = Color(0xFFF9F9F9);
-    const Color onSurfaceVariant = Color(0xFF3F4A3B);
-
     return Scaffold(
-      backgroundColor: surfaceColor,
-      // TopAppBar
+      backgroundColor: AppColors.surface, // bg-surface konsisten
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0,
-        automaticallyImplyLeading: false, // User tidak boleh back dari sini
+        automaticallyImplyLeading: false, // Proteksi agar user tidak back
         title: Row(
           children: [
-            const Icon(Icons.travel_explore, color: Color(0xFF228B22)),
+            const Icon(Icons.travel_explore, color: AppColors.primary),
             const SizedBox(width: 8),
-            Text(
+            const Text(
               'Local Guide Marketplace',
               style: TextStyle(
-                color: const Color(0xFF228B22),
+                color: AppColors.primary,
                 fontFamily: 'Manrope',
                 fontWeight: FontWeight.w900,
                 fontSize: 16,
@@ -36,108 +29,30 @@ class RegistrationSuccessScreen extends StatelessWidget {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.grey),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Hero Illustration Area
+            // 1. Hero Illustration Area (Lottie Edition)
             Center(
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 300,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        )
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
-                      child: Image.network(
-                        'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=1000',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  // Glassmorphic Success Overlay
-                  Positioned(
-                    bottom: 20,
-                    left: 20,
-                    right: 20,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                                color: Colors.white.withOpacity(0.3)),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: const BoxDecoration(
-                                  color: primaryColor,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.shopping_cart_checkout,
-                                    color: Colors.white, size: 24),
-                              ),
-                              const SizedBox(width: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Opacity(
-                                    opacity: 0.8,
-                                    child: Text(
-                                      'INFO SISTEM',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.5),
-                                    ),
-                                  ),
-                                  const Text(
-                                    'Pemesanan Berhasil',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              child: SizedBox(
+                height: 300,
+                child: Lottie.asset(
+                  'assets/animations/register-success.json', // 📁 Pastikan file JSON sudah di folder assets
+                  repeat: true, // Jalankan sekali agar elegan
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.check_circle_outline,
+                        size: 100, color: AppColors.primary);
+                  },
+                ),
               ),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 32),
 
-            // 2. Editorial Typography Section
+            // 2. Editorial Typography Section[cite: 14]
             const Text(
               'Registrasi Sukses!',
               style: TextStyle(
@@ -150,127 +65,31 @@ class RegistrationSuccessScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const Text(
-              'Pemesanan alat pendakian Anda telah terverifikasi. Anda dapat mengambil perlengkapan di pos penyewaan terdekat sesuai jadwal yang dipilih.',
+              'Akun pendaki Anda telah terverifikasi. Sekarang Anda bisa mulai mencari perlengkapan terbaik untuk petualangan berikutnya.',
               style: TextStyle(
                 fontSize: 16,
-                color: onSurfaceVariant,
+                color: AppColors.onSurfaceVariant,
                 height: 1.6,
               ),
             ),
             const SizedBox(height: 40),
 
-            // 3. Success Details Card
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.withOpacity(0.1)),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5))
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('STATUS AKUN',
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: primaryColor,
-                                letterSpacing: 1.2)),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Text('Aktif',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.verified,
-                                color: primaryColor, size: 16),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('ID PENDAKI',
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: onSurfaceVariant,
-                                letterSpacing: 1.2)),
-                        const SizedBox(height: 4),
-                        const Text('GUIDE-99218',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'monospace')),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // 3. Success Details Card[cite: 14]
+            _buildDetailsCard(),
             const SizedBox(height: 48),
 
-            // 4. Primary Call to Action (Gradient Button)
-            Container(
-              width: double.infinity,
-              height: 64,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(99),
-                gradient: const LinearGradient(
-                  colors: [secondaryColor, secondaryGradientEnd],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                      color: secondaryColor.withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8))
-                ],
-              ),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/tutorial');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(99)),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Tutorial Dulu',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18)),
-                    SizedBox(width: 12),
-                    Icon(Icons.arrow_forward, color: Colors.white),
-                  ],
-                ),
-              ),
+            // 4. Primary CTA (Bouncy Button Global)[cite: 14]
+            PrimaryButton(
+              text: 'Tutorial Dulu',
+              onTap: () => Navigator.pushNamed(context, '/tutorial'),
             ),
+
             const SizedBox(height: 24),
             const Center(
               child: Opacity(
                 opacity: 0.5,
                 child: Text(
-                  'Ketuk tombol lanjut ke tutorial dulu sebelum ke menggunakan aplikasi.',
+                  'Ketuk tombol lanjut ke tutorial dulu sebelum mulai menggunakan aplikasi.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                 ),
@@ -278,6 +97,71 @@ class RegistrationSuccessScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // --- UI HELPER COMPONENTS ---
+
+  Widget _buildDetailsCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade100),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 15,
+              offset: const Offset(0, 5))
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('STATUS AKUN',
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                        letterSpacing: 1.2)),
+                const SizedBox(height: 4),
+                const Row(
+                  children: [
+                    Text('Aktif',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    SizedBox(width: 4),
+                    Icon(Icons.verified, color: AppColors.primary, size: 16),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('ID PENDAKI',
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onSurfaceVariant,
+                        letterSpacing: 1.2)),
+                SizedBox(height: 4),
+                Text('GUIDE-99218',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'monospace')),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

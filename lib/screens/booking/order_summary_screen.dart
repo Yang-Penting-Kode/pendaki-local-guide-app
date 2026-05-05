@@ -208,6 +208,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               width: 80,
               height: 80,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: 80,
+                height: 80,
+                color: Colors.grey.shade200,
+                child: const Center(
+                  child: Icon(Icons.broken_image, color: Colors.grey),
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -333,7 +341,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         width: double.infinity,
         height: 56,
         child: ElevatedButton.icon(
-          onPressed: _selectedPayment == 'Belum Dipilih' ? null : () => Navigator.pushNamed(context, '/transaction-success'),
+          onPressed: _selectedPayment == 'Belum Dipilih'
+              ? null
+              : () => Navigator.pushNamed(context, '/transaction-success'),
           icon: const Icon(Icons.lock, size: 18),
           label: const Text('Bayar Sekarang',
               style: TextStyle(fontWeight: FontWeight.bold)),

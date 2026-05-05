@@ -57,7 +57,7 @@ class ReturnConfirmationScreen extends StatelessWidget {
         ),
       ),
       // 6. Footer Button (Sticky Bottom)
-      bottomNavigationBar: _buildStickyFooter(context ,primaryContainer),
+      bottomNavigationBar: _buildStickyFooter(context, primaryContainer),
     );
   }
 
@@ -106,6 +106,15 @@ class ReturnConfirmationScreen extends StatelessWidget {
                   width: 140,
                   height: 140,
                   fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 140,
+                    height: 140,
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: Icon(Icons.broken_image,
+                          size: 40, color: Colors.grey),
+                    ),
+                  ),
                 ),
               ),
               // Decorative Corners
@@ -235,9 +244,22 @@ class ReturnConfirmationScreen extends StatelessWidget {
       child: Row(
         children: [
           ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child:
-                  Image.network(img, width: 48, height: 48, fit: BoxFit.cover)),
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              img,
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: 48,
+                height: 48,
+                color: Colors.grey.shade200,
+                child: const Center(
+                  child: Icon(Icons.broken_image, size: 20, color: Colors.grey),
+                ),
+              ),
+            ),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child:

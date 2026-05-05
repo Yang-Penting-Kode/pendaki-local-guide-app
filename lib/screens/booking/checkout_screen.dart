@@ -71,6 +71,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       width: 96,
                       height: 96,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 96,
+                        height: 96,
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: Icon(Icons.broken_image, color: Colors.grey),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),

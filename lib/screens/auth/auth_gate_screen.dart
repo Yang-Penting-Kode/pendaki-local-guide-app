@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_colors.dart'; // 🚀 Import Warna Global
+import '../../widgets/primary_button.dart'; // 🚀 Import Button Bouncy
 
 class AuthGateScreen extends StatelessWidget {
   const AuthGateScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF007A52);
-    const Color surfaceColor = Color(0xFFF9F9F9);
-    const Color onSurfaceColor = Color(0xFF1A1C1C);
-    const Color onSurfaceVariant = Color(0xFF3F4A3B);
-    const Color outlineVariant = Color(0xFFBECAB7);
-
+    // Seluruh warna sekarang merujuk ke AppColors agar konsisten
     return Scaffold(
-      backgroundColor: surfaceColor,
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -20,19 +17,19 @@ class AuthGateScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 1. Header Branding
+                // 1. Header Branding (Hijau Alpine Konsisten)
                 Column(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF92FA83).withOpacity(0.3),
+                        color: AppColors.primaryContainer.withOpacity(0.3),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.terrain,
                         size: 40,
-                        color: primaryColor,
+                        color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -42,7 +39,7 @@ class AuthGateScreen extends StatelessWidget {
                         fontFamily: 'Manrope',
                         fontSize: 48,
                         fontWeight: FontWeight.w900,
-                        color: primaryColor,
+                        color: AppColors.primary,
                         letterSpacing: -2.0,
                       ),
                     ),
@@ -52,7 +49,7 @@ class AuthGateScreen extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 16,
-                        color: onSurfaceVariant,
+                        color: AppColors.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -60,27 +57,24 @@ class AuthGateScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
 
-                // 2. Tombol Daftar dengan Google
+                // 2. Tombol Daftar dengan Google (Visual Clean)
                 Container(
                   width: double.infinity,
                   height: 56,
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: onSurfaceColor.withOpacity(0.08),
+                        color: Colors.black.withOpacity(0.08),
                         blurRadius: 24,
                         offset: const Offset(0, 12),
                       ),
                     ],
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Sesuai flow Abang: Lempar ke register
-                      Navigator.pushNamed(context, '/register');
-                    },
+                    onPressed: () => Navigator.pushNamed(context, '/register'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: onSurfaceColor,
+                      foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(99)),
                       elevation: 0,
@@ -92,11 +86,11 @@ class AuthGateScreen extends StatelessWidget {
                           'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
                           height: 24,
                           errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error),
+                              const Icon(Icons.g_mobiledata, size: 30),
                         ),
                         const SizedBox(width: 12),
                         const Text(
-                          'Daftar dengan Google', // Teks sudah diupdate
+                          'Daftar dengan Google',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -105,68 +99,47 @@ class AuthGateScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // 3. Divider
+                // 3. Divider[cite: 14]
                 Row(
                   children: [
-                    Expanded(
-                        child: Divider(color: outlineVariant.withOpacity(0.3))),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'ATAU',
                         style: TextStyle(
                             fontSize: 10,
                             letterSpacing: 2,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF6F7A6A)),
+                            color: AppColors.outline.withOpacity(0.5)),
                       ),
                     ),
-                    Expanded(
-                        child: Divider(color: outlineVariant.withOpacity(0.3))),
+                    const Expanded(child: Divider()),
                   ],
                 ),
                 const SizedBox(height: 24),
 
-                // 4. Tombol Daftar dengan Email
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/register');
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                          color: outlineVariant.withOpacity(0.4), width: 2),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(99)),
-                    ),
-                    child: const Text(
-                      'Daftar dengan Email',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: onSurfaceColor),
-                    ),
-                  ),
+                // 4. Tombol Daftar dengan Email (Menggunakan PrimaryButton Bouncy)
+                PrimaryButton(
+                  text: 'Daftar dengan Email',
+                  onTap: () => Navigator.pushNamed(context, '/register'),
                 ),
                 const SizedBox(height: 24),
 
-                // 5. Link Login untuk User Lama
+                // 5. Link Login untuk User Lama[cite: 14]
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
                       'Sudah punya akun? ',
-                      style: TextStyle(color: onSurfaceVariant),
+                      style: TextStyle(color: AppColors.onSurfaceVariant),
                     ),
                     GestureDetector(
-                      // ✅ Ganti logic-nya jadi pushNamed ke rute email
-                      onTap: () {
-                        Navigator.pushNamed(context, '/login-email');
-                      },
+                      onTap: () => Navigator.pushNamed(context, '/login-email'),
                       child: const Text(
                         'Masuk ke Sini',
                         style: TextStyle(
-                          color: primaryColor,
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

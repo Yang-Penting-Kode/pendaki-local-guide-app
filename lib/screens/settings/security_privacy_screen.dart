@@ -20,82 +20,95 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
   }
 
   // 🛡️ MODAL 1: Konfirmasi Login Biometrik
+  // 🛡️ MODAL 1: Konfirmasi Login Biometrik (FIX OVERFLOW)
   void _showBiometricConfirmation() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled:
+          true, // 🚀 FIX 1: Biar modal bisa fleksibel melebihi 50% layar
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => Container(
-        padding: const EdgeInsets.fromLTRB(32, 16, 32, 48),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-                width: 40,
-                height: 4,
+        // 🚀 FIX 2: Gunakan padding dinamis agar aman di HP dengan notch bawah
+        padding: EdgeInsets.only(
+            left: 32,
+            right: 32,
+            top: 16,
+            bottom: MediaQuery.of(context).padding.bottom + 24),
+        child: SingleChildScrollView(
+          // 🚀 FIX 3: Bungkus dengan SingleChildScrollView agar konten bisa di-scroll jika layar kecil
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10))),
+              const SizedBox(height: 32),
+              Container(
+                width: 96,
+                height: 96,
                 decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(10))),
-            const SizedBox(height: 32),
-            Container(
-              width: 96,
-              height: 96,
-              decoration: BoxDecoration(
-                  color: const Color(0xFF006C0C).withOpacity(0.1),
-                  shape: BoxShape.circle),
-              child: const Icon(Icons.fingerprint,
-                  size: 64, color: Color(0xFF006C0C)),
-            ),
-            const SizedBox(height: 24),
-            const Text('Aktifkan Login Biometrik?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5)),
-            const SizedBox(height: 12),
-            const Text(
-                'Gunakan sidik jari atau pengenalan wajah untuk akses yang lebih cepat dan aman ke akun LocalGuide Anda.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Color(0xFF3F4A3B), fontSize: 14, height: 1.5)),
-            const SizedBox(height: 40),
-            // Button Aktifkan Sekarang
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                      colors: [Color(0xFF006C0C), Color(0xFF1C871E)]),
-                  borderRadius: BorderRadius.circular(99),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Tutup modal biometric
-                    _showPasswordVerification(); // Buka modal verifikasi
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      foregroundColor: Colors.white),
-                  child: const Text('Aktifkan Sekarang',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    color: const Color(0xFF006C0C).withOpacity(0.1),
+                    shape: BoxShape.circle),
+                child: const Icon(Icons.fingerprint,
+                    size: 64, color: Color(0xFF006C0C)),
+              ),
+              const SizedBox(height: 24),
+              const Text('Aktifkan Login Biometrik?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5)),
+              const SizedBox(height: 12),
+              const Text(
+                  'Gunakan sidik jari atau pengenalan wajah untuk akses yang lebih cepat dan aman ke akun LocalGuide Anda.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Color(0xFF3F4A3B), fontSize: 14, height: 1.5)),
+              const SizedBox(
+                  height:
+                      32), // 🚀 Dikecilkan dikit dari 40 ke 32 biar lebih pas
+              // Button Aktifkan Sekarang
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                        colors: [Color(0xFF006C0C), Color(0xFF1C871E)]),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showPasswordVerification();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        foregroundColor: Colors.white),
+                    child: const Text('Aktifkan Sekarang',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Nanti Saja',
-                  style: TextStyle(
-                      color: Color(0xFF3F4A3B), fontWeight: FontWeight.bold)),
-            ),
-          ],
+              const SizedBox(height: 8), // 🚀 Dikecilkan dikit dari 12 ke 8
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Nanti Saja',
+                    style: TextStyle(
+                        color: Color(0xFF3F4A3B), fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -276,8 +289,10 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
             _buildSectionHeader('Legalitas'),
             _buildSettingsGroup([
               _buildOptionTile(Icons.description, 'Syarat & Ketentuan',
-                  onTap: () => Navigator.pushNamed(context, '/terms-conditions')),
-              _buildOptionTile(Icons.policy, 'Kebijakan Privasi', onTap: () => Navigator.pushNamed(context, '/privacy-policy')),
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/terms-conditions')),
+              _buildOptionTile(Icons.policy, 'Kebijakan Privasi',
+                  onTap: () => Navigator.pushNamed(context, '/privacy-policy')),
             ]),
             const SizedBox(height: 32),
             Row(

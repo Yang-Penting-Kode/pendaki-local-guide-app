@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart'; // 🚀 Import package Lottie
+import '../../core/constants/app_colors.dart'; // 🚀 Gunakan warna global
 
 class EmailVerificationScreen extends StatelessWidget {
   const EmailVerificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF006C0C);
-    const Color surfaceColor =
-        Color(0xFFF9F9F9); // Warna solid penambal ghosting
-    const Color onSurfaceVariant = Color(0xFF3F4A3B);
-
     return Scaffold(
-      // Pastikan warna background solid biar layar di bawahnya nggak ngintip
-      backgroundColor: surfaceColor,
+      // Menggunakan warna solid dari core constants untuk mencegah ghosting
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: primaryColor),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -34,31 +31,26 @@ class EmailVerificationScreen extends StatelessWidget {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          color: surfaceColor, // Double protection biar nggak ghosting
+          color: AppColors.surface,
           child: Column(
             children: [
-              // Bagian Konten Tengah (Expanded biar fleksibel)
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Ilustrasi Asimetris
-                    Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          )
-                        ],
+                    // 🚀 ANIMASI LOTTIE: Mengganti ikon statis sebelumnya
+                    SizedBox(
+                      height: 240,
+                      child: Lottie.asset(
+                        'assets/animations/gmail.json', // 📁 Pastikan file utuh .json sudah di folder assets
+                        repeat: true,
+                        reverse: true,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.mark_email_read_outlined,
+                              size: 100, color: AppColors.primary);
+                        },
                       ),
-                      child: const Icon(Icons.mark_email_read_outlined,
-                          size: 100, color: primaryColor),
                     ),
                     const SizedBox(height: 40),
                     const Text(
@@ -69,17 +61,20 @@ class EmailVerificationScreen extends StatelessWidget {
                           fontFamily: 'Manrope'),
                     ),
                     const SizedBox(height: 16),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
                         'Kami telah mengirimkan tautan verifikasi ke email kamu. Silakan klik tautan tersebut untuk mengaktifkan akun.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 15, color: onSurfaceVariant, height: 1.5),
+                            fontSize: 15,
+                            color: AppColors.onSurfaceVariant,
+                            height: 1.5),
                       ),
                     ),
                     const SizedBox(height: 40),
-                    // Tombol Buka Gmail
+
+                    // Tombol Buka Gmail (UX Sat-set ala Bank Jago)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: SizedBox(
@@ -87,6 +82,7 @@ class EmailVerificationScreen extends StatelessWidget {
                         height: 56,
                         child: ElevatedButton.icon(
                           onPressed: () {
+                            // Pindah ke layar sukses pendaftaran[cite: 13]
                             Navigator.pushReplacementNamed(
                                 context, '/register-success');
                           },
@@ -103,6 +99,7 @@ class EmailVerificationScreen extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             elevation: 2,
+                            side: BorderSide(color: Colors.grey.shade100),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(99)),
                           ),
@@ -113,17 +110,17 @@ class EmailVerificationScreen extends StatelessWidget {
                 ),
               ),
 
-              // Footer (Bagian yang tadinya kepotong)
+              // Footer: Kontrol Pengiriman Ulang[cite: 13]
               Padding(
                 padding: const EdgeInsets.only(bottom: 32),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text('Tidak menerima email?',
-                        style: TextStyle(color: onSurfaceVariant)),
+                        style: TextStyle(color: AppColors.onSurfaceVariant)),
                     TextButton(
                       onPressed: () {
-                        // 🚀 Logic Kirim Ulang & Munculin SnackBar
+                        // Memunculkan SnackBar dengan tema warna brand[cite: 13]
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: const Row(
@@ -141,15 +138,12 @@ class EmailVerificationScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            backgroundColor:
-                                primaryColor, // Pakai hijau brand kita
-                            behavior: SnackBarBehavior
-                                .floating, // Biar melayang, nggak nempel bawah
+                            backgroundColor: AppColors.primary,
+                            behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            margin: const EdgeInsets.all(
-                                20), // Jarak dari pinggir layar
+                            margin: const EdgeInsets.all(20),
                             duration: const Duration(seconds: 3),
                           ),
                         );
@@ -157,7 +151,8 @@ class EmailVerificationScreen extends StatelessWidget {
                       child: const Text(
                         'Kirim Ulang',
                         style: TextStyle(
-                            color: primaryColor, fontWeight: FontWeight.bold),
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],

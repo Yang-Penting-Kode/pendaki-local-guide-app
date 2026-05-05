@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pendaki_local_guide_app/components/order_type_sheet.dart';
+import '../../core/constants/app_colors.dart'; // 🚀 Pastikan import ini benar
 
 class MountainSearchResultScreen extends StatelessWidget {
   final String searchQuery;
@@ -8,72 +8,32 @@ class MountainSearchResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color surfaceColor = Color(0xFFF9F9F9);
-    const Color onSurfaceVariant = Color(0xFF3F4A3B);
-
     return Scaffold(
-      backgroundColor: surfaceColor,
+      backgroundColor:
+          AppColors.surface, // ⚪ Gunakan warna permukaan global[cite: 2]
       appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.8),
+        backgroundColor: Colors.white.withOpacity(0.9),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1C1C)),
+          icon: const Icon(Icons.arrow_back, color: AppColors.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Container(
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F3),
-            borderRadius: BorderRadius.circular(99),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search, color: Colors.grey, size: 18),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  searchQuery,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500),
-                ),
-              ),
-              const Icon(Icons.close, color: Colors.grey, size: 18),
-            ],
-          ),
-        ),
+        title: _buildSearchHeader(context),
       ),
       body: SingleChildScrollView(
+        // 🚀 BouncingScrollPhysics memberikan efek premium saat mentok di HP VIVO
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Info Meta
-            Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 24),
-              child: RichText(
-                text: TextSpan(
-                  style: const TextStyle(
-                      color: onSurfaceVariant,
-                      fontSize: 14,
-                      fontFamily: 'Inter'),
-                  children: [
-                    const TextSpan(text: 'Menampilkan hasil untuk '),
-                    TextSpan(
-                      text: '"$searchQuery"',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // Section Info Meta
+            _buildMetaInfo(),
+            const SizedBox(height: 24),
 
-            // 1. Daftar Hasil Pencarian (Sekarang bisa diklik)
+            // 1. Daftar Hasil Pencarian
             _buildMountainResultCard(
-              context, // Oper context ke sini
+              context,
               title: 'Gunung Arjuno via Tretes',
               location: 'Pasuruan, Jawa Timur',
               elevation: '3.339 mdpl',
@@ -110,10 +70,61 @@ class MountainSearchResultScreen extends StatelessWidget {
     );
   }
 
-  // Helper Card dengan Navigasi
+  // --- UI HELPERS ---
+
+  Widget _buildSearchHeader(BuildContext context) {
+    return Container(
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppColors
+            .surfaceContainerLow, // 🚀 Gunakan token container low[cite: 2]
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.search, color: AppColors.outline, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              searchQuery,
+              overflow: TextOverflow
+                  .ellipsis, // 🚀 Cegah teks overflow di layar kecil
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetaInfo() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(
+              color: AppColors.onSurfaceVariant,
+              fontSize: 14,
+              fontFamily: 'Inter'),
+          children: [
+            const TextSpan(text: 'Menampilkan hasil untuk '),
+            TextSpan(
+              text: '"$searchQuery"',
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMountainResultCard(
     BuildContext context, {
-    // Tambahkan parameter context
     required String title,
     required String location,
     required String elevation,
@@ -122,14 +133,13 @@ class MountainSearchResultScreen extends StatelessWidget {
     required String imageUrl,
   }) {
     return GestureDetector(
-      // Gunakan GestureDetector untuk mendeteksi klik
       onTap: () {
-        showModalBottomSheet(
-          context: context,
-          backgroundColor: Colors.transparent,
-          builder: (context) =>
-              const OrderTypeSheet(), // 🚀 Tampilkan pilihan dulu
-        );
+        // 🚀 Navigasi ke detail dengan data lengkap
+        Navigator.pushNamed(context, '/mountain-detail', arguments: {
+          'title': title,
+          'location': location,
+          'imageUrl': imageUrl,
+        });
       },
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -149,17 +159,18 @@ class MountainSearchResultScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     imageUrl,
-                    width: 80,
-                    height: 80,
+                    width: 80, height: 80,
                     fit: BoxFit.cover,
+                    // 🚀 FIX: Tangani gambar 404 agar tidak muncul error merah di terminal
                     errorBuilder: (context, error, stackTrace) => Container(
                       width: 80,
                       height: 80,
-                      color: Colors.grey.shade100,
-                      child: const Icon(Icons.broken_image),
+                      color: AppColors.surfaceContainerLow,
+                      child: const Icon(Icons.broken_image,
+                          color: AppColors.outline),
                     ),
                   ),
                 ),
@@ -173,45 +184,35 @@ class MountainSearchResultScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(title,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                     fontFamily: 'Manrope',
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16)),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                                color: const Color(0xFF904D00).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(99)),
-                            child: Text(difficulty,
-                                style: const TextStyle(
-                                    color: Color(0xFF904D00),
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.bold)),
-                          ),
+                          _buildDifficultyChip(difficulty),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      _buildIconText(Icons.location_on, location),
+                      _buildIconText(Icons.location_on_outlined, location),
                       const SizedBox(height: 4),
-                      _buildIconText(Icons.landscape, elevation),
+                      _buildIconText(Icons.landscape_outlined, elevation),
                     ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            const Divider(height: 1),
+            const Divider(height: 1, color: AppColors.surfaceContainer),
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.storefront,
-                    size: 16, color: Color(0xFF006C0C)),
+                const Icon(Icons.storefront_outlined,
+                    size: 16, color: AppColors.primary),
                 const SizedBox(width: 8),
                 Text('$rentalCount Mitra Rental di sekitar basecamp',
                     style: const TextStyle(
-                        color: Color(0xFF006C0C),
+                        color: AppColors.primary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600)),
               ],
@@ -222,12 +223,27 @@ class MountainSearchResultScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildDifficultyChip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+          color: AppColors.secondary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(99)),
+      child: Text(text,
+          style: const TextStyle(
+              color: AppColors.secondary,
+              fontSize: 9,
+              fontWeight: FontWeight.bold)),
+    );
+  }
+
   Widget _buildIconText(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Colors.grey),
+        Icon(icon, size: 14, color: AppColors.outline),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        Text(text,
+            style: const TextStyle(color: AppColors.outline, fontSize: 12)),
       ],
     );
   }

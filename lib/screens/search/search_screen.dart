@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pendaki_local_guide_app/components/filter_modal.dart';
+import 'package:pendaki_local_guide_app/components/modals/filter_modal.dart';
+import 'package:pendaki_local_guide_app/core/constants/app_colors.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF005F3F);
-    const Color surfaceColor = Color(0xFFF9F9F9);
-    const Color onSurfaceVariant = Color(0xFF3E4942);
-
     return Scaffold(
-      backgroundColor: surfaceColor,
+      backgroundColor: AppColors.surface,
       // 1. Sticky Header dengan Search Bar
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.8),
@@ -23,14 +20,14 @@ class SearchScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3F3F3),
+                  color: AppColors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(99),
                 ),
                 child: const TextField(
                   decoration: InputDecoration(
                     hintText: 'Ketik nama alat...',
-                    hintStyle: TextStyle(fontSize: 14, color: onSurfaceVariant),
-                    prefixIcon: Icon(Icons.search, color: primaryColor),
+                    hintStyle: TextStyle(fontSize: 14, color: AppColors.onSurfaceVariant),
+                    prefixIcon: Icon(Icons.search, color: AppColors.primary),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -39,12 +36,12 @@ class SearchScreen extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F3F3),
+              decoration: const BoxDecoration(
+                color: AppColors.surfaceContainerLow,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                icon: const Icon(Icons.tune, color: primaryColor),
+                icon: const Icon(Icons.tune, color: AppColors.primary),
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
@@ -146,14 +143,15 @@ class SearchScreen extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? const Color(0xFF007A52) : Colors.white,
-          foregroundColor: isSelected ? Colors.white : const Color(0xFF3E4942),
+          backgroundColor: isSelected ? AppColors.primary : Colors.white,
+          foregroundColor: isSelected ? Colors.white : AppColors.onSurfaceVariant,
           elevation: 0,
+          minimumSize: Size.zero, // Fix untuk infinite width box constraints
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(99),
             side: isSelected
                 ? BorderSide.none
-                : const BorderSide(color: Color(0xFFBDC9C0), width: 0.5),
+                : const BorderSide(color: AppColors.outline, width: 0.5),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
@@ -178,7 +176,7 @@ class SearchScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFBDC9C0).withOpacity(0.2)),
+        border: Border.all(color: AppColors.outline.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,8 +190,13 @@ class SearchScreen extends StatelessWidget {
                 imageUrl,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.broken_image),
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: double.infinity,
+                  color: AppColors.surfaceContainerLow,
+                  child: const Center(
+                    child: Icon(Icons.broken_image, color: Colors.grey),
+                  ),
+                ),
               ),
             ),
           ),
@@ -215,7 +218,7 @@ class SearchScreen extends StatelessWidget {
                   text: TextSpan(
                     text: 'Rp $price',
                     style: const TextStyle(
-                        color: Color(0xFF005F3F),
+                        color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 13),
                     children: const [

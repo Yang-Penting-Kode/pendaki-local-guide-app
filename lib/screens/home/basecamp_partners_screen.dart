@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../../components/filter_modal.dart';
+import '../../core/constants/app_colors.dart'; // 🚀 Pastikan sinkron dengan AppColors
+import '../../components/modals/filter_modal.dart';
 
 class BasecampPartnersScreen extends StatelessWidget {
   const BasecampPartnersScreen({super.key});
 
-  // Fungsi untuk menampilkan modal filter
   void _showFilter(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -18,20 +18,22 @@ class BasecampPartnersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🚀 TANGKAP ARGUMEN RADIUS (Default 5000.0 meter jika tidak ada)
-    final double radiusValue =
-        ModalRoute.of(context)?.settings.arguments as double? ?? 5000.0;
+    // 🚀 FIX NULL CHECK: Tangkap argumen secara aman (Bisa double atau Map)
+    final args = ModalRoute.of(context)?.settings.arguments;
+    double radiusValue = 5000.0; // Default[cite: 8]
 
-    // Koordinat simulasi untuk Basecamp Tretes (Arjuno)
-    final LatLng basecampLocation = LatLng(-7.7000, 112.6333);
+    if (args is double) {
+      radiusValue = args;
+    } else if (args is Map) {
+      radiusValue = (args['radius'] as num?)?.toDouble() ?? 5000.0;
+    }
 
-    const Color primaryColor = Color(0xFF006C0C);
-    const Color surfaceColor = Color(0xFFF9F9F9);
+    final LatLng basecampLocation = const LatLng(-7.7000, 112.6333);
 
     return Scaffold(
       body: Stack(
         children: [
-          // 1. Interactive Map Area (OSM + Flutter Map)
+          // 1. Interactive Map Area[cite: 8]
           Positioned.fill(
             child: FlutterMap(
               options: MapOptions(
@@ -43,20 +45,18 @@ class BasecampPartnersScreen extends StatelessWidget {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.localguide.app',
                 ),
-                // RADIUS DINAMIS BERDASARKAN PILIHAN USER
                 CircleLayer(
                   circles: [
                     CircleMarker(
                       point: basecampLocation,
                       radius: radiusValue,
                       useRadiusInMeter: true,
-                      color: primaryColor.withOpacity(0.1),
-                      borderColor: primaryColor,
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderColor: AppColors.primary,
                       borderStrokeWidth: 2,
                     ),
                   ],
                 ),
-                // Marker Layer (Basecamp & Mitra)
                 MarkerLayer(
                   markers: [
                     Marker(
@@ -64,33 +64,29 @@ class BasecampPartnersScreen extends StatelessWidget {
                       width: 80,
                       height: 80,
                       child: _buildLocationPin(
-                        icon: Icons.home,
-                        label: 'Basecamp Tretes',
-                        color: Colors.red,
-                      ),
+                          icon: Icons.home,
+                          label: 'Basecamp Tretes',
+                          color: Colors.red),
                     ),
-                    _buildMitraMarker(LatLng(-7.7020, 112.6350)),
-                    _buildMitraMarker(LatLng(-7.6980, 112.6300)),
-                    _buildMitraMarker(LatLng(-7.7050, 112.6380)),
                   ],
                 ),
               ],
             ),
           ),
 
-          // 2. Custom TopAppBar
+          // 2. Custom TopAppBar[cite: 8]
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 10, bottom: 10),
+                  top: MediaQuery.of(context).padding.top + 10, bottom: 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.white.withOpacity(0.8), Colors.transparent],
+                  colors: [Colors.white.withOpacity(0.9), Colors.transparent],
                 ),
               ),
               child: Padding(
@@ -98,21 +94,19 @@ class BasecampPartnersScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: primaryColor),
+                      icon: const Icon(Icons.arrow_back,
+                          color: AppColors.primary),
                       onPressed: () => Navigator.pop(context),
                       style: IconButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.8)),
+                          backgroundColor: Colors.white, elevation: 2),
                     ),
                     const Expanded(
-                      child: Center(
-                        child: Text(
-                          'Mitra Basecamp',
+                      child: Text('Mitra Basecamp',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: 'Manrope',
                               fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        ),
-                      ),
+                              fontSize: 18)),
                     ),
                     const SizedBox(width: 48),
                   ],
@@ -121,10 +115,10 @@ class BasecampPartnersScreen extends StatelessWidget {
             ),
           ),
 
-          // 3. Bottom Sheet: Partner List
+          // 3. Bottom Sheet: Partner List[cite: 8]
           DraggableScrollableSheet(
             initialChildSize: 0.45,
-            minChildSize: 0.4,
+            minChildSize: 0.35,
             maxChildSize: 0.9,
             builder: (context, scrollController) {
               return Container(
@@ -133,74 +127,74 @@ class BasecampPartnersScreen extends StatelessWidget {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 20)],
                 ),
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      width: 48,
-                      height: 6,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(3)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: CustomScrollView(
+                  controller: scrollController,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
                         children: [
-                          RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                  fontFamily: 'Manrope',
-                                  color: Colors.black,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold),
+                          // Handle Bar
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 12),
+                            width: 48,
+                            height: 6,
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(3)),
+                          ),
+
+                          // Header Info
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const TextSpan(text: '12 Mitra di\n'),
-                                TextSpan(
-                                    text:
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('12 Mitra di',
+                                        style: TextStyle(
+                                            fontFamily: 'Manrope',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold)),
+                                    Text(
                                         'Radius ${(radiusValue / 1000).toStringAsFixed(0)} km',
-                                    style: const TextStyle(
-                                        color: primaryColor, fontSize: 18)),
+                                        style: const TextStyle(
+                                            color: AppColors.primary,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.tune),
+                                  style: IconButton.styleFrom(
+                                      backgroundColor:
+                                          AppColors.surfaceContainerLow),
+                                  onPressed: () => _showFilter(context),
+                                ),
                               ],
                             ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.tune),
-                            style: IconButton.styleFrom(
-                                backgroundColor: surfaceColor),
-                            onPressed: () => _showFilter(context),
                           ),
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: ListView(
-                        controller: scrollController,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 16),
-                        children: [
-                          // 🚀 Tambahkan 'context' sebagai parameter pertama
-                          _buildPartnerCard(
-                              context,
-                              'Tretes Gear Hub',
-                              '4.9',
-                              '1.2 km',
-                              'https://images.unsplash.com/photo-1551632811-561732d1e306'),
-                          _buildPartnerCard(
-                              context,
-                              'Arjuno Provisions',
-                              '4.7',
-                              '2.5 km',
-                              'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2'),
-                          _buildPartnerCard(
-                              context,
-                              'Puncak Supply Co.',
-                              '4.5',
-                              '3.8 km',
-                              'https://images.unsplash.com/photo-1520639889413-5d5586198482'),
-                        ],
+
+                    // 🚀 FIX: Menggunakan SliverList untuk menghindari error child.hasSize
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 8),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _buildPartnerCard(
+                            context,
+                            'Tretes Gear Hub #$index',
+                            '4.9',
+                            '${(index + 1) * 0.5} km',
+                            'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
+                          ),
+                          childCount: 10,
+                        ),
                       ),
                     ),
                   ],
@@ -227,36 +221,18 @@ class BasecampPartnersScreen extends StatelessWidget {
               border: Border.all(color: Colors.white, width: 2)),
           child: Icon(icon, color: Colors.white, size: 14),
         ),
-        Container(
-          margin: const EdgeInsets.only(top: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(4)),
-          child: Text(label,
-              style: TextStyle(
-                  color: color, fontSize: 10, fontWeight: FontWeight.bold)),
-        ),
+        const SizedBox(height: 4),
+        Text(label,
+            style: TextStyle(
+                color: color,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white)),
       ],
     );
   }
 
-  Marker _buildMitraMarker(LatLng point) {
-    return Marker(
-      point: point,
-      width: 30,
-      height: 30,
-      child: Container(
-        decoration: BoxDecoration(
-            color: const Color(0xFF006C0C),
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 2)),
-        child: const Icon(Icons.storefront, color: Colors.white, size: 14),
-      ),
-    );
-  }
-
-  // 🚀 PERBAIKAN: Tambahkan parameter 'BuildContext context' agar Navigator bisa jalan
+  // 🚀 PERBAIKAN: Tangani Infinite Width & Image 404
   Widget _buildPartnerCard(BuildContext context, String name, String rating,
       String distance, String imgUrl) {
     return Container(
@@ -268,19 +244,33 @@ class BasecampPartnersScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(radius: 28, backgroundImage: NetworkImage(imgUrl)),
+          // ClipRRect + Image.network lebih aman dari CircleAvatar untuk handle 404
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              imgUrl,
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: 56,
+                height: 56,
+                color: AppColors.surfaceContainerLow,
+                child: const Icon(Icons.broken_image, color: Colors.grey),
+              ),
+            ),
+          ),
           const SizedBox(width: 16),
+          // Expanded sangat penting agar teks tidak mendorong keluar layar
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(name,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
                 Row(
                   children: [
                     const Icon(Icons.star, color: Colors.orange, size: 14),
@@ -289,35 +279,35 @@ class BasecampPartnersScreen extends StatelessWidget {
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 12)),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        '• $distance dari Basecamp',
+                    Text('• $distance',
                         style:
-                            const TextStyle(color: Colors.grey, fontSize: 12),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                            const TextStyle(color: Colors.grey, fontSize: 12)),
                   ],
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () => Navigator.pushNamed(
-                context, '/rental-detail'), // Sekarang context sudah dikenali
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF006C0C),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(99)),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+          // Batasi ukuran tombol agar tidak "BoxConstraints infinite width"
+          SizedBox(
+            height: 36,
+            width: 90,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/rental-detail'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                minimumSize: Size.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(99)),
+                elevation: 0,
+              ),
+              child: const Text('Katalog',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold)),
             ),
-            child: const Text('Katalog',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold)),
           ),
         ],
       ),

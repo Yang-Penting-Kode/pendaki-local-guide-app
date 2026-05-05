@@ -7,7 +7,7 @@ class StorageService {
 
   // 🛠️ FIX: Nama fungsi adalah getInstance() bukan getInstances()
   static Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance(); 
+    _prefs = await SharedPreferences.getInstance();
   }
 
   static Future<void> setLanguage(String name) async {
@@ -16,5 +16,15 @@ class StorageService {
 
   static String getLanguage() {
     return _prefs?.getString(_langKey) ?? 'Bahasa Indonesia';
+  }
+
+  static const String _onboardingKey = 'has_seen_onboarding';
+
+  static Future<void> markOnboardingSeen() async {
+    await _prefs?.setBool(_onboardingKey, true);
+  }
+
+  static bool hasSeenOnboarding() {
+    return _prefs?.getBool(_onboardingKey) ?? false;
   }
 }

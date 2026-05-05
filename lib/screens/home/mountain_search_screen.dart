@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../components/filter_modal.dart'; // 🚀 Import komponen filter
+import '../../core/constants/app_colors.dart'; // 🚀 Gunakan warna global
+import '../../components/modals/filter_modal.dart'; // 🚀 Sesuaikan path folder modals
 
 class MountainSearchScreen extends StatefulWidget {
   const MountainSearchScreen({super.key});
@@ -17,7 +18,6 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
     super.dispose();
   }
 
-  // Fungsi untuk memanggil Bottom Sheet Filter
   void _showFilter(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -29,81 +29,90 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF006C0C);
-    const Color surfaceColor = Color(0xFFF9F9F9);
-    const Color outlineColor = Color(0xFF6F7A6A);
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.8),
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        flexibleSpace: ClipRect(
-          child: Container(
-            padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back,
-                      size: 28, color: Color(0xFF1A1C1C)),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                // 1. Input Pencarian
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: surfaceColor,
-                      borderRadius: BorderRadius.circular(99),
-                      border: Border.all(color: outlineColor.withOpacity(0.15)),
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: 'Ketik nama gunung...',
-                        hintStyle:
-                            TextStyle(color: outlineColor.withOpacity(0.7)),
-                        border: InputBorder.none,
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 14),
-                        suffixIcon: _searchController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.close,
-                                    size: 20, color: outlineColor),
-                                onPressed: () =>
-                                    setState(() => _searchController.clear()),
-                              )
-                            : null,
+      backgroundColor: AppColors.surface, // ⚪ Konsisten dengan tema
+      appBar: PreferredSize(
+        preferredSize:
+            const Size.fromHeight(80), // 🚀 FIX: Batasi tinggi AppBar agar aman
+        child: AppBar(
+          backgroundColor: Colors.white.withOpacity(0.9),
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          flexibleSpace: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back,
+                        size: 24, color: AppColors.onSurface),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  // 1. Input Pencarian (Safe Constraints)[cite: 7, 10]
+                  Expanded(
+                    child: Container(
+                      height: 48,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(99),
+                        border: Border.all(
+                            color: AppColors.outline.withOpacity(0.1)),
                       ),
-                      onChanged: (value) => setState(() {}),
-                      onSubmitted: (value) {
-                        if (value.isNotEmpty) {
-                          Navigator.pushNamed(
-                            context,
-                            '/mountain-search-result',
-                            arguments: value,
-                          );
-                        }
-                      },
+                      child: TextField(
+                        controller: _searchController,
+                        autofocus: true,
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                        decoration: InputDecoration(
+                          hintText: 'Ketik nama gunung...',
+                          hintStyle: TextStyle(
+                              color: AppColors.outline.withOpacity(0.6)),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 12),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () =>
+                                      setState(() => _searchController.clear()),
+                                  child: const Icon(Icons.close,
+                                      size: 18, color: AppColors.outline),
+                                )
+                              : null,
+                        ),
+                        onChanged: (value) => setState(() {}),
+                        onSubmitted: (value) {
+                          if (value.isNotEmpty) {
+                            Navigator.pushNamed(
+                              context,
+                              '/mountain-search-result',
+                              arguments: value,
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                // 2. Tombol Filter (Tune)
-                Container(
-                  decoration: BoxDecoration(
-                    color: surfaceColor,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: outlineColor.withOpacity(0.15)),
+                  const SizedBox(width: 12),
+                  // 2. Tombol Filter
+                  GestureDetector(
+                    onTap: () => _showFilter(context),
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainerLow,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: AppColors.outline.withOpacity(0.1)),
+                      ),
+                      child: const Icon(Icons.tune_rounded,
+                          color: AppColors.primary, size: 20),
+                    ),
                   ),
-                  child: IconButton(
-                    icon: const Icon(Icons.tune, color: primaryColor, size: 20),
-                    onPressed: () => _showFilter(context), // 🚀 Panggil modal
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -112,9 +121,9 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Riwayat Pencarian
+            // Riwayat Pencarian[cite: 10]
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -122,16 +131,16 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
                     'Riwayat Pencarian',
                     style: TextStyle(
                         fontFamily: 'Manrope',
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800),
                   ),
                   TextButton(
                     onPressed: () {},
-                    child: const Text('Hapus Semua',
+                    child: const Text('Hapus',
                         style: TextStyle(
-                            color: primaryColor,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14)),
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13)),
                   ),
                 ],
               ),
@@ -142,23 +151,23 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
 
             const SizedBox(height: 32),
 
-            // Pencarian Populer
+            // Pencarian Populer[cite: 10]
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 'Pencarian Populer',
                 style: TextStyle(
                     fontFamily: 'Manrope',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800),
               ),
             ),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: 10,
+                runSpacing: 10,
                 children: [
                   _buildPopularChip(
                       Icons.local_fire_department, 'Gunung Semeru',
@@ -179,23 +188,24 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
 
   Widget _buildHistoryItem(String text) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        _searchController.text = text;
+        setState(() {});
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Row(
           children: [
-            const Icon(Icons.history, color: Color(0xFF6F7A6A)),
+            const Icon(Icons.history, size: 20, color: AppColors.outline),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(
-                text,
-                style: const TextStyle(fontSize: 16, color: Color(0xFF1A1C1C)),
-              ),
+              child: Text(text,
+                  style: const TextStyle(
+                      fontSize: 15, color: AppColors.onSurface)),
             ),
-            IconButton(
-              icon: const Icon(Icons.close, size: 20, color: Colors.grey),
-              onPressed: () {},
-            ),
+            const Icon(Icons.north_west_rounded,
+                size: 16,
+                color: AppColors.outline), // Ikon panah ala Google Search
           ],
         ),
       ),
@@ -203,29 +213,22 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
   }
 
   Widget _buildPopularChip(IconData icon, String label,
-      {Color iconColor = Colors.grey}) {
+      {Color iconColor = AppColors.outline}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 4,
-              offset: const Offset(0, 2)),
-        ],
+        border: Border.all(color: AppColors.outline.withOpacity(0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: iconColor),
+          Icon(icon, size: 16, color: iconColor),
           const SizedBox(width: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-          ),
+          Text(label,
+              style:
+                  const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
         ],
       ),
     );
