@@ -197,7 +197,7 @@ class WaitingConfirmationScreen extends StatelessWidget {
                     Icon(Icons.verified_user, color: stitchPrimary, size: 14),
                     SizedBox(width: 8),
                     Text(
-                      'Transaksi dilindungi oleh Local Guide Safety',
+                      'Transaksi dilindungi oleh Mountain Kit Safety',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,

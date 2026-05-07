@@ -58,7 +58,7 @@ class AboutAppScreen extends StatelessWidget {
 
             // 6. Footer
             const Text(
-              '© 2024 LOCAL GUIDE INDONESIA. ALL RIGHTS RESERVED.',
+              '© 2024 Mountain Kit INDONESIA. ALL RIGHTS RESERVED.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
@@ -102,7 +102,7 @@ class AboutAppScreen extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         const Text(
-          'Local Guide',
+          'Mountain Kit',
           style: TextStyle(
             fontFamily: 'Manrope',
             fontSize: 30,
@@ -145,7 +145,7 @@ class AboutAppScreen extends StatelessWidget {
         ],
       ),
       child: Text(
-        'Local Guide adalah marketplace rental alat outdoor terpercaya yang menghubungkan pendaki dengan mitra rental lokal di seluruh Nusantara. Kami berdedikasi untuk memberikan akses perlengkapan berkualitas tinggi demi keamanan dan kenyamanan petualangan Anda di alam liar.',
+        'Mountain Kit adalah marketplace rental alat outdoor terpercaya yang menghubungkan pendaki dengan mitra rental lokal di seluruh Nusantara. Kami berdedikasi untuk memberikan akses perlengkapan berkualitas tinggi demi keamanan dan kenyamanan petualangan Anda di alam liar.',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 16,

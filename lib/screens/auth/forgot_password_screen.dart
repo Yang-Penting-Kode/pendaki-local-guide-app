@@ -108,7 +108,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               // 5. Footer - Dibungkus Center agar tetap di tengah[cite: 14]
               const Center(
                 child: Text(
-                  'KEAMANAN TERJAMIN • LOCAL GUIDE DESIGN',
+                  'KEAMANAN TERJAMIN • Mountain Kit DESIGN',
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,

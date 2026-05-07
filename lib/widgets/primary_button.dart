@@ -3,14 +3,14 @@ import '../core/constants/app_colors.dart'; // 🚀 Merujuk ke pusat warna
 
 class PrimaryButton extends StatefulWidget {
   final String text;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color? color;
   final bool isLoading; // 🔄 Untuk feedback saat klik login/daftar
 
   const PrimaryButton({
     super.key,
     required this.text,
-    required this.onTap,
+    this.onTap,
     this.color,
     this.isLoading = false,
   });
@@ -46,9 +46,9 @@ class _PrimaryButtonState extends State<PrimaryButton>
     return GestureDetector(
       onTapDown: (_) => widget.isLoading ? null : _controller.forward(),
       onTapUp: (_) {
-        if (!widget.isLoading) {
+        if (!widget.isLoading && widget.onTap != null) {
           _controller.reverse();
-          widget.onTap();
+          widget.onTap!();
         }
       },
       onTapCancel: () => _controller.reverse(),

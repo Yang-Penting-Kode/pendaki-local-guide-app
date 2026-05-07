@@ -108,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen>
                 FadeTransition(
                   opacity: _fadeAnimation,
                   child: const Text(
-                    'Local Guide',
+                    'Mountain Kit',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 48,

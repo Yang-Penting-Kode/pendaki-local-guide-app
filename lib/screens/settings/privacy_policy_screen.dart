@@ -116,7 +116,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 number: '3',
                 title: 'Perlindungan Data Marketplace',
                 content:
-                    'GuideIn bertindak sebagai jembatan aman. Kami hanya membagikan informasi kontak terbatas kepada Local Guide atau vendor rental yang telah Anda pilih untuk keperluan logistik.',
+                    'GuideIn bertindak sebagai jembatan aman. Kami hanya membagikan informasi kontak terbatas kepada Mountain Kit atau vendor rental yang telah Anda pilih untuk keperluan logistik.',
                 primaryColor: primaryColor,
                 isCallout: true,
               ),

@@ -74,7 +74,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     Icon(Icons.landscape, color: Colors.white, size: 24),
                     SizedBox(width: 8),
                     Text(
-                      'LOCAL GUIDE',
+                      'Mountain Kit',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,

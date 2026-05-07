@@ -162,7 +162,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               Icon(Icons.landscape, color: Color(0xFF228B22), size: 28),
               SizedBox(width: 8),
               Text(
-                'LOCAL GUIDE',
+                'Mountain Kit',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontWeight: FontWeight.w900,

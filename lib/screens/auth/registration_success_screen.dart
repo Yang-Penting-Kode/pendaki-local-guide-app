@@ -19,7 +19,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
             const Icon(Icons.travel_explore, color: AppColors.primary),
             const SizedBox(width: 8),
             const Text(
-              'Local Guide Marketplace',
+              'Mountain Kit Marketplace',
               style: TextStyle(
                 color: AppColors.primary,
                 fontFamily: 'Manrope',

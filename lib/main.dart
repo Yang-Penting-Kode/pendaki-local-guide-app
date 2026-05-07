@@ -29,6 +29,8 @@ import 'package:pendaki_local_guide_app/screens/home/mountain_search_screen.dart
 import 'package:pendaki_local_guide_app/screens/home/rental_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/track_location_screen.dart';
 import 'package:pendaki_local_guide_app/screens/products/product_detail_screen.dart';
+import 'package:pendaki_local_guide_app/screens/search/product_category_screen.dart';
+import 'package:pendaki_local_guide_app/screens/search/product_search_result_screen.dart';
 import 'package:pendaki_local_guide_app/screens/search/search_not_found_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/about_app_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/change_password_screen.dart';
@@ -64,7 +66,7 @@ class LocalGuideApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Local Guide',
+      title: 'Mountain Kit',
       theme: AppTheme.lightTheme,
       initialRoute: '/',
       onGenerateRoute: (settings) {
@@ -139,13 +141,20 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const ReturnConfirmationScreen(),
                 settings: settings);
           case '/waiting-confirmation':
-            return _fadeRoute(const WaitingConfirmationScreen(), settings: settings);
+            return _fadeRoute(const WaitingConfirmationScreen(),
+                settings: settings);
           case '/order-cancelled':
             return _fadeRoute(const OrderCancelledScreen(), settings: settings);
           case '/review':
             return _fadeRoute(const ReviewScreen(), settings: settings);
           case '/search-empty':
             return _fadeRoute(const SearchNotFoundScreen(), settings: settings);
+          case '/product-search-result':
+            final query = settings.arguments as String? ?? '';
+            return _fadeRoute(ProductSearchResultScreen(initialQuery: query),
+                settings: settings);
+          case '/product-category':
+            return _fadeRoute(const ProductCategoryScreen());
           case '/my-reviews':
             return _fadeRoute(const MyReviewsScreen(), settings: settings);
           case '/live-tracking':

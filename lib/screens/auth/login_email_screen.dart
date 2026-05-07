@@ -55,7 +55,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Local Guide',
+                    'Mountain Kit',
                     style: TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 36,

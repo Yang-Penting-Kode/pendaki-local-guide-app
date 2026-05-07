@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart'; // 🚀 Gunakan warna global
-import '../../components/modals/filter_modal.dart'; // 🚀 Sesuaikan path folder modals
+import '../../core/constants/app_colors.dart';
+import '../../components/modals/filter_modal.dart';
+import '../../widgets/custom_text_field.dart';
 
 class MountainSearchScreen extends StatefulWidget {
   const MountainSearchScreen({super.key});
@@ -27,75 +28,65 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
     );
   }
 
+  void _handleSearch(String query) {
+    if (query.trim().isEmpty) return;
+
+    // Simulasi: Jika mengetik "kosong", arahkan ke SearchNotFoundScreen
+    if (query.toLowerCase() == 'kosong') {
+      Navigator.pushNamed(context, '/search-empty');
+    } else {
+      Navigator.pushNamed(context, '/mountain-search-result', arguments: query);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surface, // ⚪ Konsisten dengan tema
+      backgroundColor: AppColors.surface,
       appBar: PreferredSize(
-        preferredSize:
-            const Size.fromHeight(80), // 🚀 FIX: Batasi tinggi AppBar agar aman
+        preferredSize: const Size.fromHeight(80),
         child: AppBar(
-          backgroundColor: Colors.white.withOpacity(0.9),
-          elevation: 0,
+          backgroundColor: Colors.white,
+          elevation: 0.5,
           automaticallyImplyLeading: false,
+          titleSpacing: 0,
           flexibleSpace: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              // 🚀 FIX: Padding yang lebih pas agar tidak terlalu rapat atau terlalu lebar
+              padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
               child: Row(
                 children: [
                   IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                     icon: const Icon(Icons.arrow_back,
                         size: 24, color: AppColors.onSurface),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  // 1. Input Pencarian (Safe Constraints)[cite: 7, 10]
+                  const SizedBox(width: 8),
                   Expanded(
-                    child: Container(
-                      height: 48,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(99),
-                        border: Border.all(
-                            color: AppColors.outline.withOpacity(0.1)),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        autofocus: true,
-                        style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w500),
-                        decoration: InputDecoration(
-                          hintText: 'Ketik nama gunung...',
-                          hintStyle: TextStyle(
-                              color: AppColors.outline.withOpacity(0.6)),
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 12),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? GestureDetector(
-                                  onTap: () =>
-                                      setState(() => _searchController.clear()),
-                                  child: const Icon(Icons.close,
-                                      size: 18, color: AppColors.outline),
-                                )
-                              : null,
-                        ),
-                        onChanged: (value) => setState(() {}),
-                        onSubmitted: (value) {
-                          if (value.isNotEmpty) {
-                            Navigator.pushNamed(
-                              context,
-                              '/mountain-search-result',
-                              arguments: value,
-                            );
-                          }
-                        },
-                      ),
+                    child: CustomTextField(
+                      hint: 'Ketik nama gunung...',
+                      controller: _searchController,
+                      borderRadius: 99, // 🚀 Bikin lonjong sempurna
+                      showShadow: false, // 🚀 Matikan shadow agar AppBar bersih
+                      // 🚀 FIX: Padding dikurangi agar teks tidak "terhimpit" vertikal
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      onChanged: (value) => setState(() {}),
+                      onSubmitted: _handleSearch,
+                      // Logika ikon hapus (X) di kanan
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? Icons.close
+                          : null,
+                      onSuffixTap: () {
+                        _searchController.clear();
+                        setState(
+                            () {}); // 👈 Refresh UI agar ikon X langsung hilang
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // 2. Tombol Filter
                   GestureDetector(
                     onTap: () => _showFilter(context),
                     child: Container(
@@ -119,21 +110,18 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Riwayat Pencarian[cite: 10]
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Riwayat Pencarian',
-                    style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800),
-                  ),
+                  const Text('Riwayat Pencarian',
+                      style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800)),
                   TextButton(
                     onPressed: () {},
                     child: const Text('Hapus',
@@ -148,23 +136,18 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
             _buildHistoryItem('Gunung Arjuno'),
             _buildHistoryItem('Gunung Welirang'),
             _buildHistoryItem('Tenda Eiger'),
-
             const SizedBox(height: 32),
-
-            // Pencarian Populer[cite: 10]
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'Pencarian Populer',
-                style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text('Pencarian Populer',
+                  style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800)),
             ),
             const SizedBox(height: 16),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Wrap(
                 spacing: 10,
                 runSpacing: 10,
@@ -184,8 +167,6 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
     );
   }
 
-  // --- HELPER WIDGETS ---
-
   Widget _buildHistoryItem(String text) {
     return InkWell(
       onTap: () {
@@ -193,19 +174,17 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
         setState(() {});
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Row(
           children: [
             const Icon(Icons.history, size: 20, color: AppColors.outline),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(text,
-                  style: const TextStyle(
-                      fontSize: 15, color: AppColors.onSurface)),
-            ),
+                child: Text(text,
+                    style: const TextStyle(
+                        fontSize: 15, color: AppColors.onSurface))),
             const Icon(Icons.north_west_rounded,
-                size: 16,
-                color: AppColors.outline), // Ikon panah ala Google Search
+                size: 16, color: AppColors.outline),
           ],
         ),
       ),

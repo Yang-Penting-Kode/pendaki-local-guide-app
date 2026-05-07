@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0,
         title: const Text(
-          'Local Guide',
+          'Mountain Kit',
           style: TextStyle(
             color: primaryColor,
             fontFamily: 'Manrope',
@@ -110,9 +110,14 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildQuickAction(Icons.qr_code_scanner, 'QR Ambil Alat'),
-                  _buildQuickAction(Icons.category, 'Kategori Alat'),
-                  _buildQuickAction(Icons.history, 'Riwayat'),
+                  _buildQuickAction(Icons.qr_code_scanner, 'QR Ambil Alat',
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/pickup-confirmation')),
+                  _buildQuickAction(Icons.category, 'Kategori Alat',
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/product-category')),
+                  _buildQuickAction(Icons.history, 'Riwayat',
+                      onTap: () => Navigator.pushNamed(context, '/dashboard')),
                 ],
               ),
             ),
@@ -232,27 +237,30 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickAction(IconData icon, String label) {
-    return Column(
-      children: [
-        Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1C871E).withOpacity(0.1),
-            shape: BoxShape.circle,
+  Widget _buildQuickAction(IconData icon, String label, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap, // 🚀 Aktifkan fungsi klik
+      child: Column(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C871E).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: const Color(0xFF006C0C), size: 28),
           ),
-          child: Icon(icon, color: const Color(0xFF006C0C), size: 28),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: 64,
-          child: Text(label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 10, fontWeight: FontWeight.w600, height: 1.2)),
-        ),
-      ],
+          const SizedBox(height: 8),
+          SizedBox(
+            width: 64,
+            child: Text(label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 10, fontWeight: FontWeight.w600, height: 1.2)),
+          ),
+        ],
+      ),
     );
   }
 

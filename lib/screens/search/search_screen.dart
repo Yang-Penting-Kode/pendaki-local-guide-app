@@ -1,69 +1,105 @@
 import 'package:flutter/material.dart';
 import 'package:pendaki_local_guide_app/components/modals/filter_modal.dart';
 import 'package:pendaki_local_guide_app/core/constants/app_colors.dart';
+import 'package:pendaki_local_guide_app/widgets/custom_text_field.dart';
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _handleSearch(String query) {
+    if (query.trim().isEmpty) return;
+    if (query.toLowerCase() == 'kosong') {
+      Navigator.pushNamed(context, '/search-empty');
+    } else {
+      Navigator.pushNamed(context, '/product-search-result', arguments: query);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      // 1. Sticky Header dengan Search Bar
       appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.8),
-        elevation: 0,
+        backgroundColor: Colors.white,
+        elevation: 0.5,
         toolbarHeight: 80,
+        // 🚀 FIX: titleSpacing 16 agar search bar mepet rapi ke sisi layar
+        titleSpacing: 16,
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(99),
-                ),
-                child: const TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Ketik nama alat...',
-                    hintStyle: TextStyle(fontSize: 14, color: AppColors.onSurfaceVariant),
-                    prefixIcon: Icon(Icons.search, color: AppColors.primary),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
+              child: CustomTextField(
+                hint: 'Ketik nama alat...',
+                controller: _searchController,
+                onSubmitted: _handleSearch,
+                prefixIcon: Icons
+                    .search, // 🚀 Gunakan prefix icon yang sudah ada di widget
+                borderRadius: 99, // 🚀 Pill shape konsisten
+                showShadow:
+                    false, // 🚀 Matikan shadow agar tidak sumpek di header
+                // 🚀 FIX: Padding vertikal 10 agar teks tidak terhimpit
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                onChanged: (value) => setState(() {}),
+                suffixIcon:
+                    _searchController.text.isNotEmpty ? Icons.close : null,
+                onSuffixTap: () {
+                  _searchController.clear();
+                  setState(() {}); // 👈 Refresh UI agar ikon X langsung hilang
+                },
               ),
             ),
             const SizedBox(width: 12),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceContainerLow,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.tune, color: AppColors.primary),
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => const FilterModal(),
-                  );
-                },
+            // Tombol Filter (Tune)
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const FilterModal(),
+                );
+              },
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLow,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.outline.withOpacity(0.1)),
+                ),
+                child:
+                    const Icon(Icons.tune, color: AppColors.primary, size: 20),
               ),
             ),
           ],
         ),
       ),
       body: Column(
+        // 🚀 FIX: Paksa kategori dan grid melebar penuh layar VIVO
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 2. Category Section (Horizontal Scroll)
           const SizedBox(height: 16),
+          // Tab Kategori Horizontal
           SizedBox(
             height: 40,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               children: [
                 _buildCategoryTab('Semua', isSelected: true),
                 _buildCategoryTab('Tenda'),
@@ -73,60 +109,52 @@ class SearchScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 24),
-
-          // 3. Bento Grid / Catalog Section
+          const SizedBox(height: 20),
+          // Grid Produk
           Expanded(
             child: GridView.count(
               crossAxisCount: 2,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
-              childAspectRatio: 0.75, // Biar card agak memanjang ke bawah
+              childAspectRatio: 0.75, // Proporsi kartu produk
               children: [
                 _buildProductCard(
-                  title: 'Tenda Dome 4P',
-                  price: '40.000',
-                  distance: '1.5 km',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-                ),
+                    title: 'Tenda Dome 4P',
+                    price: '40.000',
+                    distance: '1.5 km',
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400'),
                 _buildProductCard(
-                  title: 'Carrier 60L Pro',
-                  price: '35.000',
-                  distance: '0.8 km',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
-                ),
+                    title: 'Carrier 60L Pro',
+                    price: '35.000',
+                    distance: '0.8 km',
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400'),
                 _buildProductCard(
-                  title: 'Sleeping Bag Zero',
-                  price: '15.000',
-                  distance: '2.1 km',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=400',
-                ),
+                    title: 'Sleeping Bag Zero',
+                    price: '15.000',
+                    distance: '2.1 km',
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=400'),
                 _buildProductCard(
-                  title: 'Cooking Set Ultralight',
-                  price: '20.000',
-                  distance: '1.2 km',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400',
-                ),
+                    title: 'Cooking Set Ultralight',
+                    price: '20.000',
+                    distance: '1.2 km',
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400'),
                 _buildProductCard(
-                  title: 'Headlamp 300 Lumens',
-                  price: '10.000',
-                  distance: '3.4 km',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1508672019048-805c876b67e2?q=80&w=400',
-                ),
+                    title: 'Headlamp 300 Lumens',
+                    price: '10.000',
+                    distance: '3.4 km',
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1508672019048-805c876b67e2?q=80&w=400'),
                 _buildProductCard(
-                  title: 'Matras Alumunium',
-                  price: '5.000',
-                  distance: '1.9 km',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1525811902-f23426213fd0?q=80&w=400',
-                ),
-                const SizedBox(height: 12),
+                    title: 'Matras Alumunium',
+                    price: '5.000',
+                    distance: '1.9 km',
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1525811902-f23426213fd0?q=80&w=400'),
               ],
             ),
           ),
@@ -135,53 +163,54 @@ class SearchScreen extends StatelessWidget {
     );
   }
 
-  // --- HELPER WIDGETS ---
-
   Widget _buildCategoryTab(String label, {bool isSelected = false}) {
     return Container(
-      margin: const EdgeInsets.only(right: 12),
+      margin: const EdgeInsets.only(right: 10),
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
           backgroundColor: isSelected ? AppColors.primary : Colors.white,
-          foregroundColor: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+          foregroundColor:
+              isSelected ? Colors.white : AppColors.onSurfaceVariant,
           elevation: 0,
-          minimumSize: Size.zero, // Fix untuk infinite width box constraints
+          minimumSize: Size.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(99),
             side: isSelected
                 ? BorderSide.none
                 : const BorderSide(color: AppColors.outline, width: 0.5),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-          ),
-        ),
+        child: Text(label,
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500)),
       ),
     );
   }
 
-  Widget _buildProductCard({
-    required String title,
-    required String price,
-    required String distance,
-    required String imageUrl,
-  }) {
+  Widget _buildProductCard(
+      {required String title,
+      required String price,
+      required String distance,
+      required String imageUrl}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.outline.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 4))
+        ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            CrossAxisAlignment.stretch, // 🚀 FIX: Isi kartu melebar penuh
         children: [
-          // Gambar Produk
           Expanded(
             child: ClipRRect(
               borderRadius:
@@ -191,7 +220,6 @@ class SearchScreen extends StatelessWidget {
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
-                  width: double.infinity,
                   color: AppColors.surfaceContainerLow,
                   child: const Center(
                     child: Icon(Icons.broken_image, color: Colors.grey),
@@ -200,19 +228,16 @@ class SearchScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Info Produk
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 13, height: 1.2),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 13, height: 1.2),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
                 RichText(
                   text: TextSpan(
@@ -227,14 +252,14 @@ class SearchScreen extends StatelessWidget {
                           style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.normal,
-                              fontSize: 10)),
+                              fontSize: 10))
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 12, color: Colors.grey),
+                    const Icon(Icons.location_on, size: 10, color: Colors.grey),
                     const SizedBox(width: 4),
                     Text(distance,
                         style: const TextStyle(

@@ -34,7 +34,7 @@ class AuthGateScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Local Guide',
+                      'Mountain Kit',
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 48,

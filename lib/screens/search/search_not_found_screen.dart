@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../widgets/custom_image.dart';
+import '../../components/modals/filter_modal.dart'; // 🚀 Import modal filter
 
 class SearchNotFoundScreen extends StatelessWidget {
   const SearchNotFoundScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Definisi Warna sesuai desain HTML
+    // Definisi Warna sesuai desain
     const Color primaryColor = Color(0xFF005F3F);
     const Color primaryContainer = Color(0xFF007A52);
     const Color secondaryContainer = Color(0xFFC5ECD4);
@@ -14,23 +15,33 @@ class SearchNotFoundScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      // 1. TopAppBar
+      // 1. TopAppBar (Fungsional)
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.search, color: primaryColor),
-          onPressed: () {},
+          // 🚀 FIX: Ubah ke arrow_back agar user tahu ini tombol kembali
+          icon: const Icon(Icons.arrow_back, color: primaryColor),
+          onPressed: () =>
+              Navigator.pop(context), // Kembali ke layar search sebelumnya
         ),
         title: const Text(
-          'Cari Alat & Mitra',
+          'Hasil Tidak Ditemukan',
           style: TextStyle(
               color: primaryColor, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.tune, color: primaryColor),
-            onPressed: () {},
+            onPressed: () {
+              // 🚀 FIX: Munculkan Filter Modal
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const FilterModal(),
+              );
+            },
           ),
         ],
       ),
@@ -66,8 +77,8 @@ class SearchNotFoundScreen extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // 4. Action Button
-              _buildResetButton(primaryContainer),
+              // 4. Action Button (Fungsional)
+              _buildResetButton(context, primaryContainer),
 
               const SizedBox(height: 60),
 
@@ -77,8 +88,6 @@ class SearchNotFoundScreen extends StatelessWidget {
           ),
         ),
       ),
-      // 6. BottomNavBar
-      bottomNavigationBar: _buildBottomNav(primaryColor),
     );
   }
 
@@ -121,11 +130,14 @@ class SearchNotFoundScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildResetButton(Color bg) {
+  Widget _buildResetButton(BuildContext context, Color bg) {
     return ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        // 🚀 FIX: Kembali ke layar sebelumnya untuk mengetik ulang
+        Navigator.pop(context);
+      },
       icon: const Icon(Icons.refresh),
-      label: const Text('Atur Ulang Filter',
+      label: const Text('Atur Ulang Pencarian',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
       style: ElevatedButton.styleFrom(
         backgroundColor: bg,
@@ -179,38 +191,6 @@ class SearchNotFoundScreen extends StatelessWidget {
           Text(label,
               style:
                   const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav(Color primary) {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 20),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 20)],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: 2, // Cari aktif
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: primary,
-        unselectedItemColor: Colors.grey,
-        selectedLabelStyle:
-            const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-        unselectedLabelStyle:
-            const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'BERANDA'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month), label: 'BOOKING'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'CARI'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'RIWAYAT'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'PENGATURAN'),
         ],
       ),
     );

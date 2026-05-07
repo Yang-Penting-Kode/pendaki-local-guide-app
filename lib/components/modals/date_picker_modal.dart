@@ -14,6 +14,7 @@ class _DatePickerModalState extends State<DatePickerModal> {
   int? startDayIndex;
   int? endDayIndex;
 
+  // 🚀 OPTIMASI: Logika tap yang lebih ramping
   void _onDateTap(int index) {
     setState(() {
       if (startDayIndex == null ||
@@ -44,15 +45,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 12, bottom: 8),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(99),
-            ),
-          ),
+          // Handle modal bar statis (Gunakan const)
+          const _ModalHandle(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Row(
@@ -73,6 +67,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
           ),
           Flexible(
             child: SingleChildScrollView(
+              // 🚀 OPTIMASI: Tambahkan physics agar scroll di VIVO lebih mulus
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
               child: Column(
                 children: [
@@ -90,33 +86,19 @@ class _DatePickerModalState extends State<DatePickerModal> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  _buildCalendarHeader('Oktober 2023'),
+                  const _CalendarHeader(month: 'Oktober 2023'),
                   const SizedBox(height: 24),
                   _buildCalendarGrid(),
                   const SizedBox(height: 40),
-
-                  // 🚀 FIX: Menggunakan fungsi anonim agar tidak melanggar aturan non-nullable
                   PrimaryButton(
                     text: 'Terapkan Tanggal',
-                    onTap: () {
-                      if (startDayIndex != null && endDayIndex != null) {
-                        _navigateToPartners(context);
-                      }
-                    },
+                    // Tombol hanya aktif jika range sudah dipilih
+                    onTap: (startDayIndex != null && endDayIndex != null)
+                        ? () => _navigateToPartners(context)
+                        : null,
                   ),
-
                   const SizedBox(height: 16),
-                  const Opacity(
-                    opacity: 0.6,
-                    child: Text(
-                      '*Harga dapat berubah sewaktu-waktu tergantung ketersediaan alat pendakian.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontStyle: FontStyle.italic,
-                          color: AppColors.onSurfaceVariant),
-                    ),
-                  ),
+                  const _DisclaimerText(),
                 ],
               ),
             ),
@@ -126,35 +108,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
     );
   }
 
-  void _navigateToPartners(BuildContext context) {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        // 🚀 FIX: Ganti placeholder kemarin dengan Class Screen yang asli
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const BasecampPartnersScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 0.1);
-          const end = Offset.zero;
-          const curve = Curves.easeOutQuart;
+  // --- OPTIMIZED UI HELPERS ---
 
-          var tweetTranslation = animation.drive(
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve)),
-          );
-          var fadeAnimation = animation.drive(Tween(begin: 0.0, end: 1.0));
-
-          return FadeTransition(
-            opacity: fadeAnimation,
-            child: SlideTransition(position: tweetTranslation, child: child),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 600),
-      ),
-    );
-  }
-
-  // --- UI HELPERS TETAP SAMA ---
   Widget _buildCalendarGrid() {
     return GridView.builder(
       shrinkWrap: true,
@@ -163,26 +118,24 @@ class _DatePickerModalState extends State<DatePickerModal> {
           crossAxisCount: 7, mainAxisSpacing: 8),
       itemCount: 35,
       itemBuilder: (context, index) {
-        if (index < 4) return const SizedBox();
-        bool isStart = index == startDayIndex;
-        bool isEnd = index == endDayIndex;
-        bool isInRange = startDayIndex != null &&
+        if (index < 4) return const SizedBox.shrink();
+
+        final bool isStart = index == startDayIndex;
+        final bool isEnd = index == endDayIndex;
+        final bool isInRange = startDayIndex != null &&
             endDayIndex != null &&
             index > startDayIndex! &&
             index < endDayIndex!;
-        return GestureDetector(
-            onTap: () => _onDateTap(index),
-            child: _buildDateCell(index, isStart, isEnd, isInRange));
+
+        return _DateCell(
+          index: index,
+          isStart: isStart,
+          isEnd: isEnd,
+          isInRange: isInRange,
+          onTap: () => _onDateTap(index),
+        );
       },
     );
-  }
-
-  Widget _buildDateCell(int index, bool isStart, bool isEnd, bool isInRange) {
-    String dayText = "${index - 3}";
-    if (isStart) return _buildSelectedDay(dayText, isStart: true);
-    if (isEnd) return _buildSelectedDay(dayText, isEnd: true);
-    if (isInRange) return _buildRangeDay(dayText);
-    return Center(child: Text(dayText, style: const TextStyle(fontSize: 14)));
   }
 
   Widget _buildDateInfo(String label, String date, IconData icon) {
@@ -216,7 +169,53 @@ class _DatePickerModalState extends State<DatePickerModal> {
     );
   }
 
-  Widget _buildCalendarHeader(String month) {
+  void _navigateToPartners(BuildContext context) {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const BasecampPartnersScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: animation.drive(
+                  Tween(begin: const Offset(0.0, 0.1), end: Offset.zero)
+                      .chain(CurveTween(curve: Curves.easeOutQuart))),
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 600),
+      ),
+    );
+  }
+}
+
+// 🚀 EXTRA OPTIMIZATION: Pisahkan widget statis agar tidak kena rebuild setState
+
+class _ModalHandle extends StatelessWidget {
+  const _ModalHandle();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 12, bottom: 8),
+      width: 40,
+      height: 4,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(99),
+      ),
+    );
+  }
+}
+
+class _CalendarHeader extends StatelessWidget {
+  final String month;
+  const _CalendarHeader({required this.month});
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -230,44 +229,86 @@ class _DatePickerModalState extends State<DatePickerModal> {
       ],
     );
   }
+}
 
-  Widget _buildSelectedDay(String day,
-      {bool isStart = false, bool isEnd = false}) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        if (startDayIndex != null && endDayIndex != null)
+class _DateCell extends StatelessWidget {
+  final int index;
+  final bool isStart;
+  final bool isEnd;
+  final bool isInRange;
+  final VoidCallback onTap;
+
+  const _DateCell({
+    required this.index,
+    required this.isStart,
+    required this.isEnd,
+    required this.isInRange,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final String dayText = "${index - 3}";
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(99),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (isInRange || isStart || isEnd)
+            Container(
+              margin: EdgeInsets.only(
+                left: isStart ? 20 : 0,
+                right: isEnd ? 20 : 0,
+              ),
+              decoration: BoxDecoration(
+                color: (isInRange || isStart || isEnd)
+                    ? AppColors.primaryContainer.withOpacity(0.2)
+                    : Colors.transparent,
+              ),
+            ),
           Container(
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primaryContainer.withOpacity(0.2),
-              borderRadius: BorderRadius.horizontal(
-                left: isEnd ? Radius.zero : const Radius.circular(99),
-                right: isStart ? Radius.zero : const Radius.circular(99),
+              color:
+                  (isStart || isEnd) ? AppColors.primary : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                dayText,
+                style: TextStyle(
+                  color: (isStart || isEnd) ? Colors.white : Colors.black,
+                  fontWeight: (isStart || isEnd || isInRange)
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
-        Container(
-          width: 40,
-          height: 40,
-          decoration: const BoxDecoration(
-              color: AppColors.primary, shape: BoxShape.circle),
-          child: Center(
-              child: Text(day,
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold))),
-        ),
-      ],
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildRangeDay(String day) {
-    return Container(
-      color: AppColors.primaryContainer.withOpacity(0.2),
-      child: Center(
-          child: Text(day,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onPrimaryFixedVariant))),
+class _DisclaimerText extends StatelessWidget {
+  const _DisclaimerText();
+  @override
+  Widget build(BuildContext context) {
+    return const Opacity(
+      opacity: 0.6,
+      child: Text(
+        '*Harga dapat berubah sewaktu-waktu tergantung ketersediaan alat pendakian.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 11,
+            fontStyle: FontStyle.italic,
+            color: AppColors.onSurfaceVariant),
+      ),
     );
   }
 }

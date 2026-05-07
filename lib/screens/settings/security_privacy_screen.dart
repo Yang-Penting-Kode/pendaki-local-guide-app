@@ -19,7 +19,6 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
     super.dispose();
   }
 
-  // 🛡️ MODAL 1: Konfirmasi Login Biometrik
   // 🛡️ MODAL 1: Konfirmasi Login Biometrik (FIX OVERFLOW)
   void _showBiometricConfirmation() {
     showModalBottomSheet(
@@ -475,7 +474,7 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
 
   Widget _buildFooter() {
     return Column(children: [
-      const Text('Versi Aplikasi 2.4.1 (Local Guide Official)',
+      const Text('Versi Aplikasi 2.4.1 (Mountain Kit Official)',
           style: TextStyle(color: Colors.grey, fontSize: 11)),
       const SizedBox(height: 12),
       Row(

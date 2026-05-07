@@ -53,7 +53,7 @@ class _NotificationSettingsScreenState
         //     padding: EdgeInsets.only(right: 24),
         //     child: Center(
         //       child: Text(
-        //         'Local Guide',
+        //         'Mountain Kit',
         //         style: TextStyle(
         //           color: Color(0xFF00560A),
         //           fontFamily: 'Manrope',

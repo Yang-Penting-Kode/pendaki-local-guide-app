@@ -32,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Warna sesuai brand Local Guide
+    // Warna sesuai brand Mountain Kit
     const Color primaryColor = Color(0xFF006C0C);
     const Color unselectedColor = Color(0xFF9E9E9E);
 

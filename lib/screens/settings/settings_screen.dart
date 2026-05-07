@@ -141,7 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 24),
             const Center(
               child: Text(
-                'GuideIn Versi 2.4.0 (Alpine Edition)',
+                'Mountain Kit Versi 2.4.0 (Alpine Edition)',
                 style: TextStyle(color: outlineColor, fontSize: 12),
               ),
             ),

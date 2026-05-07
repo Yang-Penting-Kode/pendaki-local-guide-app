@@ -36,8 +36,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xFF006C0C);
-    const Color secondaryContainer = Color(0xFFFD8B00);
-    const Color onSecondaryContainer = Color(0xFF603100);
+    const Color secondaryContainer = Color.fromARGB(255, 80, 172, 5);
+    const Color onSecondaryContainer = Color.fromARGB(255, 238, 237, 236);
     const Color onSurfaceVariant = Color(0xFF3F4A3B);
 
     return Scaffold(
