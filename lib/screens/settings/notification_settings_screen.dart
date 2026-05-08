@@ -95,14 +95,14 @@ class _NotificationSettingsScreenState
             // 4. Section 2: Keamanan & Cuaca
             _buildSectionHeader(
                 Icons.warning, 'Keamanan & Cuaca', secondaryColor),
-            _buildNotificationItem(
-              'Peringatan Cuaca Ekstrem',
-              'Peringatan langsung untuk ancaman cuaca di sepanjang jalur pendakian.',
-              _cuacaEkstrem,
-              (val) => setState(() => _cuacaEkstrem = val),
-              hasLeftBorder: true,
-              borderColor: secondaryColor,
-            ),
+            // _buildNotificationItem(
+            //   'Peringatan Cuaca Ekstrem',
+            //   'Peringatan langsung untuk ancaman cuaca di sepanjang jalur pendakian.',
+            //   _cuacaEkstrem,
+            //   (val) => setState(() => _cuacaEkstrem = val),
+            //   hasLeftBorder: true,
+            //   borderColor: secondaryColor,
+            // ),
             _buildNotificationItem(
               'Pembaruan Jalur',
               'Informasi penutupan jalur atau peringatan keamanan terkini.',
@@ -131,7 +131,7 @@ class _NotificationSettingsScreenState
             const SizedBox(height: 32),
 
             // 6. Footer Visual Card[cite: 1]
-            _buildFooterCard(primaryColor),
+            // _buildFooterCard(primaryColor),
           ],
         ),
       ),

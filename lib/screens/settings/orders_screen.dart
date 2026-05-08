@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/custom_image.dart';
+import '../../widgets/custom_text_field.dart'; // 🚀 Import CustomTextField
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -11,6 +12,7 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -21,22 +23,20 @@ class _OrdersScreenState extends State<OrdersScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
-  // 🔔 MODAL: Notifikasi - FIXED Overflow dengan SingleChildScrollView
   void _showNotificationModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      isScrollControlled:
-          true, // 🚀 Penting agar modal bisa mengikuti tinggi konten
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => Container(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-        // Batasi tinggi modal agar tidak menutupi seluruh layar
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.7,
         ),
@@ -66,7 +66,6 @@ class _OrdersScreenState extends State<OrdersScreen>
               ],
             ),
             const SizedBox(height: 20),
-            // 🚀 FIX OVERFLOW: Gunakan Expanded + SingleChildScrollView
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -167,17 +166,15 @@ class _OrdersScreenState extends State<OrdersScreen>
 
     return Scaffold(
       backgroundColor: surfaceColor,
-      // 1. Top App Bar - FIXED: Replaced Hamburger with Back Arrow
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0,
         centerTitle: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1C1C)),
-          onPressed: () =>
-              Navigator.pop(context), // 🚀 Kembali ke Profile/Settings
+          onPressed: () => Navigator.pop(context),
         ),
-        titleSpacing: 0, // Agar judul lebih dekat ke panah
+        titleSpacing: 0,
         title: const Text(
           'Pesanan & Penyewaan',
           style: TextStyle(
@@ -199,7 +196,6 @@ class _OrdersScreenState extends State<OrdersScreen>
       ),
       body: Column(
         children: [
-          // 2. Custom Tabs - FIXED: indicatorPadding error
           Container(
             color: Colors.white,
             width: double.infinity,
@@ -221,12 +217,11 @@ class _OrdersScreenState extends State<OrdersScreen>
               ],
             ),
           ),
-
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildActiveOrders(primaryColor, onSurfaceVariant),
+                _buildActiveOrders(context, primaryColor, onSurfaceVariant),
                 const Center(child: Text('Belum ada riwayat pesanan')),
               ],
             ),
@@ -236,31 +231,26 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
   }
 
-  Widget _buildActiveOrders(Color primary, Color variant) {
+  Widget _buildActiveOrders(
+      BuildContext context, Color primary, Color variant) {
     return ListView(
+      physics: const BouncingScrollPhysics(), // 🚀 Smooth scrolling untuk VIVO
       padding: const EdgeInsets.all(24),
       children: [
-        // Search Bar
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEEEEEE),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.withOpacity(0.1)),
-          ),
-          child: const TextField(
-            decoration: InputDecoration(
-              icon: Icon(Icons.search, color: Colors.grey),
-              hintText: 'Cari pesanan...',
-              border: InputBorder.none,
-              hintStyle: TextStyle(fontSize: 14),
-            ),
-          ),
+        // 🚀 IMPLEMENTASI: CustomTextField
+        CustomTextField(
+          hint: 'Cari pesanan...',
+          controller: _searchController,
+          prefixIcon: Icons.search,
+          borderRadius: 12,
+          showShadow: false,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
         const SizedBox(height: 32),
 
-        // Order Cards - FIXED: Overflows & Image URLs
         _buildOrderCard(
+          context,
           title: 'Tenda Eiger 4P Waterproof',
           status: 'Siap Diambil',
           date: '14 - 16 Ags',
@@ -274,6 +264,7 @@ class _OrdersScreenState extends State<OrdersScreen>
         ),
         const SizedBox(height: 24),
         _buildOrderCard(
+          context,
           title: 'Carrier Osprey 65L Premium',
           status: 'Sedang Disewa',
           date: '12 - 15 Ags',
@@ -285,10 +276,7 @@ class _OrdersScreenState extends State<OrdersScreen>
           buttonText: 'Lacak',
           isGradientButton: false,
         ),
-
         const SizedBox(height: 32),
-
-        // Bento Grid Upsell
         Row(
           children: [
             Expanded(
@@ -306,7 +294,8 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
   }
 
-  Widget _buildOrderCard({
+  Widget _buildOrderCard(
+    BuildContext context, {
     required String title,
     required String status,
     required String date,
@@ -389,7 +378,8 @@ class _OrdersScreenState extends State<OrdersScreen>
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                       fontFamily: 'Manrope')),
-              _buildActionButton(buttonText, isGradientButton),
+              // 🚀 PERBAIKAN: Kirim context ke button action
+              _buildActionButton(context, buttonText, isGradientButton),
             ],
           ),
         ],
@@ -413,7 +403,8 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
   }
 
-  Widget _buildActionButton(String text, bool isGradient) {
+  Widget _buildActionButton(
+      BuildContext context, String text, bool isGradient) {
     return Container(
       decoration: isGradient
           ? BoxDecoration(
@@ -429,7 +420,14 @@ class _OrdersScreenState extends State<OrdersScreen>
             )
           : null,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          // 🚀 LOGIKA NAVIGASI DINAMIS
+          if (text == 'Detail') {
+            Navigator.pushNamed(context, '/pickup-confirmation');
+          } else if (text == 'Lacak') {
+            Navigator.pushNamed(context, '/live-tracking');
+          }
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor:
               isGradient ? Colors.transparent : const Color(0xFFEEEEEE),

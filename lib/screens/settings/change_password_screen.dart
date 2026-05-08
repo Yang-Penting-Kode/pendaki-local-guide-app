@@ -33,8 +33,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     const Color primaryColor = Color(0xFF006C0C);
     const Color surfaceColor = Color(0xFFF9F9F9);
     const Color onSurfaceVariant = Color(0xFF3F4A3B);
-    const Color secondaryColor = Color(0xFF904D00);
-    const Color secondaryContainer = Color(0xFFFD8B00);
+    const Color secondaryColor = Color(0xFF006C0C);
+    const Color secondaryContainer = Color(0xFF006C0C);
 
     return Scaffold(
       backgroundColor: surfaceColor,

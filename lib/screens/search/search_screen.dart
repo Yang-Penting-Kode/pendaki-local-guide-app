@@ -120,36 +120,42 @@ class _SearchScreenState extends State<SearchScreen> {
               childAspectRatio: 0.75, // Proporsi kartu produk
               children: [
                 _buildProductCard(
+                    context: context,
                     title: 'Tenda Dome 4P',
                     price: '40.000',
                     distance: '1.5 km',
                     imageUrl:
                         'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400'),
                 _buildProductCard(
+                    context: context,
                     title: 'Carrier 60L Pro',
                     price: '35.000',
                     distance: '0.8 km',
                     imageUrl:
                         'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400'),
                 _buildProductCard(
+                    context: context,
                     title: 'Sleeping Bag Zero',
                     price: '15.000',
                     distance: '2.1 km',
                     imageUrl:
                         'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=400'),
                 _buildProductCard(
+                    context: context,
                     title: 'Cooking Set Ultralight',
                     price: '20.000',
                     distance: '1.2 km',
                     imageUrl:
                         'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400'),
                 _buildProductCard(
+                    context: context,
                     title: 'Headlamp 300 Lumens',
                     price: '10.000',
                     distance: '3.4 km',
                     imageUrl:
                         'https://images.unsplash.com/photo-1508672019048-805c876b67e2?q=80&w=400'),
                 _buildProductCard(
+                    context: context,
                     title: 'Matras Alumunium',
                     price: '5.000',
                     distance: '1.9 km',
@@ -191,87 +197,105 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildProductCard(
-      {required String title,
+      {required BuildContext context,
+      required String title,
       required String price,
       required String distance,
       required String imageUrl}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outline.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 8,
-              offset: const Offset(0, 4))
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch, // 🚀 FIX: Isi kartu melebar penuh
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.network(
-                imageUrl,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: AppColors.surfaceContainerLow,
-                  child: const Center(
-                    child: Icon(Icons.broken_image, color: Colors.grey),
+    return GestureDetector(
+      // 🚀 Navigasi ke halaman detail produk
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          '/product-detail',
+          arguments: {
+            'title': title,
+            'price': price,
+            'imageUrl': imageUrl,
+          },
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.outline.withOpacity(0.2)),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 4))
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.stretch, // 🚀 FIX: Isi kartu melebar penuh
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
+                child: Image.network(
+                  imageUrl,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: AppColors.surfaceContainerLow,
+                    child: const Center(
+                      child: Icon(Icons.broken_image, color: Colors.grey),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 13, height: 1.2),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 4),
-                RichText(
-                  text: TextSpan(
-                    text: 'Rp $price',
-                    style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13),
-                    children: const [
-                      TextSpan(
-                          text: '/hari',
-                          style: TextStyle(
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          height: 1.2),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 4),
+                  RichText(
+                    text: TextSpan(
+                      text: 'Rp $price',
+                      style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13),
+                      children: const [
+                        TextSpan(
+                            text: '/hari',
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 10))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          size: 10, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(distance,
+                          style: const TextStyle(
+                              fontSize: 10,
                               color: Colors.grey,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 10))
+                              fontWeight: FontWeight.w500)),
                     ],
                   ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 10, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(distance,
-                        style: const TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

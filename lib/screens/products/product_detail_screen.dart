@@ -343,7 +343,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   width: 180,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(context, '/checkout'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primary,
                       foregroundColor: Colors.white,
