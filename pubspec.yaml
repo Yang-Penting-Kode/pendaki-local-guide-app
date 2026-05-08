@@ -29,8 +29,10 @@ dependencies:
   # 🚀 Phase 3: API Integration (The "Laravel API" Arsenal)
   dio: ^5.3.0
 
-  # 🚀 Networking (Jika nanti konek ke API Laravel)
-  http: 1.1.0
+  # 🚀 Cached Network Image (agar disimpan di ram)
+  cached_network_image: ^3.3.1
+
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
