@@ -305,7 +305,7 @@ class PickupConfirmationScreen extends StatelessWidget {
         width: double.infinity,
         height: 56,
         child: ElevatedButton.icon(
-          onPressed: () => Navigator.pushNamed(context, '/return-confirmation'),
+          onPressed: () => Navigator.pushNamed(context, '/return-equipment'),
           icon: const Icon(Icons.task_alt, size: 20),
           label: const Text('Selesai Mengambil Alat',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

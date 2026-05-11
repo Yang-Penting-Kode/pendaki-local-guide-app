@@ -11,9 +11,11 @@ import 'package:pendaki_local_guide_app/screens/booking/checkout_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/delivery_arrived_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/live_tracking_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_cancelled_screen.dart';
+import 'package:pendaki_local_guide_app/screens/booking/order_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_summary_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/pickup_confirmation_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/return_confirmation_screen.dart';
+import 'package:pendaki_local_guide_app/screens/booking/return_equipment_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/review_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/transaction_failed_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/transaction_success_screen.dart';
@@ -134,8 +136,13 @@ class LocalGuideApp extends StatelessWidget {
           case '/transaction-failed':
             return _fadeRoute(const TransactionFailedScreen(),
                 settings: settings);
+          case '/order-detail':
+            return _fadeRoute(const OrderDetailScreen(), settings: settings);
           case '/pickup-confirmation':
             return _fadeRoute(const PickupConfirmationScreen(),
+                settings: settings);
+          case '/return-equipment':
+            return _fadeRoute(const ReturnEquipmentScreen(),
                 settings: settings);
           case '/return-confirmation':
             return _fadeRoute(const ReturnConfirmationScreen(),

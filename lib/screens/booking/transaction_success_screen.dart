@@ -129,7 +129,7 @@ class TransactionSuccessScreen extends StatelessWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: () =>
-                    Navigator.pushNamed(context, '/pickup-confirmation'),
+                    Navigator.pushNamed(context, '/order-detail'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.white,
