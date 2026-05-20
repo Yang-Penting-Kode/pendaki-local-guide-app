@@ -212,7 +212,7 @@ class _BookingScreenState extends State<BookingScreen>
                 statusText: const Color(0xFF005F3F),
                 imageUrl:
                     'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
-                onTap: () => Navigator.pushNamed(context, '/live-tracking'),
+                onTap: () => Navigator.pushNamed(context, '/tracking-order'),
               ),
               const SizedBox(height: 12),
               _buildOrderCard(

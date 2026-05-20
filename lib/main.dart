@@ -9,7 +9,7 @@ import 'package:pendaki_local_guide_app/screens/auth/registration_success_screen
 import 'package:pendaki_local_guide_app/screens/auth/reset_password_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/checkout_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/delivery_arrived_screen.dart';
-import 'package:pendaki_local_guide_app/screens/booking/live_tracking_screen.dart';
+import 'package:pendaki_local_guide_app/screens/v2/live_tracking_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_cancelled_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_summary_screen.dart';
@@ -17,6 +17,7 @@ import 'package:pendaki_local_guide_app/screens/booking/pickup_confirmation_scre
 import 'package:pendaki_local_guide_app/screens/booking/return_confirmation_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/return_equipment_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/review_screen.dart';
+import 'package:pendaki_local_guide_app/screens/booking/tracking_order_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/transaction_failed_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/transaction_success_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/waiting_confirmation_screen.dart';
@@ -164,8 +165,11 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const ProductCategoryScreen());
           case '/my-reviews':
             return _fadeRoute(const MyReviewsScreen(), settings: settings);
-          case '/live-tracking':
-            return _fadeRoute(const LiveTrackingScreen(), settings: settings);
+          // Live Tracking Nanti untuk Pengembangan V2
+          // case '/live-tracking':
+          //   return _fadeRoute(const LiveTrackingScreen(), settings: settings);
+          case '/tracking-order':
+            return _fadeRoute(const TrackingOrderScreen(), settings: settings);
           case '/delivery-arrived':
             return _fadeRoute(const DeliveryArrivedScreen(),
                 settings: settings);
