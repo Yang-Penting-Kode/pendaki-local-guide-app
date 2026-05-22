@@ -75,6 +75,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: 'Contoh: Budi Santoso', controller: _nameController),
                 const SizedBox(height: 20),
 
+                const CustomLabel(text: 'Alamat Email'),
+                CustomTextField(
+                    hint: 'customer@gmail.com', controller: _nameController),
+                const SizedBox(height: 20),
+
+                const CustomLabel(text: 'Password'),
+                CustomTextField(
+                    hint: 'secret#123', controller: _nameController),
+                const SizedBox(height: 20),
+
+                const CustomLabel(text: 'Konfirmasi Password'),
+                CustomTextField(
+                    hint: 'secret#123', controller: _nameController),
+                const SizedBox(height: 20),
+
                 const CustomLabel(text: 'Nomor HP'),
                 CustomTextField(
                   hint: '+62 812 3456 7890',
@@ -104,10 +119,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const CustomLabel(text: 'Kontak Darurat'),
                 CustomTextField(
-                    hint: 'Nama & No. HP', controller: _emergencyController),
+                    hint: 'Nama', controller: _emergencyController),
+                const SizedBox(height: 20),
+                CustomTextField(
+                    hint: 'No. HP', controller: _emergencyController),
                 const SizedBox(height: 32),
 
-                // 3. Info Card Keamanan[cite: 14]
+                // 3. Info Card Keamanan
                 _buildSecurityInfo(),
               ],
             ),
