@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pendaki_local_guide_app/services/storage_services.dart';
-import '../models/language_model.dart';
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
+// START REPLACE
+import 'package:pendaki_local_guide_app/features/settings/data/language_model.dart';
+// END REPLACE
 
 class SettingsProvider extends ChangeNotifier {
   String _currentLanguage = StorageService.getLanguage(); // Ambil bahasa dari storage saat inisialisasi

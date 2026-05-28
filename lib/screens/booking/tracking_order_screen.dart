@@ -1,10 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:pendaki_local_guide_app/models/tracking_model.dart';
+// START REPLACE
+// [LOCAL MODEL] TrackingStageModel & TrackingStatus didefinisikan lokal karena
+// ini adalah model presentasi (UI-only) yang hanya dipakai di screen ini.
+// Tidak perlu di-shared karena tidak ada data dari backend untuk fitur ini di V1.
+// END REPLACE
 import 'package:pendaki_local_guide_app/core/constants/app_colors.dart';
 import 'package:pendaki_local_guide_app/components/modals/delivery_proof_modal.dart';
 // 🚀 REFAKTOR: Impor widget kustom global agar kode ringkas & sat-set
 import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
 import 'package:pendaki_local_guide_app/widgets/primary_button.dart';
+
+// START REPLACE
+/// Enum status tahapan tracking pengiriman.
+enum TrackingStatus { completed, current, pending }
+
+/// Model data untuk satu tahapan dalam linimasa tracking.
+class TrackingStageModel {
+  final String title;
+  final String timeAndDesc;
+  final TrackingStatus status;
+  final bool hasProof;
+  final String? proofImageUrl;
+
+  const TrackingStageModel({
+    required this.title,
+    required this.timeAndDesc,
+    required this.status,
+    this.hasProof = false,
+    this.proofImageUrl,
+  });
+}
+// END REPLACE
 
 class TrackingOrderScreen extends StatefulWidget {
   const TrackingOrderScreen({super.key});

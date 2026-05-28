@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/custom_image.dart';
 import '../../components/modals/language_modal.dart';
-import '../../providers/settings_provider.dart'; // 🚀 Import Provider baru
+import 'package:pendaki_local_guide_app/features/settings/providers/settings_provider.dart'; // 🚀 Import Provider baru
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

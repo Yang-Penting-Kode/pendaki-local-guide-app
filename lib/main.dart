@@ -1,4 +1,7 @@
+// START REPLACE
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+// END REPLACE
 import 'package:pendaki_local_guide_app/core/constants/app_theme.dart';
 import 'package:pendaki_local_guide_app/screens/auth/auth_gate_screen.dart';
 import 'package:pendaki_local_guide_app/screens/auth/email_verification_screen.dart';
@@ -48,7 +51,9 @@ import 'package:pendaki_local_guide_app/screens/settings/security_privacy_screen
 import 'package:pendaki_local_guide_app/screens/settings/terms_conditions_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/wishlist_screen.dart';
 import 'package:pendaki_local_guide_app/screens/tutorial/tutorial_screen.dart';
-import 'package:pendaki_local_guide_app/services/storage_services.dart';
+// START REPLACE
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
+// END REPLACE
 import 'screens/splash/splash_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 
@@ -56,7 +61,9 @@ void main() async {
   // Inisialisasi wajib untuk Flutter & SharedPreferences
   WidgetsFlutterBinding.ensureInitialized();
   await StorageService.init(); // 🚀 Inisialisasi storage
-  runApp(const LocalGuideApp());
+  // START REPLACE
+  runApp(const ProviderScope(child: LocalGuideApp()));
+  // END REPLACE
 }
 
 class LocalGuideApp extends StatelessWidget {

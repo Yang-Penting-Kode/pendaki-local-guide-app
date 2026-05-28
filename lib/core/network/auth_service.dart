@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../models/user_model.dart';
+import 'package:pendaki_local_guide_app/shared/models/auth/user_model.dart';
 
 class AuthService {
   // Gunakan singleton Dio untuk efisiensi koneksi di laptop ROG-mu

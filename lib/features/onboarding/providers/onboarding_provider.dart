@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/onboarding_model.dart';
+// START REPLACE
+import 'package:pendaki_local_guide_app/features/onboarding/data/onboarding_model.dart';
+// END REPLACE
 
 class OnboardingProvider extends ChangeNotifier {
   final List<OnboardingModel> slides = [

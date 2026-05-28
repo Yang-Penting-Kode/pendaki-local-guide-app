@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../models/language_model.dart';
-import '../../widgets/custom_image.dart';
+// START REPLACE
+import 'package:pendaki_local_guide_app/features/settings/data/language_model.dart';
+// END REPLACE
+// START REPLACE
+import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
+// END REPLACE
 
 class LanguageModal extends StatefulWidget {
   final String initialLanguage;

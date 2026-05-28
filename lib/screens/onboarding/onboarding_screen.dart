@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pendaki_local_guide_app/services/storage_services.dart';
-import '../../models/onboarding_model.dart';
-import '../../providers/onboarding_provider.dart';
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
+// START REPLACE
+import 'package:pendaki_local_guide_app/features/onboarding/data/onboarding_model.dart';
+// END REPLACE
+import 'package:pendaki_local_guide_app/features/onboarding/providers/onboarding_provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

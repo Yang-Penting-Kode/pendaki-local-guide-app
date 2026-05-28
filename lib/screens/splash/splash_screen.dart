@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart'; // 🚀 Gunakan warna global
-import '../../services/storage_services.dart'; // 🚀 Gunakan storage logic
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart'; // 🚀 Gunakan storage logic
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
