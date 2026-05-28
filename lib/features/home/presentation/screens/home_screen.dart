@@ -1,10 +1,15 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/features/catalog/providers/catalog_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/catalog/product_model.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final productsAsync = ref.watch(productProvider);
     // Definisi warna dari desain
     const Color primaryColor = Color(0xFF006C0C);
     const Color secondaryColor = Color(0xFF904D00);
@@ -190,6 +195,79 @@ class HomeScreen extends StatelessWidget {
                         'https://images.unsplash.com/photo-1588392382834-a8af9f50e869?q=80&w=400',
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 7. Rekomendasi Alat Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Rekomendasi Alat',
+                        style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Siapkan perlengkapan terbaikmu',
+                        style: TextStyle(color: outlineColor, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, '/catalog'),
+                    child: const Text('Lihat Semua',
+                        style: TextStyle(
+                            color: primaryColor, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 8. Horizontal Scrollable Product Cards (Riverpod Data)
+            SizedBox(
+              height: 260,
+              child: productsAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) => Center(child: Text('Gagal memuat produk: $error')),
+                data: (products) {
+                  if (products.isEmpty) {
+                    return const Center(child: Text('Belum ada rekomendasi alat.'));
+                  }
+                  
+                  // Tampilkan maksimal 5 item
+                  final displayProducts = products.take(5).toList();
+                  
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(left: 24, right: 8, bottom: 20),
+                    itemCount: displayProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = displayProducts[index];
+                      // Rule Finansial: Harga produk = (basePrice + Rp 1.000)
+                      final displayPrice = (product.basePrice + Decimal.parse('1000')).toStringAsFixed(0);
+                      
+                      return _buildProductCard(
+                        context,
+                        product: product,
+                        displayPrice: displayPrice,
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          '/product-detail',
+                          arguments: product,
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
             const SizedBox(height: 100), // Spacer untuk Bottom Nav
@@ -408,6 +486,81 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildProductCard(
+    BuildContext context, {
+    required ProductModel product,
+    required String displayPrice,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 160,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                  ? Image.network(
+                      product.imageUrl!,
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
+                    )
+                  : _buildPlaceholderImage(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Rp $displayPrice / hari',
+                    style: const TextStyle(
+                      color: Color(0xFF006C0C),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      height: 120,
+      width: double.infinity,
+      color: Colors.grey.shade200,
+      child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 40),
     );
   }
 }

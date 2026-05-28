@@ -7,32 +7,36 @@ import 'package:pendaki_local_guide_app/core/constants/app_theme.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/auth_gate_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/login_email_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/register_screen.dart';
-import 'package:pendaki_local_guide_app/screens/booking/checkout_screen.dart';
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/email_verification_screen.dart';
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/registration_success_screen.dart';
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/checkout_screen.dart';
 // END REPLACE
 import 'package:pendaki_local_guide_app/screens/booking/delivery_arrived_screen.dart';
-import 'package:pendaki_local_guide_app/screens/v2/live_tracking_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_cancelled_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_detail_screen.dart';
-import 'package:pendaki_local_guide_app/screens/booking/order_summary_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/order_summary_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/pickup_confirmation_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/return_confirmation_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/return_equipment_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/review_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/tracking_order_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/transaction_failed_screen.dart';
-import 'package:pendaki_local_guide_app/screens/booking/transaction_success_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/transaction_success_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/waiting_confirmation_screen.dart';
-import 'package:pendaki_local_guide_app/screens/cart/cart_screen.dart';
-import 'package:pendaki_local_guide_app/screens/dashboard/dashboard_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/cart_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/qr_generator_screen.dart';
+import 'package:pendaki_local_guide_app/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:pendaki_local_guide_app/screens/history/my_reviews_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/basecamp_partners_screen.dart';
-import 'package:pendaki_local_guide_app/screens/home/catalog_screen.dart';
+import 'package:pendaki_local_guide_app/features/catalog/presentation/screens/catalog_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/mountain_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/mountain_search_result_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/mountain_search_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/rental_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/track_location_screen.dart';
-import 'package:pendaki_local_guide_app/screens/products/product_detail_screen.dart';
+import 'package:pendaki_local_guide_app/features/catalog/presentation/screens/product_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/search/product_category_screen.dart';
 import 'package:pendaki_local_guide_app/screens/search/product_search_result_screen.dart';
 import 'package:pendaki_local_guide_app/screens/search/search_not_found_screen.dart';
@@ -48,7 +52,6 @@ import 'package:pendaki_local_guide_app/screens/settings/profile_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/security_privacy_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/terms_conditions_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/wishlist_screen.dart';
-import 'package:pendaki_local_guide_app/screens/tutorial/tutorial_screen.dart';
 // START REPLACE
 import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
 // END REPLACE
@@ -76,7 +79,7 @@ class LocalGuideApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Mountain Kit',
       theme: AppTheme.lightTheme,
-      initialRoute: '/',
+      initialRoute: startRoute, // Memperbaiki unused variable 'startRoute'
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/':
@@ -90,6 +93,14 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const RegisterScreen(), settings: settings);
           case '/login-email':
             return _fadeRoute(const LoginEmailScreen(), settings: settings);
+          case '/forgot-password':
+            return _fadeRoute(const ForgotPasswordScreen(), settings: settings);
+          case '/email-verification':
+            return _fadeRoute(const EmailVerificationScreen(), settings: settings);
+          case '/registration-success':
+            return _fadeRoute(const RegistrationSuccessScreen(), settings: settings);
+          case '/reset-password':
+            return _fadeRoute(const ResetPasswordScreen(), settings: settings);
           case '/dashboard':
 // END REPLACE
             return _fadeRoute(const DashboardScreen(), settings: settings);
@@ -119,7 +130,7 @@ class LocalGuideApp extends StatelessWidget {
           case '/catalog':
             return _fadeRoute(const CatalogScreen(), settings: settings);
           case '/product-detail':
-            return _fadeRoute(const ProductDetailScreen(), settings: settings);
+            return _fadeRoute(ProductDetailScreen(), settings: settings);
           case '/cart':
             return _fadeRoute(const CartScreen(), settings: settings);
           case '/checkout':
@@ -146,6 +157,8 @@ class LocalGuideApp extends StatelessWidget {
           case '/waiting-confirmation':
             return _fadeRoute(const WaitingConfirmationScreen(),
                 settings: settings);
+          case '/qr-generator':
+            return _fadeRoute(const QrGeneratorScreen(), settings: settings);
           case '/order-cancelled':
             return _fadeRoute(const OrderCancelledScreen(), settings: settings);
           case '/review':

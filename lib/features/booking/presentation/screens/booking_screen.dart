@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart'; // 🚀 Import agar anti-lemot
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
+import 'package:pendaki_local_guide_app/shared/models/enums/app_enums.dart';
+import '../../../../widgets/custom_image.dart'; // 🚀 Import agar anti-lemot
 
-class BookingScreen extends StatefulWidget {
+class BookingScreen extends ConsumerStatefulWidget {
   const BookingScreen({super.key});
 
   @override
-  State<BookingScreen> createState() => _BookingScreenState();
+  ConsumerState<BookingScreen> createState() => _BookingScreenState();
 }
 
-class _BookingScreenState extends State<BookingScreen>
+class _BookingScreenState extends ConsumerState<BookingScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -154,6 +158,8 @@ class _BookingScreenState extends State<BookingScreen>
     const Color primaryColor = Color(0xFF005F3F);
     const Color surfaceColor = Color(0xFFF9F9F9);
 
+    final ordersAsync = ref.watch(orderProvider);
+
     return Scaffold(
       backgroundColor: surfaceColor,
       appBar: AppBar(
@@ -183,56 +189,139 @@ class _BookingScreenState extends State<BookingScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          ListView(
-            padding: const EdgeInsets.all(16),
+      body: ordersAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Terjadi kesalahan: $err')),
+        data: (orders) {
+          final activeOrders = orders.where((o) =>
+              o.status == OrderStatus.awaitingConfirmation ||
+              o.status == OrderStatus.activeRental ||
+              o.status == OrderStatus.readyForReturn).toList();
+
+          final historyOrders = orders.where((o) =>
+              o.status == OrderStatus.completed ||
+              o.status == OrderStatus.cancelled).toList();
+
+          return TabBarView(
+            controller: _tabController,
             children: [
-              _buildOrderCard(
-                context: context,
-                title: 'Tenda Eiger 4P',
-                store: 'Toko Merdeka Outdoor',
-                date: '15 - 17 Okt 2024',
-                status: 'Menunggu Konfirmasi',
-                statusBg: const Color.fromARGB(255, 255, 252, 216),
-                statusText: const Color.fromARGB(255, 184, 181, 0),
-                imageUrl:
-                    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-                onTap: () => _showWaitingModal(context),
-              ),
-              const SizedBox(height: 12),
-              _buildOrderCard(
-                context: context,
-                title: 'Carrier Osprey 65L',
-                store: 'Basecamp Rental',
-                date: '16 Okt 2024',
-                status: 'Sedang Diantar',
-                statusBg: const Color(0xFFC5ECD4),
-                statusText: const Color(0xFF005F3F),
-                imageUrl:
-                    'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
-                onTap: () => Navigator.pushNamed(context, '/tracking-order'),
-              ),
-              const SizedBox(height: 12),
-              _buildOrderCard(
-                context: context,
-                title: 'Carrier Osprey 65L',
-                store: 'Basecamp Rental',
-                date: '18 Okt 2024',
-                status: 'Dibatalkan',
-                statusBg: const Color(0xFFFFDAD8),
-                statusText: const Color.fromARGB(255, 197, 70, 53),
-                imageUrl:
-                    'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
-                onTap: () => _showCancelledModal(context),
-              ),
+              // TAB 1: AKTIF
+              activeOrders.isEmpty
+                  ? const Center(child: Text('Belum ada pesanan aktif'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: activeOrders.length,
+                      itemBuilder: (context, index) {
+                        final order = activeOrders[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildOrderCardFromModel(context, order),
+                        );
+                      },
+                    ),
+
+              // TAB 2: RIWAYAT
+              historyOrders.isEmpty
+                  ? const Center(child: Text('Belum ada riwayat pesanan'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: historyOrders.length,
+                      itemBuilder: (context, index) {
+                        final order = historyOrders[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildOrderCardFromModel(context, order),
+                        );
+                      },
+                    ),
             ],
-          ),
-          const Center(child: Text('Belum ada riwayat pesanan')),
-        ],
+          );
+        },
       ),
     );
+  }
+
+  // --- HELPER METHODS ---
+
+  Widget _buildOrderCardFromModel(BuildContext context, OrderModel order) {
+    final title = order.items.isNotEmpty
+        ? order.items.first.productName
+        : "Pesanan #${order.id.length > 8 ? order.id.substring(0, 8).toUpperCase() : order.id}";
+    
+    // Tampilkan jumlah item lain jika lebih dari 1
+    final displayTitle = order.items.length > 1
+        ? "$title (+${order.items.length - 1} item lain)"
+        : title;
+
+    final dateStr = "${order.rentalStartDate.day}/${order.rentalStartDate.month}/${order.rentalStartDate.year}";
+    final priceStr = "Rp ${order.totalGrossPrice.toStringAsFixed(0)}";
+    
+    // Fallback imageUrl
+    const fallbackImage = 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400';
+    
+    VoidCallback? action;
+    if (order.status == OrderStatus.awaitingConfirmation || order.status == OrderStatus.readyForReturn) {
+      action = () => Navigator.pushNamed(context, '/qr-generator', arguments: order.id);
+    } else if (order.status == OrderStatus.cancelled) {
+      action = () => _showCancelledModal(context);
+    } else if (order.status == OrderStatus.activeRental) {
+      action = () => Navigator.pushNamed(context, '/tracking-order');
+    } else {
+      action = () => Navigator.pushNamed(context, '/order-detail');
+    }
+
+    return _buildOrderCard(
+      context: context,
+      title: displayTitle,
+      store: priceStr, // Menggunakan harga di tempat nama toko untuk UI karena tidak ada field harga di UI Card asli
+      date: dateStr,
+      status: _getStatusText(order.status),
+      statusBg: _getStatusBgColor(order.status),
+      statusText: _getStatusTextColor(order.status),
+      imageUrl: fallbackImage,
+      onTap: action,
+    );
+  }
+
+  String _getStatusText(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.awaitingConfirmation:
+        return 'Menunggu Konfirmasi';
+      case OrderStatus.activeRental:
+        return 'Sedang Disewa';
+      case OrderStatus.readyForReturn:
+        return 'Siap Dikembalikan';
+      case OrderStatus.completed:
+        return 'Selesai';
+      case OrderStatus.cancelled:
+        return 'Dibatalkan';
+    }
+  }
+
+  Color _getStatusBgColor(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.awaitingConfirmation:
+        return const Color.fromARGB(255, 255, 252, 216);
+      case OrderStatus.activeRental:
+      case OrderStatus.readyForReturn:
+      case OrderStatus.completed:
+        return const Color(0xFFC5ECD4);
+      case OrderStatus.cancelled:
+        return const Color(0xFFFFDAD8);
+    }
+  }
+
+  Color _getStatusTextColor(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.awaitingConfirmation:
+        return const Color.fromARGB(255, 184, 181, 0);
+      case OrderStatus.activeRental:
+      case OrderStatus.readyForReturn:
+      case OrderStatus.completed:
+        return const Color(0xFF005F3F);
+      case OrderStatus.cancelled:
+        return const Color.fromARGB(255, 197, 70, 53);
+    }
   }
 
   Widget _buildOrderCard({
