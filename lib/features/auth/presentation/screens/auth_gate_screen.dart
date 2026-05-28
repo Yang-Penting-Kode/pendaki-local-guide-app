@@ -1,14 +1,27 @@
+// START REPLACE
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart'; // 🚀 Import Warna Global
-import '../../widgets/primary_button.dart'; // 🚀 Import Button Bouncy
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../widgets/primary_button.dart';
+import '../../providers/auth_provider.dart';
 
-class AuthGateScreen extends StatelessWidget {
+class AuthGateScreen extends ConsumerWidget {
   const AuthGateScreen({super.key});
+// END REPLACE
 
+// START REPLACE
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 🚀 Redirect otomatis jika sudah login
+    ref.listen<bool>(isLoggedInProvider, (previous, isLoggedIn) {
+      if (isLoggedIn) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+    });
+
     // Seluruh warna sekarang merujuk ke AppColors agar konsisten
     return Scaffold(
+// END REPLACE
       backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Center(

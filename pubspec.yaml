@@ -19,6 +19,9 @@ dependencies:
   latlong2: ^0.9.1
   geolocator: ^11.1.0
 
+  permission_handler: ^11.0.1  # Wajib untuk geolocator di Android/iOS
+  uuid: ^4.3.3
+
   # 🌊 State Management & Logic
   flutter_riverpod: ^2.4.10
   shared_preferences: ^2.2.1

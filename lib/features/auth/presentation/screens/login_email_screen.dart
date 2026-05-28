@@ -1,14 +1,29 @@
+// START REPLACE
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
 
-class LoginEmailScreen extends StatefulWidget {
+class LoginEmailScreen extends ConsumerStatefulWidget {
   const LoginEmailScreen({super.key});
 
   @override
-  State<LoginEmailScreen> createState() => _LoginEmailScreenState();
+  ConsumerState<LoginEmailScreen> createState() => _LoginEmailScreenState();
 }
 
-class _LoginEmailScreenState extends State<LoginEmailScreen> {
+class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+// END REPLACE
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +98,12 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 children: [
                   // Email Field
                   _buildLabel('EMAIL'),
+// START REPLACE
                   _buildTextField(
                     hint: 'nama@email.com',
                     icon: Icons.mail_outline,
                     keyboardType: TextInputType.emailAddress,
+                    controller: _emailController,
                   ),
                   const SizedBox(height: 24),
 
@@ -114,6 +131,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   _buildTextField(
                     hint: '••••••••',
                     isPassword: true,
+                    controller: _passwordController,
                     obscureText: !_isPasswordVisible,
                     toggleVisibility: () {
                       setState(() {
@@ -121,6 +139,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                       });
                     },
                   ),
+// END REPLACE
                 ],
               ),
               const SizedBox(height: 32),
@@ -130,9 +149,25 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Logic Login
-                    Navigator.pushReplacementNamed(context, '/dashboard');
+// START REPLACE
+                  onPressed: _isLoading ? null : () {
+                    setState(() => _isLoading = true);
+                    final result = ref.read(authProvider.notifier).login(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
+                    setState(() => _isLoading = false);
+
+                    if (result.isSuccess) {
+                      Navigator.pushReplacementNamed(context, '/dashboard');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(result.message ?? 'Login gagal'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
@@ -141,18 +176,27 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                     elevation: 8,
                     shadowColor: primaryColor.withOpacity(0.3),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Masuk',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18)),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward, color: Colors.white),
+                      _isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            )
+                          : const Text('Masuk',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18)),
+                      if (!_isLoading) ...[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward, color: Colors.white),
+                      ],
                     ],
                   ),
+// END REPLACE
                 ),
               ),
 
@@ -247,6 +291,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     );
   }
 
+// START REPLACE
   // Helper Widget TextField
   Widget _buildTextField({
     required String hint,
@@ -255,8 +300,10 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     bool obscureText = false,
     VoidCallback? toggleVisibility,
     TextInputType? keyboardType,
+    TextEditingController? controller,
   }) {
     return Container(
+// END REPLACE
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -267,10 +314,13 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
           )
         ],
       ),
+// START REPLACE
       child: TextField(
+        controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
         decoration: InputDecoration(
+// END REPLACE
           hintText: hint,
           hintStyle: TextStyle(color: Colors.black.withOpacity(0.2)),
           filled: true,

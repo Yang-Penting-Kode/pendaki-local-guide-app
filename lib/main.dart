@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // END REPLACE
 import 'package:pendaki_local_guide_app/core/constants/app_theme.dart';
-import 'package:pendaki_local_guide_app/screens/auth/auth_gate_screen.dart';
-import 'package:pendaki_local_guide_app/screens/auth/email_verification_screen.dart';
-import 'package:pendaki_local_guide_app/screens/auth/forgot_password_screen.dart';
-import 'package:pendaki_local_guide_app/screens/auth/login_email_screen.dart';
-import 'package:pendaki_local_guide_app/screens/auth/register_screen.dart';
-import 'package:pendaki_local_guide_app/screens/auth/registration_success_screen.dart';
-import 'package:pendaki_local_guide_app/screens/auth/reset_password_screen.dart';
+// START REPLACE
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/auth_gate_screen.dart';
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/login_email_screen.dart';
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/register_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/checkout_screen.dart';
+// END REPLACE
 import 'package:pendaki_local_guide_app/screens/booking/delivery_arrived_screen.dart';
 import 'package:pendaki_local_guide_app/screens/v2/live_tracking_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_cancelled_screen.dart';
@@ -87,23 +85,13 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const OnboardingScreen(), settings: settings);
           case '/login':
             return _fadeRoute(const AuthGateScreen(), settings: settings);
+// START REPLACE
           case '/register':
             return _fadeRoute(const RegisterScreen(), settings: settings);
-          case '/register-success':
-            return _fadeRoute(const RegistrationSuccessScreen(),
-                settings: settings);
-          case '/tutorial':
-            return _fadeRoute(const TutorialScreen(), settings: settings);
-          case '/verify-email':
-            return _fadeRoute(const EmailVerificationScreen(),
-                settings: settings);
           case '/login-email':
             return _fadeRoute(const LoginEmailScreen(), settings: settings);
-          case '/forgot-password':
-            return _fadeRoute(const ForgotPasswordScreen(), settings: settings);
-          case '/reset-password':
-            return _fadeRoute(const ResetPasswordScreen(), settings: settings);
           case '/dashboard':
+// END REPLACE
             return _fadeRoute(const DashboardScreen(), settings: settings);
           case '/mountain-search':
             return _fadeRoute(const MountainSearchScreen(), settings: settings);

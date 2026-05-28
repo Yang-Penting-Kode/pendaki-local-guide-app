@@ -1,33 +1,46 @@
+// START REPLACE
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
-import '../../widgets/custom_label.dart';
-import '../../widgets/custom_text_field.dart';
-import '../../widgets/custom_dropdown.dart'; // 🚀 Widget baru kita
-import '../../widgets/primary_button.dart'; // 🚀 Button bouncy global
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../widgets/custom_label.dart';
+import '../../../../widgets/custom_text_field.dart';
+import '../../../../widgets/custom_dropdown.dart';
+import '../../../../widgets/primary_button.dart';
+import '../../providers/auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   // 🎮 Controllers untuk data pendaftaran
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
   final _ktpController = TextEditingController();
-  final _emergencyController = TextEditingController();
+  final _emergencyNameController = TextEditingController();
+  final _emergencyPhoneController = TextEditingController();
   String? _selectedGender;
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _phoneController.dispose();
     _ktpController.dispose();
-    _emergencyController.dispose();
+    _emergencyNameController.dispose();
+    _emergencyPhoneController.dispose();
     super.dispose();
   }
+// END REPLACE
 
   // 🛠️ Fungsi pemicu Kamera untuk KTP
   void _handleKTPAction() {
@@ -75,20 +88,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: 'Contoh: Budi Santoso', controller: _nameController),
                 const SizedBox(height: 20),
 
+// START REPLACE
                 const CustomLabel(text: 'Alamat Email'),
                 CustomTextField(
-                    hint: 'customer@gmail.com', controller: _nameController),
+                    hint: 'customer@gmail.com', controller: _emailController),
                 const SizedBox(height: 20),
 
                 const CustomLabel(text: 'Password'),
                 CustomTextField(
-                    hint: 'secret#123', controller: _nameController),
+                    hint: 'secret#123', controller: _passwordController, isPassword: true),
                 const SizedBox(height: 20),
 
                 const CustomLabel(text: 'Konfirmasi Password'),
                 CustomTextField(
-                    hint: 'secret#123', controller: _nameController),
+                    hint: 'secret#123', controller: _confirmPasswordController, isPassword: true),
                 const SizedBox(height: 20),
+// END REPLACE
 
                 const CustomLabel(text: 'Nomor HP'),
                 CustomTextField(
@@ -117,13 +132,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
 
+// START REPLACE
                 const CustomLabel(text: 'Kontak Darurat'),
                 CustomTextField(
-                    hint: 'Nama', controller: _emergencyController),
+                    hint: 'Nama', controller: _emergencyNameController),
                 const SizedBox(height: 20),
                 CustomTextField(
-                    hint: 'No. HP', controller: _emergencyController),
+                    hint: 'No. HP', controller: _emergencyPhoneController),
                 const SizedBox(height: 32),
+// END REPLACE
 
                 // 3. Info Card Keamanan
                 _buildSecurityInfo(),
@@ -142,14 +159,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 color: Colors.white.withOpacity(0.9),
                 border: const Border(top: BorderSide(color: Color(0xFFEEEEEE))),
               ),
+// START REPLACE
               child: PrimaryButton(
                 text: 'Daftar Sekarang',
                 color: AppColors.primary, // Warna Orange untuk pendaftaran
+                isLoading: _isLoading,
                 onTap: () {
-                  // Simulasi pindah ke verifikasi
-                  Navigator.pushReplacementNamed(context, '/verify-email');
+                  if (_isLoading) return;
+                  setState(() => _isLoading = true);
+
+                  String mergedPhone = _phoneController.text.trim();
+                  if (_emergencyNameController.text.isNotEmpty || _emergencyPhoneController.text.isNotEmpty) {
+                    mergedPhone += " (Darurat: ${_emergencyNameController.text.trim()} - ${_emergencyPhoneController.text.trim()})";
+                  }
+
+                  final result = ref.read(authProvider.notifier).register(
+                    fullName: _nameController.text,
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    confirmPassword: _confirmPasswordController.text,
+                    phoneNumber: mergedPhone,
+                  );
+
+                  setState(() => _isLoading = false);
+
+                  if (result.isSuccess) {
+                    Navigator.pushReplacementNamed(context, '/dashboard');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(result.message ?? 'Gagal mendaftar'), backgroundColor: Colors.red),
+                    );
+                  }
                 },
               ),
+// END REPLACE
             ),
           ),
         ],
