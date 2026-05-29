@@ -5,6 +5,7 @@ import 'package:pendaki_local_guide_app/features/booking/providers/order_provide
 import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
 import 'package:pendaki_local_guide_app/core/constants/app_colors.dart';
 import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
+import 'package:pendaki_local_guide_app/shared/models/enums/app_enums.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   const OrderDetailScreen({super.key});
@@ -78,7 +79,7 @@ class OrderDetailScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomSheet: _buildFooter(context, order.id),
+      bottomSheet: _buildFooter(context, order),
     );
       },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -128,7 +129,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Text(
-                DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt),
+                '${DateFormat('dd MMM yyyy').format(order.rentalStartDate)} - ${DateFormat('dd MMM yyyy').format(order.rentalEndDate)}',
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ],
@@ -248,7 +249,43 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFooter(BuildContext context, String orderId) {
+  Widget _buildFooter(BuildContext context, OrderModel order) {
+    if (order.status == OrderStatus.completed) {
+      if (order.rating == null) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            border: Border(top: BorderSide(color: Colors.grey.shade200)),
+          ),
+          child: ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/review', arguments: order.id),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary, // Emas atau Primary
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+            ),
+            child: const Text(
+              'Beri Ulasan',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      } else {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          width: double.infinity,
+          color: Colors.white.withOpacity(0.9),
+          child: const Text(
+            'Pesanan ini sudah diulas',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+          ),
+        );
+      }
+    }
+
+    // Default tracking button for other statuses
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -256,7 +293,7 @@ class OrderDetailScreen extends ConsumerWidget {
         border: Border(top: BorderSide(color: Colors.grey.shade200)),
       ),
       child: ElevatedButton(
-        onPressed: () => Navigator.pushNamed(context, '/tracking-order', arguments: orderId),
+        onPressed: () => Navigator.pushNamed(context, '/tracking-order', arguments: order.id),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           minimumSize: const Size(double.infinity, 56),

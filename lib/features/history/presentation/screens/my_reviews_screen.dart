@@ -1,14 +1,21 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
-import '../../widgets/custom_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../widgets/custom_image.dart';
+// import '../../booking/providers/order_provider.dart';
+import '../../../../features/booking/providers/order_provider.dart';
+import '../../../../shared/models/enums/app_enums.dart';
 
-class MyReviewsScreen extends StatelessWidget {
+class MyReviewsScreen extends ConsumerWidget {
   const MyReviewsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const Color primaryColor = Color(0xFF005F3F);
+    
+    final ordersAsync = ref.watch(orderProvider);
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -37,44 +44,54 @@ class MyReviewsScreen extends StatelessWidget {
               letterSpacing: -0.5),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        // 🚀 Padding top 110 agar konten tidak tertutup AppBar
-        padding: const EdgeInsets.fromLTRB(16, 110, 16, 40),
-        child: Column(
-          children: [
-            _buildStatsSection(primaryColor),
-            const SizedBox(height: 24),
-            _buildReviewCard(
-              context,
-              title: 'Tenda Eiger 4P',
-              date: '16 Ags 2024',
-              content:
-                  'Tenda sangat kokoh saat badai di Merbabu. Bersih dan wangi saat diterima.',
-              rating: 5,
-              imageUrl:
-                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-              primary: primaryColor,
+      body: ordersAsync.when(
+        data: (orders) {
+          final reviewedOrders = orders.where((o) => o.status == OrderStatus.completed && o.rating != null).toList();
+          
+          final int totalReviews = reviewedOrders.length;
+          final double avgRating = totalReviews > 0
+              ? reviewedOrders.map((o) => o.rating!).reduce((a, b) => a + b) / totalReviews
+              : 0.0;
+
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 110, 16, 40),
+            child: Column(
+              children: [
+                _buildStatsSection(primaryColor, totalReviews, avgRating),
+                const SizedBox(height: 24),
+                if (reviewedOrders.isEmpty)
+                  const Center(child: Text('Belum ada ulasan', style: TextStyle(color: Colors.grey)))
+                else
+                  ...reviewedOrders.map((order) {
+                    final item = order.items.isNotEmpty ? order.items.first : null;
+                    return Column(
+                      children: [
+                        _buildReviewCard(
+                          context,
+                          title: item?.productName ?? 'Produk',
+                          date: DateFormat('dd MMM yyyy').format(order.updatedAt),
+                          content: order.reviewText ?? '',
+                          rating: order.rating?.toInt() ?? 0,
+                          imageUrl: item != null ? 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4' : '',
+                          primary: primaryColor,
+                          orderId: order.id,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    );
+                  }),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildReviewCard(
-              context,
-              title: 'Sepatu Hiking Salomon',
-              date: '10 Jul 2024',
-              content:
-                  'Nyaman dipakai, grip masih sangat bagus. Pengiriman tepat waktu.',
-              rating: 4,
-              imageUrl:
-                  'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
-              primary: primaryColor,
-            ),
-          ],
-        ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
       ),
     );
   }
 
-  Widget _buildStatsSection(Color primary) {
+  Widget _buildStatsSection(Color primary, int totalReviews, double avgRating) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -95,26 +112,26 @@ class MyReviewsScreen extends StatelessWidget {
             children: [
               const Text('Total Ulasan',
                   style: TextStyle(color: Colors.grey, fontSize: 13)),
-              Text('24',
+              Text('$totalReviews',
                   style: TextStyle(
                       color: primary,
                       fontSize: 32,
                       fontWeight: FontWeight.bold)),
             ],
           ),
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Row(
                 children: [
-                  Icon(Icons.star, color: Colors.amber, size: 24),
-                  SizedBox(width: 4),
-                  Text('4.9',
+                  const Icon(Icons.star, color: Colors.amber, size: 24),
+                  const SizedBox(width: 4),
+                  Text(avgRating.toStringAsFixed(1),
                       style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                          const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 ],
               ),
-              Text('Rata-rata Rating',
+              const Text('Rata-rata Rating',
                   style: TextStyle(color: Colors.grey, fontSize: 11)),
             ],
           ),
@@ -131,6 +148,7 @@ class MyReviewsScreen extends StatelessWidget {
     required int rating,
     required String imageUrl,
     required Color primary,
+    required String orderId,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -181,7 +199,7 @@ class MyReviewsScreen extends StatelessWidget {
               // 🚀 FIX: Bungkus dengan Flexible atau gunakan tombol tanpa infinity width
               Flexible(
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/review'),
+                  onPressed: () => Navigator.pushNamed(context, '/review', arguments: orderId),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primary.withOpacity(0.1),
                     foregroundColor: primary,

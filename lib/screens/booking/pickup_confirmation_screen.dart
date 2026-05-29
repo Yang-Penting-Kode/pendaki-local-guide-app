@@ -66,7 +66,7 @@ class PickupConfirmationScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _buildStickyFooter(context, primaryContainer),
+      bottomNavigationBar: _buildStickyFooter(context, primaryContainer, order.id),
     );
       },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -312,7 +312,7 @@ class PickupConfirmationScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStickyFooter(BuildContext context, Color primaryContainer) {
+  Widget _buildStickyFooter(BuildContext context, Color primaryContainer, String orderId) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -323,7 +323,7 @@ class PickupConfirmationScreen extends ConsumerWidget {
         width: double.infinity,
         height: 56,
         child: ElevatedButton.icon(
-          onPressed: () => Navigator.pushNamed(context, '/return-equipment'),
+          onPressed: () => Navigator.pushNamed(context, '/return-equipment', arguments: orderId),
           icon: const Icon(Icons.task_alt, size: 20),
           label: const Text('Selesai Mengambil Alat',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

@@ -27,6 +27,8 @@ class OrderModel {
   final List<OrderItemModel> items;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final double? rating; // 🚀 Injeksi Rating Ulasan
+  final String? reviewText; // 🚀 Injeksi Teks Ulasan
 
   const OrderModel({
     required this.id,
@@ -46,6 +48,8 @@ class OrderModel {
     required this.items,
     required this.createdAt,
     required this.updatedAt,
+    this.rating,
+    this.reviewText,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -81,6 +85,8 @@ class OrderModel {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : DateTime.now(),
+      rating: json['rating'] != null ? double.tryParse(json['rating'].toString()) : null,
+      reviewText: json['review_text']?.toString(),
     );
   }
 
@@ -103,6 +109,8 @@ class OrderModel {
       'items': items.map((e) => e.toJson()).toList(),
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'rating': rating,
+      'review_text': reviewText,
     };
   }
 
@@ -124,6 +132,8 @@ class OrderModel {
     List<OrderItemModel>? items,
     DateTime? createdAt,
     DateTime? updatedAt,
+    double? rating,
+    String? reviewText,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -143,6 +153,8 @@ class OrderModel {
       items: items ?? this.items,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      rating: rating ?? this.rating,
+      reviewText: reviewText ?? this.reviewText,
     );
   }
 

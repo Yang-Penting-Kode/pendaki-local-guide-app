@@ -12,16 +12,20 @@ import 'package:pendaki_local_guide_app/features/auth/presentation/screens/email
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/registration_success_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:pendaki_local_guide_app/features/booking/presentation/screens/checkout_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/return_confirmation_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/return_equipment_screen.dart';
+import 'package:pendaki_local_guide_app/features/booking/presentation/screens/review_screen.dart';
 import 'package:pendaki_local_guide_app/features/booking/presentation/screens/tracking_order_screen.dart';
+import 'package:pendaki_local_guide_app/features/history/presentation/screens/my_reviews_screen.dart';
 // END REPLACE
 import 'package:pendaki_local_guide_app/screens/booking/delivery_arrived_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_cancelled_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/order_detail_screen.dart';
 import 'package:pendaki_local_guide_app/features/booking/presentation/screens/order_summary_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/pickup_confirmation_screen.dart';
-import 'package:pendaki_local_guide_app/screens/booking/return_confirmation_screen.dart';
-import 'package:pendaki_local_guide_app/screens/booking/return_equipment_screen.dart';
-import 'package:pendaki_local_guide_app/screens/booking/review_screen.dart';
+// import 'package:pendaki_local_guide_app/screens/booking/return_confirmation_screen.dart';
+// import 'package:pendaki_local_guide_app/screens/booking/return_equipment_screen.dart';
+// import 'package:pendaki_local_guide_app/screens/booking/review_screen.dart';
 // import 'package:pendaki_local_guide_app/screens/booking/tracking_order_screen.dart';
 import 'package:pendaki_local_guide_app/screens/booking/transaction_failed_screen.dart';
 import 'package:pendaki_local_guide_app/features/booking/presentation/screens/transaction_success_screen.dart';
@@ -31,7 +35,7 @@ import 'package:pendaki_local_guide_app/features/booking/presentation/screens/qr
 import 'package:pendaki_local_guide_app/features/home/presentation/screens/active_rentals_screen.dart';
 import 'package:pendaki_local_guide_app/features/home/presentation/screens/return_schedules_screen.dart';
 import 'package:pendaki_local_guide_app/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:pendaki_local_guide_app/screens/history/my_reviews_screen.dart';
+// import 'package:pendaki_local_guide_app/screens/history/my_reviews_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/basecamp_partners_screen.dart';
 import 'package:pendaki_local_guide_app/features/catalog/presentation/screens/catalog_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/mountain_detail_screen.dart';

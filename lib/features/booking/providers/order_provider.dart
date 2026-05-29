@@ -152,6 +152,26 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
   Future<OrderModel?> getOrderById(String orderId) {
     return _repo.getOrderById(orderId);
   }
+
+  // ---------------------------------------------------------------------------
+  // 📝 UPDATE ORDER (Utility for Review and Status change)
+  // ---------------------------------------------------------------------------
+  Future<void> updateOrder(String orderId, {OrderStatus? status, double? rating, String? reviewText}) async {
+    state = await AsyncValue.guard(() async {
+      final currentOrders = await future;
+      return currentOrders.map((o) {
+        if (o.id == orderId) {
+          return o.copyWith(
+            status: status ?? o.status,
+            rating: rating ?? o.rating,
+            reviewText: reviewText ?? o.reviewText,
+            updatedAt: DateTime.now(),
+          );
+        }
+        return o;
+      }).toList();
+    });
+  }
 }
 
 // ---------------------------------------------------------------------------

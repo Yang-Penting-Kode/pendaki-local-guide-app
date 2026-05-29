@@ -283,14 +283,14 @@ class _BookingScreenState extends ConsumerState<BookingScreen>
     const fallbackImage = 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400';
     
     VoidCallback? action;
-    if (order.status == OrderStatus.awaitingConfirmation || order.status == OrderStatus.readyForReturn) {
-      action = () => Navigator.pushNamed(context, '/qr-generator', arguments: order.id);
+    if (order.status == OrderStatus.awaitingConfirmation || order.status == OrderStatus.activeRental) {
+      action = () => Navigator.pushNamed(context, '/tracking-order', arguments: order.id);
+    } else if (order.status == OrderStatus.readyForReturn) {
+      action = () => Navigator.pushNamed(context, '/return-equipment', arguments: order.id);
     } else if (order.status == OrderStatus.cancelled) {
       action = () => _showCancelledModal(context);
-    } else if (order.status == OrderStatus.activeRental) {
-      action = () => Navigator.pushNamed(context, '/tracking-order');
     } else {
-      action = () => Navigator.pushNamed(context, '/order-detail');
+      action = () => Navigator.pushNamed(context, '/order-detail', arguments: order.id);
     }
 
     return _buildOrderCard(

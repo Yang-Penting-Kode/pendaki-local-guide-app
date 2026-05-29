@@ -70,11 +70,15 @@ class TrackingOrderScreen extends ConsumerWidget {
             title: 'Dalam Pengantaran',
             timeAndDesc: '13:45 WIB - Kurir menuju lokasi pengiriman Anda.',
             status: TrackingStatus.current,
+            hasProof: true,
+            proofImageUrl: 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
           ),
           const TrackingStageModel(
             title: 'Tiba di Lokasi',
             timeAndDesc: 'Estimasi kedatangan: 14:30 WIB.',
             status: TrackingStatus.pending,
+            hasProof: true,
+            proofImageUrl: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=400',
           ),
         ];
         return Scaffold(

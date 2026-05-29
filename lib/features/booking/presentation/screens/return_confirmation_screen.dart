@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/order_provider.dart';
+import '../../../../shared/models/transactions/order_model.dart';
 
-class ReturnConfirmationScreen extends StatelessWidget {
+class ReturnConfirmationScreen extends ConsumerWidget {
   const ReturnConfirmationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Definisi Warna sesuai desain HTML
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderId = ModalRoute.of(context)?.settings.arguments as String?;
+    if (orderId == null) {
+      return const Scaffold(body: Center(child: Text('ID Pesanan tidak valid')));
+    }
+
+    final ordersAsync = ref.watch(orderProvider);
+
     const Color primaryColor = Color(0xFF005F3F);
     const Color primaryContainer = Color(0xFF007A52);
     const Color onSurfaceVariant = Color(0xFF3E4942);
     const Color secondaryContainer = Color(0xFFC5ECD4);
+
+    return ordersAsync.when(
+      data: (orders) {
+        final order = orders.firstWhere((o) => o.id == orderId, orElse: () => throw Exception('Order not found'));
+        final returnCode = order.id.length >= 8 ? order.id.substring(0, 8).toUpperCase() : order.id.toUpperCase();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
@@ -33,7 +47,7 @@ class ReturnConfirmationScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 2. Section 1: QR Code Card
-            _buildReturnCodeCard(primaryColor, onSurfaceVariant),
+            _buildReturnCodeCard(primaryColor, onSurfaceVariant, returnCode),
 
             const SizedBox(height: 24),
 
@@ -47,7 +61,7 @@ class ReturnConfirmationScreen extends StatelessWidget {
             // 4. Section 3: Rincian Alat
             const _SectionTitle(title: 'RINCIAN ALAT'),
             const SizedBox(height: 12),
-            _buildItemsList(secondaryContainer, primaryColor, onSurfaceVariant),
+            _buildItemsList(secondaryContainer, primaryColor, onSurfaceVariant, order.items),
 
             const SizedBox(height: 24),
 
@@ -57,13 +71,17 @@ class ReturnConfirmationScreen extends StatelessWidget {
         ),
       ),
       // 6. Footer Button (Sticky Bottom)
-      bottomNavigationBar: _buildStickyFooter(context, primaryContainer),
+      bottomNavigationBar: _buildStickyFooter(context, primaryContainer, order.id),
+    );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
     );
   }
 
   // --- UI COMPONENTS ---
 
-  Widget _buildReturnCodeCard(Color primary, Color variant) {
+  Widget _buildReturnCodeCard(Color primary, Color variant, String returnCode) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
@@ -86,7 +104,7 @@ class ReturnConfirmationScreen extends StatelessWidget {
                   color: Colors.grey,
                   letterSpacing: 1.5)),
           const SizedBox(height: 8),
-          Text('RTN-8829',
+          Text(returnCode,
               style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w900,
@@ -102,7 +120,7 @@ class ReturnConfirmationScreen extends StatelessWidget {
                     color: const Color(0xFFF3F3F3),
                     borderRadius: BorderRadius.circular(20)),
                 child: Image.network(
-                  'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=RTN-8829',
+                  'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$returnCode',
                   width: 140,
                   height: 140,
                   fit: BoxFit.contain,
@@ -209,30 +227,27 @@ class ReturnConfirmationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsList(Color bg, Color primary, Color variant) {
+  Widget _buildItemsList(Color bg, Color primary, Color variant, List<OrderItemModel> items) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.shade100)),
       child: Column(
-        children: [
-          _buildItemRow(
-              'Tenda Eiger 4P',
-              'Kondisi Baik',
-              '1x',
-              'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
-              bg,
-              primary),
-          const Divider(height: 1),
-          _buildItemRow(
-              'Tas Carrier 60L',
-              'Kondisi Baik',
-              '1x',
-              'https://images.unsplash.com/photo-1551632811-561732d1e306',
-              bg,
-              primary),
-        ],
+        children: items.map((item) {
+          return Column(
+            children: [
+              _buildItemRow(
+                  item.productName,
+                  'Rp ${item.unitPrice.toStringAsFixed(0)}',
+                  '${item.quantity}x',
+                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
+                  bg,
+                  primary),
+              if (item != items.last) const Divider(height: 1),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
@@ -315,7 +330,7 @@ class ReturnConfirmationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStickyFooter(BuildContext context, Color primaryContainer) {
+  Widget _buildStickyFooter(BuildContext context, Color primaryContainer, String orderId) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -325,7 +340,7 @@ class ReturnConfirmationScreen extends StatelessWidget {
         width: double.infinity,
         height: 56,
         child: ElevatedButton(
-          onPressed: () => Navigator.pushNamed(context, '/review'),
+          onPressed: () => Navigator.pushNamed(context, '/review', arguments: orderId),
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryContainer,
             foregroundColor: Colors.white,

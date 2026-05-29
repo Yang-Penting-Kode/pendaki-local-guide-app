@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
+import '../../providers/order_provider.dart';
+import '../../../../shared/models/enums/app_enums.dart';
 
-class ReviewScreen extends StatefulWidget {
+class ReviewScreen extends ConsumerStatefulWidget {
   const ReviewScreen({super.key});
 
   @override
-  State<ReviewScreen> createState() => _ReviewScreenState();
+  ConsumerState<ReviewScreen> createState() => _ReviewScreenState();
 }
 
-class _ReviewScreenState extends State<ReviewScreen> {
+class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   // 🚀 Logic: State untuk rating bintang dan input ulasan
   int _selectedRating = 0;
   final TextEditingController _reviewController = TextEditingController();
@@ -21,6 +24,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final orderId = ModalRoute.of(context)?.settings.arguments as String?;
+
     const Color primaryColor = Color(0xFF005F3F);
     const Color primaryContainer = Color(0xFF007A52);
     const Color onSurfaceVariant = Color(0xFF3E4942);
@@ -81,7 +86,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
         ),
       ),
       // 6. Sticky Footer
-      bottomNavigationBar: _buildStickyFooter(primaryContainer),
+      bottomNavigationBar: _buildStickyFooter(primaryContainer, orderId),
     );
   }
 
@@ -253,7 +258,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
     );
   }
 
-  Widget _buildStickyFooter(Color primaryContainer) {
+  Widget _buildStickyFooter(Color primaryContainer, String? orderId) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -264,12 +269,20 @@ class _ReviewScreenState extends State<ReviewScreen> {
         width: double.infinity,
         height: 56,
         child: ElevatedButton.icon(
-          onPressed: _selectedRating == 0
+          onPressed: _selectedRating == 0 || orderId == null
               ? null
-              : () {
+              : () async {
+                  await ref.read(orderProvider.notifier).updateOrder(
+                        orderId,
+                        status: OrderStatus.completed,
+                        rating: _selectedRating.toDouble(),
+                        reviewText: _reviewController.text,
+                      );
                   // 🚀 FIX: Navigasi ke '/dashboard' sesuai main.dart
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/dashboard', (route) => false);
+                  if (mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/dashboard', (route) => false);
+                  }
                 },
           icon: const Icon(Icons.send, size: 18),
           label: const Text('Kirim Ulasan',
