@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
 import '../../providers/order_provider.dart';
 import '../../../../shared/models/enums/app_enums.dart';
+
 
 class ReviewScreen extends ConsumerStatefulWidget {
   const ReviewScreen({super.key});
@@ -16,11 +19,21 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   int _selectedRating = 0;
   final TextEditingController _reviewController = TextEditingController();
 
-  // Simulasi data foto terlampir dengan link stabil
-  final List<String> _attachedPhotos = [
-    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-    'https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=400',
-  ];
+  File? _reviewImage;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          _reviewImage = File(image.path);
+        });
+      }
+    } catch (e) {
+      debugPrint("Error picking image: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +86,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const _SectionLabel(label: 'LAMPIRAN FOTO'),
-                Text('Maks. 3 foto',
+                Text('Maks. 1 foto',
                     style: TextStyle(
                         color: onSurfaceVariant,
                         fontSize: 11,
@@ -191,20 +204,21 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     );
   }
 
-  Widget _buildPhotoGrid(Color primary) {
+  Widget _buildPhotoGrid(Color primaryColor) {
     return GridView.builder(
+      padding: EdgeInsets.zero,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+        crossAxisCount: 4,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
-      itemCount: _attachedPhotos.length + 1,
+      itemCount: _reviewImage == null ? 1 : 2,
       itemBuilder: (context, index) {
         if (index == 0) {
           return InkWell(
-            onTap: () {}, // Trigger Image Picker
+            onTap: _pickImage,
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -226,23 +240,23 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             ),
           );
         }
-        final photoUrl = _attachedPhotos[index - 1];
+        
         return Stack(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              // 🚀 PERBAIKAN: Gunakan CustomNetworkImage
-              child: CustomNetworkImage(
-                  imageUrl: photoUrl,
-                  width: double.infinity,
-                  height: double.infinity),
+              child: Image.file(
+                _reviewImage!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
             ),
             Positioned(
               top: 4,
               right: 4,
               child: InkWell(
-                onTap: () =>
-                    setState(() => _attachedPhotos.removeAt(index - 1)),
+                onTap: () => setState(() => _reviewImage = null),
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
@@ -277,6 +291,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                         status: OrderStatus.completed,
                         rating: _selectedRating.toDouble(),
                         reviewText: _reviewController.text,
+                        reviewImageUrl: _reviewImage?.path,
                       );
                   // 🚀 FIX: Navigasi ke '/dashboard' sesuai main.dart
                   if (mounted) {

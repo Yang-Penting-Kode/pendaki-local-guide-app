@@ -29,6 +29,7 @@ class OrderModel {
   final DateTime updatedAt;
   final double? rating; // 🚀 Injeksi Rating Ulasan
   final String? reviewText; // 🚀 Injeksi Teks Ulasan
+  final String? reviewImageUrl; // 🚀 Injeksi Foto Ulasan
 
   const OrderModel({
     required this.id,
@@ -50,6 +51,7 @@ class OrderModel {
     required this.updatedAt,
     this.rating,
     this.reviewText,
+    this.reviewImageUrl,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -87,6 +89,7 @@ class OrderModel {
           : DateTime.now(),
       rating: json['rating'] != null ? double.tryParse(json['rating'].toString()) : null,
       reviewText: json['review_text']?.toString(),
+      reviewImageUrl: json['review_image_url']?.toString(),
     );
   }
 
@@ -111,6 +114,7 @@ class OrderModel {
       'updated_at': updatedAt.toIso8601String(),
       'rating': rating,
       'review_text': reviewText,
+      'review_image_url': reviewImageUrl,
     };
   }
 
@@ -134,6 +138,7 @@ class OrderModel {
     DateTime? updatedAt,
     double? rating,
     String? reviewText,
+    String? reviewImageUrl,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -155,6 +160,7 @@ class OrderModel {
       updatedAt: updatedAt ?? this.updatedAt,
       rating: rating ?? this.rating,
       reviewText: reviewText ?? this.reviewText,
+      reviewImageUrl: reviewImageUrl ?? this.reviewImageUrl,
     );
   }
 

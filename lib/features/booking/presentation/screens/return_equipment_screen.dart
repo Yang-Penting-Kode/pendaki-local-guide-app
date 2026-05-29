@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../widgets/custom_image.dart';
 import '../../providers/order_provider.dart';
@@ -279,14 +281,27 @@ class _ReturnEquipmentScreenState extends ConsumerState<ReturnEquipmentScreen> {
       ),
       child: Column(
         children: [
-          // Map Placeholder
+          // 🚀 PERBAIKAN: OSM Map Placeholder
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: CustomNetworkImage(
-              imageUrl:
-                  'https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800',
+            child: SizedBox(
               height: 150,
               width: double.infinity,
+              child: FlutterMap(
+                options: const MapOptions(
+                    initialCenter: LatLng(-6.7725, 106.9489), initialZoom: 15),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.localguide.app',
+                  ),
+                  const MarkerLayer(markers: [
+                    Marker(
+                        point: LatLng(-6.7725, 106.9489),
+                        child: Icon(Icons.location_on, color: Colors.red, size: 36)),
+                  ]),
+                ],
+              ),
             ),
           ),
           Padding(

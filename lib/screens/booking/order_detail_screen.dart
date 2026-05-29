@@ -79,7 +79,7 @@ class OrderDetailScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomSheet: _buildFooter(context, order),
+      bottomSheet: _buildFooter(context, ref, order),
     );
       },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -249,7 +249,7 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFooter(BuildContext context, OrderModel order) {
+  Widget _buildFooter(BuildContext context, WidgetRef ref, OrderModel order) {
     if (order.status == OrderStatus.completed) {
       if (order.rating == null) {
         return Container(
@@ -283,6 +283,71 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
         );
       }
+    } else if (order.status == OrderStatus.awaitingConfirmation) {
+      return Container(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/tracking-order', arguments: order.id),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+              ),
+              child: const Text(
+                'Lacak Pesanan',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Batalkan Pesanan?'),
+                    content: const Text('Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat diubah.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Kembali', style: TextStyle(color: Colors.grey)),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await ref.read(orderProvider.notifier).updateOrder(order.id, status: OrderStatus.cancelled);
+                          if (ctx.mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Pesanan berhasil dibatalkan.')),
+                            );
+                          }
+                        },
+                        child: const Text('Ya, Batalkan', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red,
+                side: const BorderSide(color: Colors.red),
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+              ),
+              child: const Text(
+                'Batalkan Pesanan',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     // Default tracking button for other statuses

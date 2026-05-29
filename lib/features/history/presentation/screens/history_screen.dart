@@ -62,20 +62,24 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
         itemCount: list.length,
         itemBuilder: (context, index) {
           final order = list[index];
-          return InkWell(
-            // 🚀 PERBAIKAN: Navigasi ke order-detail dengan passing orderId
-            onTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order.id),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: _buildTransactionCard(
-                date: DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt),
-                status: order.status.name.toUpperCase(),
-                title: order.items.isNotEmpty ? order.items.first.productName : 'Pesanan',
-                store: order.storeId,
-                totalPrice: order.totalGrossPrice.toStringAsFixed(0),
-                buttonLabel: 'Detail',
-                imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-              ),
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _buildTransactionCard(
+              date: DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt),
+              status: order.status.name.toUpperCase(),
+              title: order.items.isNotEmpty ? order.items.first.productName : 'Pesanan',
+              store: order.storeId,
+              totalPrice: order.totalGrossPrice.toStringAsFixed(0),
+              buttonLabel: (order.status == OrderStatus.completed && order.rating != null) ? 'Lihat Review' : 'Detail',
+              imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+              onCardTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order.id),
+              onButtonTap: () {
+                if (order.status == OrderStatus.completed && order.rating != null) {
+                  Navigator.pushNamed(context, '/my-reviews');
+                } else {
+                  Navigator.pushNamed(context, '/order-detail', arguments: order.id);
+                }
+              },
             ),
           );
         },
@@ -158,6 +162,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
     required String totalPrice,
     required String buttonLabel,
     required String imageUrl,
+    required VoidCallback onCardTap,
+    required VoidCallback onButtonTap,
   }) {
     const Color primaryColor = Color(0xFF005F3F);
     const Color primaryContainer = Color(0xFF007A52);
@@ -179,58 +185,68 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: Tanggal & Status
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(date,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: secondaryContainer,
-                  borderRadius: BorderRadius.circular(99),
-                ),
-                child: Text(
-                  status,
-                  style: const TextStyle(
-                      color: primaryContainer,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          // Body: Gambar & Nama Produk
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                // 🚀 PERBAIKAN: Gunakan CustomNetworkImage
-                child: CustomNetworkImage(
-                  imageUrl: imageUrl,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          // Membungkus area Header dan Body agar dapat diketuk terpisah
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onCardTap,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header: Tanggal & Status
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title,
+                    Text(date,
+                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: secondaryContainer,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Text(
+                        status,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text(store,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 14)),
+                            color: primaryContainer,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                // Body: Gambar & Nama Produk
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      // 🚀 PERBAIKAN: Gunakan CustomNetworkImage
+                      child: CustomNetworkImage(
+                        imageUrl: imageUrl,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(store,
+                              style:
+                                  const TextStyle(color: Colors.grey, fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           const Divider(height: 1),
@@ -250,14 +266,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
                 ],
               ),
               OutlinedButton(
-                // 🚀 PERBAIKAN: Logika Navigasi Dinamis
-                onPressed: () {
-                  if (buttonLabel == 'Beri Ulasan') {
-                    Navigator.pushNamed(context, '/review');
-                  } else if (buttonLabel == 'Lihat Ulasan') {
-                    Navigator.pushNamed(context, '/my-reviews');
-                  }
-                },
+                // 🚀 PERBAIKAN: Hitbox terpisah untuk action button
+                onPressed: onButtonTap,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: primaryColor,
                   side: const BorderSide(color: primaryColor),

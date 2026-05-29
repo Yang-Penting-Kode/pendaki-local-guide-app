@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
 import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
 import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
@@ -260,6 +262,31 @@ class PickupConfirmationScreen extends ConsumerWidget {
               ),
               const Icon(Icons.directions, color: Colors.grey),
             ],
+          ),
+          const SizedBox(height: 16),
+          // 🚀 PERBAIKAN: Injeksi OSM Map
+          Container(
+            height: 150,
+            width: double.infinity,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: FlutterMap(
+              options: const MapOptions(
+                  initialCenter: LatLng(-6.7725, 106.9489), initialZoom: 15),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.localguide.app',
+                ),
+                const MarkerLayer(markers: [
+                  Marker(
+                      point: LatLng(-6.7725, 106.9489),
+                      child: Icon(Icons.location_on, color: Colors.red, size: 36)),
+                ]),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           Container(

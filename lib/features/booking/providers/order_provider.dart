@@ -156,7 +156,7 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
   // ---------------------------------------------------------------------------
   // 📝 UPDATE ORDER (Utility for Review and Status change)
   // ---------------------------------------------------------------------------
-  Future<void> updateOrder(String orderId, {OrderStatus? status, double? rating, String? reviewText}) async {
+  Future<void> updateOrder(String orderId, {OrderStatus? status, double? rating, String? reviewText, String? reviewImageUrl}) async {
     state = await AsyncValue.guard(() async {
       final currentOrders = await future;
       return currentOrders.map((o) {
@@ -165,6 +165,7 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
             status: status ?? o.status,
             rating: rating ?? o.rating,
             reviewText: reviewText ?? o.reviewText,
+            reviewImageUrl: reviewImageUrl ?? o.reviewImageUrl,
             updatedAt: DateTime.now(),
           );
         }
