@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
-import '../../widgets/custom_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
+import 'package:pendaki_local_guide_app/core/constants/app_colors.dart';
+import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
 
-class OrderDetailScreen extends StatelessWidget {
+class OrderDetailScreen extends ConsumerWidget {
   const OrderDetailScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderId = ModalRoute.of(context)?.settings.arguments as String?;
+    if (orderId == null) {
+      return const Scaffold(body: Center(child: Text('ID Pesanan tidak valid')));
+    }
+
+    final ordersAsync = ref.watch(orderProvider);
+
+    return ordersAsync.when(
+      data: (orders) {
+        final order = orders.firstWhere((o) => o.id == orderId, orElse: () => throw Exception('Order not found'));
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0,
@@ -31,47 +46,47 @@ class OrderDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Status Card
-            _buildStatusCard(),
+            _buildStatusCard(order),
             const SizedBox(height: 32),
 
             // 2. Produk yang Disewa
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Produk yang Disewa',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                Text('2 Item', style: TextStyle(color: Colors.grey)),
+                Text('${order.items.length} Item', style: const TextStyle(color: Colors.grey)),
               ],
             ),
             const SizedBox(height: 16),
-            _buildOrderItem(
-              'Tenda Eiger 4P',
-              'TENDA',
-              'Toko Merdeka Outdoor',
-              'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-            ),
-            const SizedBox(height: 12),
-            _buildOrderItem(
-              'Carrier Osprey 60L',
-              'CARRIER',
-              'Toko Merdeka Outdoor',
-              'https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400',
-            ),
+            ...order.items.map((item) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildOrderItem(
+                item.productName,
+                'ALAT',
+                order.storeId,
+                'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+              ),
+            )).toList(),
             const SizedBox(height: 32),
 
             // 3. Rincian Pembayaran
-            _buildPaymentDetail(),
+            _buildPaymentDetail(order),
             const SizedBox(height: 100), // Spacer untuk footer
           ],
         ),
       ),
-      bottomSheet: _buildFooter(context),
+      bottomSheet: _buildFooter(context, order.id),
+    );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
     );
   }
 
-  Widget _buildStatusCard() {
+  Widget _buildStatusCard(OrderModel order) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -96,9 +111,9 @@ class OrderDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    'PESANAN BERHASIL',
-                    style: TextStyle(
+                  Text(
+                    order.status.name.toUpperCase(),
+                    style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w800,
                       fontSize: 10,
@@ -108,13 +123,13 @@ class OrderDetailScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              const Text(
-                '#RNT-99281',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                '#${order.id.length > 8 ? order.id.substring(0, 8).toUpperCase() : order.id}',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const Text(
-                '24 Oktober 2023, 14:30 WIB',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
+              Text(
+                DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ],
           ),
@@ -173,7 +188,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentDetail() {
+  Widget _buildPaymentDetail(OrderModel order) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -187,9 +202,9 @@ class OrderDetailScreen extends StatelessWidget {
           const Text('Rincian Pembayaran',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          _buildPriceRow('Subtotal Sewa', 'Rp 160.000'),
-          _buildPriceRow('Biaya Layanan', 'Rp 5.000'),
-          _buildPriceRow('Diskon Promo', '- Rp 15.000', isDiscount: true),
+          _buildPriceRow('Subtotal Sewa', 'Rp ${order.rentalCost.toStringAsFixed(0)}'),
+          _buildPriceRow('Biaya Layanan', 'Rp ${order.platformServiceFee.toStringAsFixed(0)}'),
+          _buildPriceRow('Biaya Pengantaran', 'Rp ${order.deliveryCost.toStringAsFixed(0)}'),
           const Divider(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -197,8 +212,8 @@ class OrderDetailScreen extends StatelessWidget {
               const Text('Total Pembayaran',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Text(
-                'Rp 150.000',
-                style: TextStyle(
+                'Rp ${order.totalGrossPrice.toStringAsFixed(0)}',
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                   color: AppColors.primary,
@@ -230,7 +245,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter(BuildContext context) {
+  Widget _buildFooter(BuildContext context, String orderId) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -238,7 +253,7 @@ class OrderDetailScreen extends StatelessWidget {
         border: Border(top: BorderSide(color: Colors.grey.shade200)),
       ),
       child: ElevatedButton(
-        onPressed: () => Navigator.pushNamed(context, '/pickup-confirmation'),
+        onPressed: () => Navigator.pushNamed(context, '/pickup-confirmation', arguments: orderId),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           minimumSize: const Size(double.infinity, 56),

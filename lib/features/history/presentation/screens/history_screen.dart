@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
-import '../../../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
+import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
+import 'package:pendaki_local_guide_app/shared/models/enums/app_enums.dart';
 
-class HistoryScreen extends StatefulWidget {
+class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen>
+class _HistoryScreenState extends ConsumerState<HistoryScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -47,6 +52,36 @@ class _HistoryScreenState extends State<HistoryScreen>
     const Color surfaceColor = Color(0xFFF9F9F9);
     const Color onSurfaceVariant = Color(0xFF3E4942);
 
+    // 🚀 Ambil data dari provider (Bentuk AsyncValue)
+    final ordersAsync = ref.watch(orderProvider);
+
+    Widget buildOrderList(List<OrderModel> list, String emptyMessage) {
+      if (list.isEmpty) return Center(child: Text(emptyMessage));
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          final order = list[index];
+          return InkWell(
+            // 🚀 PERBAIKAN: Navigasi ke order-detail dengan passing orderId
+            onTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order.id),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _buildTransactionCard(
+                date: DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt),
+                status: order.status.name.toUpperCase(),
+                title: order.items.isNotEmpty ? order.items.first.productName : 'Pesanan',
+                store: order.storeId,
+                totalPrice: order.totalGrossPrice.toStringAsFixed(0),
+                buttonLabel: 'Detail',
+                imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor: surfaceColor,
       // 1. Sticky App Bar & Tab Bar
@@ -55,10 +90,6 @@ class _HistoryScreenState extends State<HistoryScreen>
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back, color: primaryColor),
-        //   onPressed: () => Navigator.pop(context),
-        // ),
         title: const Text(
           'Riwayat Pesanan',
           style: TextStyle(
@@ -91,37 +122,29 @@ class _HistoryScreenState extends State<HistoryScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          const Center(child: Text('Belum ada pesanan berlangsung')),
-          // 2. Tab Selesai (Main Content)
-          ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildTransactionCard(
-                date: '16 Ags 2026',
-                status: 'Selesai',
-                title: 'Tenda Eiger 4P',
-                store: 'Toko Merdeka Outdoor',
-                totalPrice: '100.000',
-                buttonLabel: 'Beri Ulasan',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-              ),
-              const SizedBox(height: 16),
-              _buildTransactionCard(
-                date: '12 Ags 2026',
-                status: 'Selesai',
-                title: 'Sleeping Bag Polar',
-                store: 'Gunung Emas Camp',
-                totalPrice: '50.000',
-                buttonLabel: 'Lihat Ulasan',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=400',
-              ),
-            ],
-          ),
-          const Center(child: Text('Tidak ada pesanan dibatalkan')),
-        ],
+        children: ordersAsync.when(
+          data: (orders) {
+            final activeOrders = orders.where((o) => o.status != OrderStatus.completed && o.status != OrderStatus.cancelled).toList();
+            final completedOrders = orders.where((o) => o.status == OrderStatus.completed).toList();
+            final cancelledOrders = orders.where((o) => o.status == OrderStatus.cancelled).toList();
+            
+            return [
+              buildOrderList(activeOrders, 'Belum ada pesanan berlangsung'),
+              buildOrderList(completedOrders, 'Tidak ada pesanan selesai'),
+              buildOrderList(cancelledOrders, 'Tidak ada pesanan dibatalkan'),
+            ];
+          },
+          loading: () => [
+            const Center(child: CircularProgressIndicator()),
+            const Center(child: CircularProgressIndicator()),
+            const Center(child: CircularProgressIndicator()),
+          ],
+          error: (err, stack) => [
+            Center(child: Text('Error: $err')),
+            Center(child: Text('Error: $err')),
+            Center(child: Text('Error: $err')),
+          ],
+        ),
       ),
     );
   }
