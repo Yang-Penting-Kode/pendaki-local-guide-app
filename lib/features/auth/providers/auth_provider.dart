@@ -91,6 +91,11 @@ class AuthNotifier extends Notifier<UserModel?> {
     required String password,
     required String confirmPassword,
     String? phoneNumber,
+    String? gender,
+    String? ktpPhotoUrl,
+    String? profilePhotoUrl,
+    String? emergencyName,
+    String? emergencyPhone,
   }) {
     // Validasi lokal sebelum menyentuh repository
     if (fullName.trim().isEmpty || email.trim().isEmpty || password.isEmpty) {
@@ -120,6 +125,11 @@ class AuthNotifier extends Notifier<UserModel?> {
         email: email,
         password: password,
         phoneNumber: phoneNumber,
+        gender: gender,
+        ktpPhotoUrl: ktpPhotoUrl,
+        profilePhotoUrl: profilePhotoUrl,
+        emergencyName: emergencyName,
+        emergencyPhone: emergencyPhone,
       );
 
       // Auto-login setelah register berhasil

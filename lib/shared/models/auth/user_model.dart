@@ -15,6 +15,9 @@ class UserModel {
   final String? gender;
   final String? ktpNumber;
   final String? ktpPhotoUrl;
+  final String? profilePhotoUrl;
+  final String? emergencyName;
+  final String? emergencyPhone;
   final bool isVerified;
   final bool faceVerified;
   final StoreModel? store;
@@ -29,6 +32,9 @@ class UserModel {
     this.gender,
     this.ktpNumber,
     this.ktpPhotoUrl,
+    this.profilePhotoUrl,
+    this.emergencyName,
+    this.emergencyPhone,
     this.isVerified = false,
     this.faceVerified = false,
     this.store,
@@ -47,6 +53,9 @@ class UserModel {
       gender: json['gender'],
       ktpNumber: json['ktp_number'],
       ktpPhotoUrl: json['ktp_photo_url'],
+      profilePhotoUrl: json['profile_photo_url'],
+      emergencyName: json['emergency_name'],
+      emergencyPhone: json['emergency_phone'],
       isVerified: json['email_verified_at'] != null,
       faceVerified: json['face_verified_at'] != null,
       // Parsing relasi nested — mendukung key 'store' maupun 'shop'
@@ -74,6 +83,9 @@ class UserModel {
       'gender': gender,
       'ktp_number': ktpNumber,
       'ktp_photo_url': ktpPhotoUrl,
+      'profile_photo_url': profilePhotoUrl,
+      'emergency_name': emergencyName,
+      'emergency_phone': emergencyPhone,
       'is_verified': isVerified,
       'face_verified': faceVerified,
       'store': store?.toJson(),
@@ -91,6 +103,9 @@ class UserModel {
     String? gender,
     String? ktpNumber,
     String? ktpPhotoUrl,
+    String? profilePhotoUrl,
+    String? emergencyName,
+    String? emergencyPhone,
     bool? isVerified,
     bool? faceVerified,
     StoreModel? store,
@@ -105,6 +120,9 @@ class UserModel {
       gender: gender ?? this.gender,
       ktpNumber: ktpNumber ?? this.ktpNumber,
       ktpPhotoUrl: ktpPhotoUrl ?? this.ktpPhotoUrl,
+      profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
+      emergencyName: emergencyName ?? this.emergencyName,
+      emergencyPhone: emergencyPhone ?? this.emergencyPhone,
       isVerified: isVerified ?? this.isVerified,
       faceVerified: faceVerified ?? this.faceVerified,
       store: store ?? this.store,

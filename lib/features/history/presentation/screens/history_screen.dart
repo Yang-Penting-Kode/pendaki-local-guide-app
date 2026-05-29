@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
+import '../../../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -25,6 +25,22 @@ class _HistoryScreenState extends State<HistoryScreen>
     super.dispose();
   }
 
+  void _showNotificationModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => const Padding(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          heightFactor: 1,
+          child: Text('Belum ada notifikasi baru', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xFF005F3F);
@@ -38,6 +54,7 @@ class _HistoryScreenState extends State<HistoryScreen>
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
         // leading: IconButton(
         //   icon: const Icon(Icons.arrow_back, color: primaryColor),
         //   onPressed: () => Navigator.pop(context),
@@ -51,6 +68,12 @@ class _HistoryScreenState extends State<HistoryScreen>
             fontSize: 18,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () => _showNotificationModal(context),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: primaryColor,

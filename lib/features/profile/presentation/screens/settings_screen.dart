@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart';
-import '../../components/modals/language_modal.dart';
+import '../../../../widgets/custom_image.dart';
+import '../../../../components/modals/language_modal.dart';
+import 'dart:io';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/features/auth/providers/auth_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/auth/user_model.dart';
 import 'package:pendaki_local_guide_app/features/settings/providers/settings_provider.dart'; // 🚀 Import Provider baru
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   // 🚀 Inisialisasi Provider (Manual sebelum migrasi penuh ke Riverpod)
   final SettingsProvider _settingsProvider = SettingsProvider();
 
@@ -30,6 +34,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _onProviderUpdate() {
     if (mounted) setState(() {});
+  }
+
+  void _showNotificationModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => const Padding(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          heightFactor: 1,
+          child: Text('Belum ada notifikasi baru', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
   }
 
   // 🛡️ MODAL: Pemilihan Bahasa (Sudah bersih, data diambil dari Provider)
@@ -53,6 +73,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(authProvider);
+
     // Warna sesuai desain Alpine Minimalist[cite: 10]
     const Color primaryColor = Color(0xFF006C0C);
     const Color primaryFixed = Color(0xFF92FA83);
@@ -68,6 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0,
         centerTitle: false,
+        automaticallyImplyLeading: false,
         title: const Text(
           'Pengaturan',
           style: TextStyle(
@@ -77,6 +100,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             fontSize: 18,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () => _showNotificationModal(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -84,7 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 👤 User Hero Card
-            _buildUserHeroCard(primaryColor, onSurfaceVariant),
+            _buildUserHeroCard(primaryColor, onSurfaceVariant, user),
 
             const SizedBox(height: 32),
 
@@ -154,7 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // --- 🛠️ SUB-WIDGET HELPERS ---
 
-  Widget _buildUserHeroCard(Color primary, Color variantText) {
+  Widget _buildUserHeroCard(Color primary, Color variantText, UserModel? user) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
@@ -179,11 +208,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   shape: BoxShape.circle,
                   border: Border.all(color: const Color(0xFFEEEEEE), width: 4),
                 ),
-                child: const ClipOval(
-                  child: CustomNetworkImage(
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
-                  ),
+                child: ClipOval(
+                  child: user?.profilePhotoUrl != null
+                      ? Image.file(File(user!.profilePhotoUrl!), fit: BoxFit.cover, width: 96, height: 96)
+                      : const CustomNetworkImage(
+                          imageUrl:
+                              'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
+                        ),
                 ),
               ),
               Positioned(
@@ -208,10 +239,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Adi Chandra Isro\' Salsabilla',
+          Text(
+            user?.fullName ?? 'Pendaki',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 22,
                 fontWeight: FontWeight.w800),

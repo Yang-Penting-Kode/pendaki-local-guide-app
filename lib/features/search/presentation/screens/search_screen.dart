@@ -28,6 +28,22 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void _showNotificationModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => const Padding(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          heightFactor: 1,
+          child: Text('Belum ada notifikasi baru', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +55,12 @@ class _SearchScreenState extends State<SearchScreen> {
         // 🚀 FIX: titleSpacing 16 agar search bar mepet rapi ke sisi layar
         titleSpacing: 16,
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: AppColors.primary),
+            onPressed: () => _showNotificationModal(context),
+          ),
+        ],
         title: Row(
           children: [
             Expanded(

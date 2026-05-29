@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pendaki_local_guide_app/features/booking/presentation/screens/booking_screen.dart';
-import 'package:pendaki_local_guide_app/screens/history/history_screen.dart';
-import 'package:pendaki_local_guide_app/screens/search/search_screen.dart';
-import 'package:pendaki_local_guide_app/screens/settings/settings_screen.dart';
+import 'package:pendaki_local_guide_app/features/history/presentation/screens/history_screen.dart';
+import 'package:pendaki_local_guide_app/features/search/presentation/screens/search_screen.dart';
+import 'package:pendaki_local_guide_app/features/profile/presentation/screens/settings_screen.dart';
 import 'package:pendaki_local_guide_app/features/home/presentation/screens/home_screen.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
 

@@ -7,6 +7,22 @@ import 'package:pendaki_local_guide_app/shared/models/catalog/product_model.dart
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
+  void _showNotificationModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => const Padding(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          heightFactor: 1,
+          child: Text('Belum ada notifikasi baru', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productsAsync = ref.watch(productProvider);
@@ -22,6 +38,7 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.8),
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: const Text(
           'Mountain Kit',
           style: TextStyle(
@@ -33,6 +50,10 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: primaryColor),
+            onPressed: () => _showNotificationModal(context),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: CircleAvatar(
@@ -94,6 +115,7 @@ class HomeScreen extends ConsumerWidget {
                     subtitle: '1 Alat Aktif',
                     iconColor: primaryColor,
                     bgColor: primaryColor.withOpacity(0.1),
+                    onTap: () => Navigator.pushNamed(context, '/active-rentals'),
                   ),
                   const SizedBox(width: 16),
                   _buildStatusCard(
@@ -103,6 +125,7 @@ class HomeScreen extends ConsumerWidget {
                     iconColor: secondaryColor,
                     bgColor: const Color(0xFFFD8B00).withOpacity(0.2),
                     subtitleColor: secondaryColor,
+                    onTap: () => Navigator.pushNamed(context, '/return-schedules'),
                   ),
                 ],
               ),
@@ -286,30 +309,34 @@ class HomeScreen extends ConsumerWidget {
     required Color iconColor,
     required Color bgColor,
     Color? subtitleColor,
+    VoidCallback? onTap,
   }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-              child: Icon(icon, color: iconColor, size: 20),
-            ),
-            const SizedBox(height: 12),
-            Text(title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-            Text(subtitle,
-                style: TextStyle(
-                    color: subtitleColor ?? Colors.grey, fontSize: 11)),
-          ],
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(height: 12),
+              Text(title,
+                  style:
+                      const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              Text(subtitle,
+                  style: TextStyle(
+                      color: subtitleColor ?? Colors.grey, fontSize: 11)),
+            ],
+          ),
         ),
       ),
     );

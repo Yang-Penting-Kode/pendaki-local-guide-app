@@ -1,27 +1,59 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:pendaki_local_guide_app/features/auth/providers/auth_provider.dart';
+import '../../../../widgets/custom_image.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  // Controller untuk input data
-  final TextEditingController _nameController =
-      TextEditingController(text: 'Adi Chandra Isro\' Salsabilla');
-  final TextEditingController _phoneController =
-      TextEditingController(text: '+62 812 3456 7890');
-  final TextEditingController _emailController =
-      TextEditingController(text: 'adi.chandra@email.com');
-  final TextEditingController _emergencyNameController =
-      TextEditingController();
-  final TextEditingController _emergencyPhoneController =
-      TextEditingController();
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _emergencyNameController;
+  late final TextEditingController _emergencyPhoneController;
 
   String? _selectedGender;
+  File? _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = ref.read(authProvider);
+    _nameController = TextEditingController(text: user?.fullName ?? 'Adi Chandra Isro\' Salsabilla');
+    _phoneController = TextEditingController(text: user?.phoneNumber ?? '+62 812 3456 7890');
+    _emailController = TextEditingController(text: user?.email ?? 'adi.chandra@email.com');
+    _emergencyNameController = TextEditingController(text: user?.emergencyName ?? '');
+    _emergencyPhoneController = TextEditingController(text: user?.emergencyPhone ?? '');
+    
+    String? rawGender = user?.gender?.toLowerCase();
+    if (rawGender == 'laki-laki' || rawGender == 'male') {
+      _selectedGender = 'Laki-laki';
+    } else if (rawGender == 'perempuan' || rawGender == 'female') {
+      _selectedGender = 'Perempuan';
+    } else {
+      _selectedGender = null;
+    }
+    
+    // 🚀 FIX: Inisialisasi gambar awal dari data user yang sudah register
+    _imageFile = user?.profilePhotoUrl != null ? File(user!.profilePhotoUrl!) : null;
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -79,6 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _nameController,
                 hint: 'Masukkan nama lengkap'),
             const SizedBox(height: 20),
+            // 🚀 FIX: Dipastikan controller merujuk ke _phoneController, BUKAN emergency
             _buildInputField(
                 label: 'NOMOR HP',
                 controller: _phoneController,
@@ -96,11 +129,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildGenderDropdown(onSurfaceVariant, primaryColor),
 
             const SizedBox(height: 20),
+            // 🚀 FIX: Dipastikan controller merujuk ke _emergencyNameController
             _buildInputField(
                 label: 'NAMA KONTAK DARURAT',
                 controller: _emergencyNameController,
                 hint: 'Nama Lengkap Kontak'),
             const SizedBox(height: 20),
+            // 🚀 FIX: Dipastikan controller merujuk ke _emergencyPhoneController
             _buildInputField(
                 label: 'KONTAK DARURAT',
                 controller: _emergencyPhoneController,
@@ -130,21 +165,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 shape: BoxShape.circle,
                 border: Border.all(color: const Color(0xFFEEEEEE), width: 4),
               ),
-              child: const ClipOval(
-                child: CustomNetworkImage(
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
-                ),
+              child: ClipOval(
+                child: _imageFile != null
+                    ? Image.file(_imageFile!, fit: BoxFit.cover, width: 128, height: 128)
+                    : const CustomNetworkImage(
+                        imageUrl:
+                            'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
+                      ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: primary,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: const Icon(Icons.edit, color: Colors.white, size: 18),
               ),
-              child: const Icon(Icons.edit, color: Colors.white, size: 18),
             ),
           ],
         ),
@@ -223,8 +263,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 borderSide: BorderSide(color: primary, width: 2)),
           ),
           items: const [
-            DropdownMenuItem(value: 'male', child: Text('Laki-laki')),
-            DropdownMenuItem(value: 'female', child: Text('Perempuan')),
+            DropdownMenuItem(value: 'Laki-laki', child: Text('Laki-laki')),
+            DropdownMenuItem(value: 'Perempuan', child: Text('Perempuan')),
           ],
           onChanged: (val) => setState(() => _selectedGender = val),
         ),
@@ -249,6 +289,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         height: 56,
         child: ElevatedButton(
           onPressed: () {
+            final user = ref.read(authProvider);
+            if (user != null) {
+              final updatedUser = user.copyWith(
+                fullName: _nameController.text,
+                email: _emailController.text,
+                phoneNumber: _phoneController.text,
+                gender: _selectedGender,
+                emergencyName: _emergencyNameController.text,
+                emergencyPhone: _emergencyPhoneController.text,
+                profilePhotoUrl: _imageFile?.path, // 🚀 FIX: Jangan hilangkan foto profil saat save
+              );
+              ref.read(authProvider.notifier).updateProfile(updatedUser);
+            }
+
             // Simulasi simpan data
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

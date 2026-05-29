@@ -27,6 +27,8 @@ import 'package:pendaki_local_guide_app/features/booking/presentation/screens/tr
 import 'package:pendaki_local_guide_app/screens/booking/waiting_confirmation_screen.dart';
 import 'package:pendaki_local_guide_app/features/booking/presentation/screens/cart_screen.dart';
 import 'package:pendaki_local_guide_app/features/booking/presentation/screens/qr_generator_screen.dart';
+import 'package:pendaki_local_guide_app/features/home/presentation/screens/active_rentals_screen.dart';
+import 'package:pendaki_local_guide_app/features/home/presentation/screens/return_schedules_screen.dart';
 import 'package:pendaki_local_guide_app/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:pendaki_local_guide_app/screens/history/my_reviews_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/basecamp_partners_screen.dart';
@@ -43,12 +45,12 @@ import 'package:pendaki_local_guide_app/screens/search/search_not_found_screen.d
 import 'package:pendaki_local_guide_app/screens/settings/about_app_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/change_password_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/document_verification_screen.dart';
-import 'package:pendaki_local_guide_app/screens/settings/edit_profile_screen.dart';
+import 'package:pendaki_local_guide_app/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/help_center_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/notification_settings_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/orders_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/privacy_policy_screen.dart';
-import 'package:pendaki_local_guide_app/screens/settings/profile_screen.dart';
+import 'package:pendaki_local_guide_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/security_privacy_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/terms_conditions_screen.dart';
 import 'package:pendaki_local_guide_app/screens/settings/wishlist_screen.dart';
@@ -102,8 +104,11 @@ class LocalGuideApp extends StatelessWidget {
           case '/reset-password':
             return _fadeRoute(const ResetPasswordScreen(), settings: settings);
           case '/dashboard':
-// END REPLACE
             return _fadeRoute(const DashboardScreen(), settings: settings);
+          case '/active-rentals':
+            return _fadeRoute(const ActiveRentalsScreen(), settings: settings);
+          case '/return-schedules':
+            return _fadeRoute(const ReturnSchedulesScreen(), settings: settings);
           case '/mountain-search':
             return _fadeRoute(const MountainSearchScreen(), settings: settings);
           case '/mountain-search-result':

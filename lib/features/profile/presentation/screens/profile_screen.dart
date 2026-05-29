@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart'; // 🚀 Anti-lemot image loader[cite: 4]
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/features/auth/providers/auth_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/auth/user_model.dart';
+import '../../../../widgets/custom_image.dart'; // 🚀 Anti-lemot image loader[cite: 4]
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   // 🛡️ MODAL: Verifikasi Identitas (Sesuai Desain Alpine Minimalist)[cite: 4]
-  void _showVerificationModal(BuildContext context) {
+  void _showVerificationModal(BuildContext context, UserModel? user) {
     const Color primaryColor = Color(0xFF006C0C);
 
     showModalBottomSheet(
@@ -97,18 +101,18 @@ class ProfileScreen extends StatelessWidget {
                           const Icon(Icons.contact_page, color: primaryColor),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('AKUN PERSONAL',
+                          const Text('AKUN PERSONAL',
                               style: TextStyle(
                                   color: Color(0xFF6F7A6A),
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1)),
-                          Text('Adi Chandra Isro\' Salsabilla',
-                              style: TextStyle(
+                          Text(user?.fullName ?? 'Pendaki',
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                   fontFamily: 'Manrope')),
@@ -195,7 +199,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authProvider);
+
     const Color primaryColor = Color(0xFF006C0C);
     const Color primaryFixed = Color(0xFF92FA83);
     const Color secondaryFixed = Color(0xFFFFDCC3);
@@ -214,7 +220,7 @@ class ProfileScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Akun GuideIn',
+          'Profil Akun',
           style: TextStyle(
             color: primaryColor,
             fontFamily: 'Manrope',
@@ -232,7 +238,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             _buildProfileHeader(
-                primaryColor, secondaryFixed, secondaryColor, onSurfaceVariant),
+                primaryColor, secondaryFixed, secondaryColor, onSurfaceVariant, user),
             const SizedBox(height: 32),
             _buildStatsGrid(primaryColor, onSurfaceVariant),
             const SizedBox(height: 32),
@@ -260,7 +266,7 @@ class ProfileScreen extends StatelessWidget {
                     primaryColor,
                     isVerified: true,
                     onTap: () => _showVerificationModal(
-                        context), // 🚀 Panggil Modal[cite: 4]
+                        context, user), // 🚀 Panggil Modal[cite: 4]
                   ),
                   const Divider(height: 1, indent: 56),
                   _buildMenuItem(context, Icons.favorite,
@@ -281,7 +287,7 @@ class ProfileScreen extends StatelessWidget {
   // --- UI HELPERS ---[cite: 4]
 
   Widget _buildProfileHeader(
-      Color primary, Color badgeBg, Color badgeText, Color variantText) {
+      Color primary, Color badgeBg, Color badgeText, Color variantText, UserModel? user) {
     return Column(
       children: [
         Stack(
@@ -300,11 +306,13 @@ class ProfileScreen extends StatelessWidget {
                       offset: const Offset(0, 4))
                 ],
               ),
-              child: const ClipOval(
-                child: CustomNetworkImage(
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
-                ),
+              child: ClipOval(
+                child: user?.profilePhotoUrl != null
+                    ? Image.file(File(user!.profilePhotoUrl!), fit: BoxFit.cover, width: 120, height: 120)
+                    : const CustomNetworkImage(
+                        imageUrl:
+                            'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
+                      ),
               ),
             ),
             Container(
@@ -319,10 +327,10 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Adi Chandra Isro\' Salsabilla',
+        Text(
+          user?.fullName ?? 'Pendaki',
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
               fontFamily: 'Manrope',
               fontSize: 24,
               fontWeight: FontWeight.w800,

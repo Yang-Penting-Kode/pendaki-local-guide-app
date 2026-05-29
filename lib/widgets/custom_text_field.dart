@@ -15,6 +15,7 @@ class CustomTextField extends StatelessWidget {
   final bool showShadow; // 🚀 Bisa matikan/hidupkan shadow
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -31,6 +32,7 @@ class CustomTextField extends StatelessWidget {
     this.showShadow = true,
     this.onChanged,
     this.onSubmitted,
+    this.validator,
   });
 
   @override
@@ -48,12 +50,13 @@ class CustomTextField extends StatelessWidget {
               ]
             : [],
       ),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
         onChanged: onChanged,
-        onSubmitted: onSubmitted,
+        onFieldSubmitted: onSubmitted,
+        validator: validator,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
         decoration: InputDecoration(
           hintText: hint,

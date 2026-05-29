@@ -82,6 +82,11 @@ class AuthRepository {
     required String email,
     required String password,
     String? phoneNumber,
+    String? gender,
+    String? ktpPhotoUrl,
+    String? profilePhotoUrl,
+    String? emergencyName,
+    String? emergencyPhone,
   }) {
     final trimmedEmail = email.trim().toLowerCase();
 
@@ -100,6 +105,11 @@ class AuthRepository {
       fullName: fullName.trim(),
       email: trimmedEmail,
       phoneNumber: phoneNumber?.trim(),
+      gender: gender,
+      ktpPhotoUrl: ktpPhotoUrl,
+      profilePhotoUrl: profilePhotoUrl,
+      emergencyName: emergencyName?.trim(),
+      emergencyPhone: emergencyPhone?.trim(),
       isVerified: false,
       faceVerified: false,
       store: null,

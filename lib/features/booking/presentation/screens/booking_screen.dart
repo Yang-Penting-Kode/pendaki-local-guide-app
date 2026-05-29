@@ -28,6 +28,22 @@ class _BookingScreenState extends ConsumerState<BookingScreen>
     super.dispose();
   }
 
+  void _showNotificationModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => const Padding(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          heightFactor: 1,
+          child: Text('Belum ada notifikasi baru', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
+  }
+
   // 🛡️ MODAL: Menunggu Konfirmasi
   void _showWaitingModal(BuildContext context) {
     showDialog(
@@ -165,6 +181,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: const Text(
           'Pesanan Alat',
@@ -175,6 +192,12 @@ class _BookingScreenState extends ConsumerState<BookingScreen>
             fontSize: 18,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () => _showNotificationModal(context),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: primaryColor,
