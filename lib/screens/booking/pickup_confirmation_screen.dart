@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart'; // 🚀 Import widget custom agar anti-lemot
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
+import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
 
-class PickupConfirmationScreen extends StatelessWidget {
+class PickupConfirmationScreen extends ConsumerWidget {
   const PickupConfirmationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF005F3F);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderId = ModalRoute.of(context)?.settings.arguments as String?;
+    if (orderId == null) {
+      return const Scaffold(body: Center(child: Text('ID Pesanan tidak valid')));
+    }
+
+    final ordersAsync = ref.watch(orderProvider);
+    
+    return ordersAsync.when(
+      data: (orders) {
+        final order = orders.firstWhere((o) => o.id == orderId, orElse: () => throw Exception('Order not found'));
+        final pickupCode = order.id.length >= 8 ? order.id.substring(0, 8).toUpperCase() : order.id.toUpperCase();
+
+        const Color primaryColor = Color(0xFF005F3F);
     const Color primaryContainer = Color(0xFF007A52);
     const Color onSurfaceVariant = Color(0xFF3E4942);
 
@@ -29,11 +44,11 @@ class PickupConfirmationScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
         child: Column(
           children: [
-            _buildPickupCodeCard(primaryColor, onSurfaceVariant),
+            _buildPickupCodeCard(primaryColor, onSurfaceVariant, pickupCode),
             const SizedBox(height: 24),
-            _buildItemListHeader(primaryColor),
+            _buildItemListHeader(primaryColor, order.items.length),
             const SizedBox(height: 12),
-            _buildItemsList(primaryColor, onSurfaceVariant),
+            _buildItemsList(primaryColor, onSurfaceVariant, order.items),
             const SizedBox(height: 24),
             const Align(
               alignment: Alignment.centerLeft,
@@ -53,11 +68,15 @@ class PickupConfirmationScreen extends StatelessWidget {
       ),
       bottomNavigationBar: _buildStickyFooter(context, primaryContainer),
     );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
+    );
   }
 
   // --- UI COMPONENTS ---
 
-  Widget _buildPickupCodeCard(Color primary, Color variant) {
+  Widget _buildPickupCodeCard(Color primary, Color variant, String pickupCode) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
@@ -81,7 +100,8 @@ class PickupConfirmationScreen extends StatelessWidget {
                   color: Colors.grey,
                   letterSpacing: 1)),
           const SizedBox(height: 8),
-          Text('GDN-8829',
+          const SizedBox(height: 8),
+          Text(pickupCode,
               style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.w900,
@@ -94,10 +114,10 @@ class PickupConfirmationScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.grey.shade100, width: 2)),
-            // 🚀 PERBAIKAN: Gunakan CustomNetworkImage untuk QR Code
-            child: const CustomNetworkImage(
+            // 🚀 PERBAIKAN: Gunakan CustomNetworkImage untuk QR Code dinamis
+            child: CustomNetworkImage(
               imageUrl:
-                  'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=GDN-8829',
+                  'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$pickupCode',
               width: 160,
               height: 160,
               fit: BoxFit.contain, // Agar QR tidak terdistorsi
@@ -112,7 +132,7 @@ class PickupConfirmationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildItemListHeader(Color primary) {
+  Widget _buildItemListHeader(Color primary, int itemCount) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -127,7 +147,7 @@ class PickupConfirmationScreen extends StatelessWidget {
           decoration: BoxDecoration(
               color: primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(99)),
-          child: Text('2 ITEM',
+          child: Text('$itemCount ITEM',
               style: TextStyle(
                   color: primary, fontSize: 10, fontWeight: FontWeight.bold)),
         ),
@@ -135,28 +155,26 @@ class PickupConfirmationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsList(Color primary, Color variant) {
+  Widget _buildItemsList(Color primary, Color variant, List<OrderItemModel> items) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.shade200)),
       child: Column(
-        children: [
-          _buildItemRow(
-              'Tenda Eiger 4P',
-              'Kapasitas 4 Orang • Waterproof',
-              '1x',
-              'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
-              primary),
-          const Divider(height: 1),
-          _buildItemRow(
-              'Tas Carrier 60L',
-              'Ergonomic Backsystem',
-              '1x',
-              'https://images.unsplash.com/photo-1551632811-561732d1e306',
-              primary),
-        ],
+        children: items.map((item) {
+          return Column(
+            children: [
+              _buildItemRow(
+                  item.productName,
+                  'Rp ${item.unitPrice.toStringAsFixed(0)}',
+                  '${item.quantity}x',
+                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4', // Default image or from item if available
+                  primary),
+              if (item != items.last) const Divider(height: 1),
+            ],
+          );
+        }).toList(),
       ),
     );
   }

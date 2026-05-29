@@ -189,6 +189,8 @@ class OrderDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildPaymentDetail(OrderModel order) {
+    final int durationDays = order.rentalEndDate.difference(order.rentalStartDate).inDays + 1;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -202,6 +204,7 @@ class OrderDetailScreen extends ConsumerWidget {
           const Text('Rincian Pembayaran',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
+          _buildPriceRow('Durasi Sewa', '$durationDays Hari'),
           _buildPriceRow('Subtotal Sewa', 'Rp ${order.rentalCost.toStringAsFixed(0)}'),
           _buildPriceRow('Biaya Layanan', 'Rp ${order.platformServiceFee.toStringAsFixed(0)}'),
           _buildPriceRow('Biaya Pengantaran', 'Rp ${order.deliveryCost.toStringAsFixed(0)}'),
@@ -253,7 +256,7 @@ class OrderDetailScreen extends ConsumerWidget {
         border: Border(top: BorderSide(color: Colors.grey.shade200)),
       ),
       child: ElevatedButton(
-        onPressed: () => Navigator.pushNamed(context, '/pickup-confirmation', arguments: orderId),
+        onPressed: () => Navigator.pushNamed(context, '/tracking-order', arguments: orderId),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           minimumSize: const Size(double.infinity, 56),
@@ -261,7 +264,7 @@ class OrderDetailScreen extends ConsumerWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
         ),
         child: const Text(
-          'Konfirmasi Pengambilan',
+          'Lacak Pesanan',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),

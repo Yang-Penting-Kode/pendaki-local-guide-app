@@ -10,6 +10,10 @@ import 'package:pendaki_local_guide_app/components/modals/delivery_proof_modal.d
 import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
 import 'package:pendaki_local_guide_app/widgets/primary_button.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
+
+
 // START REPLACE
 /// Enum status tahapan tracking pengiriman.
 enum TrackingStatus { completed, current, pending }
@@ -32,45 +36,49 @@ class TrackingStageModel {
 }
 // END REPLACE
 
-class TrackingOrderScreen extends StatefulWidget {
+
+class TrackingOrderScreen extends ConsumerWidget {
   const TrackingOrderScreen({super.key});
 
   @override
-  State<TrackingOrderScreen> createState() => _TrackingOrderScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderId = ModalRoute.of(context)?.settings.arguments as String?;
+    if (orderId == null) {
+      return const Scaffold(body: Center(child: Text('ID Pesanan tidak valid')));
+    }
 
-class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
-  // Mockup daftar linimasa status pelacakan pengiriman barang
-  final List<TrackingStageModel> _stages = [
-    TrackingStageModel(
-      title: 'Pesanan Diterima',
-      timeAndDesc: '10:30 WIB - Sistem telah memverifikasi pesanan Anda.',
-      status: TrackingStatus.completed,
-    ),
-    TrackingStageModel(
-      title: 'Alat Sedang Disiapkan',
-      timeAndDesc: '11:15 WIB - Tim logistik mengemas perlengkapan ekspedisi.',
-      status: TrackingStatus.completed,
-      hasProof: true,
-      proofImageUrl:
-          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
-    ),
-    TrackingStageModel(
-      title: 'Dalam Pengantaran',
-      timeAndDesc: '13:45 WIB - Kurir menuju lokasi pengiriman Anda.',
-      status: TrackingStatus.current,
-    ),
-    TrackingStageModel(
-      title: 'Tiba di Lokasi',
-      timeAndDesc: 'Estimasi kedatangan: 14:30 WIB.',
-      status: TrackingStatus.pending,
-    ),
-  ];
+    final ordersAsync = ref.watch(orderProvider);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+    return ordersAsync.when(
+      data: (orders) {
+        final order = orders.firstWhere((o) => o.id == orderId, orElse: () => throw Exception('Order not found'));
+        
+        final List<TrackingStageModel> stages = [
+          const TrackingStageModel(
+            title: 'Pesanan Diterima',
+            timeAndDesc: '10:30 WIB - Sistem telah memverifikasi pesanan Anda.',
+            status: TrackingStatus.completed,
+          ),
+          const TrackingStageModel(
+            title: 'Alat Sedang Disiapkan',
+            timeAndDesc: '11:15 WIB - Tim logistik mengemas perlengkapan ekspedisi.',
+            status: TrackingStatus.completed,
+            hasProof: true,
+            proofImageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+          ),
+          const TrackingStageModel(
+            title: 'Dalam Pengantaran',
+            timeAndDesc: '13:45 WIB - Kurir menuju lokasi pengiriman Anda.',
+            status: TrackingStatus.current,
+          ),
+          const TrackingStageModel(
+            title: 'Tiba di Lokasi',
+            timeAndDesc: 'Estimasi kedatangan: 14:30 WIB.',
+            status: TrackingStatus.pending,
+          ),
+        ];
+        return Scaffold(
+          backgroundColor: const Color(0xFFF9F9F9),
       appBar: _buildAppBar(context),
       body: SafeArea(
         child: Stack(
@@ -83,19 +91,23 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildScreenHeader(),
-                    const SizedBox(height: 40),
-                    _buildVerticalTimeline(),
+                      _buildScreenHeader(order.id),
+                      const SizedBox(height: 40),
+                      _buildVerticalTimeline(context, stages),
                   ],
                 ),
               ),
             ),
 
-            // Kartu Informasi Profil Kurir (Fixed Sticky Bottom)
-            _buildStickyCourierCard(),
-          ],
+              // Kartu Informasi Profil Kurir (Fixed Sticky Bottom)
+              _buildStickyCourierCard(context, order.id),
+            ],
+          ),
         ),
-      ),
+      );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
     );
   }
 
@@ -127,11 +139,12 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
     );
   }
 
-  Widget _buildScreenHeader() {
-    return const Center(
+  Widget _buildScreenHeader(String orderId) {
+    final displayId = orderId.length > 8 ? '#${orderId.substring(0, 8).toUpperCase()}' : '#$orderId';
+    return Center(
       child: Column(
         children: [
-          Text(
+          const Text(
             'Pesanan',
             style: TextStyle(
                 fontSize: 28,
@@ -139,10 +152,10 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
                 color: Colors.black,
                 letterSpacing: -0.5),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
-            'ID: #TRX-89247-ALP',
-            style: TextStyle(
+            'ID: $displayId',
+            style: const TextStyle(
                 color: Color(0xFF3E4942),
                 fontSize: 15,
                 fontWeight: FontWeight.w500),
@@ -152,7 +165,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
     );
   }
 
-  Widget _buildVerticalTimeline() {
+  Widget _buildVerticalTimeline(BuildContext context, List<TrackingStageModel> stages) {
     return Stack(
       children: [
         Positioned(
@@ -174,8 +187,8 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
           ),
         ),
         Column(
-          children: List.generate(_stages.length, (index) {
-            final stage = _stages[index];
+          children: List.generate(stages.length, (index) {
+            final stage = stages[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 36),
               child: Row(
@@ -231,7 +244,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
                                       color: AppColors.primary, size: 16),
                                   const SizedBox(width: 6),
                                   Text(
-                                    'Lihat Bukti Pengantaran',
+                                    'Lihat Bukti',
                                     style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.bold,
@@ -297,7 +310,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
     }
   }
 
-  Widget _buildStickyCourierCard() {
+  Widget _buildStickyCourierCard(BuildContext context, String orderId) {
     return Positioned(
       bottom: 0,
       left: 0,
@@ -374,9 +387,9 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
 
             // 🚀 REFAKTOR BUTTON: Memakai PrimaryButton kustom Abang agar baris kodingan ramping & rapi
             PrimaryButton(
-              text: 'Lihat Koordinat Tujuan',
+              text: 'Konfirmasi Pengambilan Alat',
               onTap: () {
-                // Jalankan logika maps dev nanti disini
+                Navigator.pushNamed(context, '/pickup-confirmation', arguments: orderId);
               },
             ),
           ],

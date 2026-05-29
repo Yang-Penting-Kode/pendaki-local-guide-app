@@ -182,7 +182,7 @@ class TransactionSuccessScreen extends ConsumerWidget {
                     height: 50,
                     child: OutlinedButton(
                       onPressed: () =>
-                          Navigator.pushNamed(context, '/order-detail'),
+                          Navigator.pushNamed(context, '/order-detail', arguments: orderId),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: primaryColor,
                         side: const BorderSide(color: primaryColor),

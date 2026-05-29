@@ -79,7 +79,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Daftar Akun Rental'),
+        title: const Text('Daftar Akun Pengguna'),
       ),
       body: Stack(
         children: [
