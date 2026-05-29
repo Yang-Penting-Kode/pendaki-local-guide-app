@@ -64,16 +64,22 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
     required UserModel currentUser,
     required DateTime rentalStart,
     required DateTime rentalEnd,
+    required Decimal deliveryCost, // 🚀 Injeksi Biaya Ongkir
   }) async {
     // Ambil item keranjang dari cartProvider
     final cartItems = ref.read(cartProvider);
     if (cartItems.isEmpty) return null;
 
+    // Hitung Durasi (Tanggal Kembali - Tanggal Sewa + 1)
+    final durationDays = rentalEnd.difference(rentalStart).inDays + 1;
+
     // Kalkulasi semua biaya menggunakan Decimal (tanpa double!)
-    final rentalCost = cartItems.fold(
+    // Base daily cost * durationDays
+    final dailyCost = cartItems.fold(
       Decimal.zero,
       (sum, item) => sum + item.subtotal,
     );
+    final rentalCost = dailyCost * Decimal.fromInt(durationDays);
 
     // Skema Flat Fee: Biaya Admin Rp 5.000 per transaksi
     final platformFee = Decimal.parse('5000');
@@ -81,8 +87,8 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
     // Deposit dihapus sesuai aturan bisnis baru
     final depositCost = Decimal.zero;
 
-    // Total gross = Total Cart (sudah include markup Rp 1.000/item) + Admin Fee
-    final totalGrossPrice = rentalCost + platformFee;
+    // Total gross = Total Cart + Admin Fee + Delivery Cost (Ongkir)
+    final totalGrossPrice = rentalCost + platformFee + deliveryCost; // 🚀 Kalkulasi ulang
     
     // Net earnings (hanya untuk referensi internal, diabaikan di UI consumer)
     // Sebenarnya net earnings harus dikurangi markup per item, tapi demi kesederhanaan model:
@@ -104,6 +110,7 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
       rentalCost: rentalCost,
       depositCost: depositCost,
       platformServiceFee: platformFee,
+      deliveryCost: deliveryCost, // 🚀 Masukkan Delivery Cost ke Model
       netEarnings: netEarnings,
       items: cartItems, // Langsung dari cart — single source of truth
       createdAt: DateTime.now(),

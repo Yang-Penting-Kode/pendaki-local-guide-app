@@ -13,6 +13,7 @@
 // ⚠️ WAJIB: if (!mounted) return; setelah setiap await.
 // =============================================================================
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -81,9 +82,18 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
     final cartItems = ref.watch(cartProvider);
     final cartTotal = ref.watch(cartTotalProvider);
 
+    // 🚀 Tangkap operan dari CheckoutScreen
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final String? simaksiPath = args?['simaksiPath'];
+    final Decimal deliveryCost = args?['deliveryCost'] as Decimal? ?? Decimal.zero;
+    final int durationDays = args?['durationDays'] as int? ?? 1; // 🚀
+    final DateTime rentalStart = args?['rentalStart'] as DateTime? ?? DateTime.now(); // 🚀
+    final DateTime rentalEnd = args?['rentalEnd'] as DateTime? ?? DateTime.now().add(const Duration(days: 1)); // 🚀
+
     // Kalkulasi biaya admin flat
     final adminFee = Decimal.parse('5000');
-    final grandTotal = cartTotal + adminFee;
+    final rentalCost = cartTotal * Decimal.fromInt(durationDays); // 🚀 Rental calculation
+    final grandTotal = rentalCost + adminFee + deliveryCost; // 🚀 Injeksi Ongkir & Rental
 
     // Item pertama untuk display card
     final firstItem = cartItems.isNotEmpty ? cartItems.first : null;
@@ -104,16 +114,53 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                 fontSize: 18)),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 32), // 🚀 HOTFIX: Padding disesuaikan
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Order Card — 🔌 Injeksi: Dari cartProvider
-            _buildOrderCard(
-                firstItem?.productName ?? 'Pesanan Sewa',
-                cartTotal,
-                primaryColor,
-                onSurfaceVariant),
+            // 1. Daftar Alat Disewa — Diambil dari CheckoutScreen
+            const _SectionTitle(title: 'DAFTAR ALAT DISEWA'),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                children: cartItems.map((item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(width: 56, height: 56, color: Colors.grey.shade200, child: const Icon(Icons.broken_image, color: Colors.grey, size: 24)),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item.productName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 4),
+                            Text('${item.quantity} Unit x Rp ${item.unitPrice.toStringAsFixed(0)}', style: TextStyle(color: onSurfaceVariant, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                      Text('Rp ${(item.unitPrice * Decimal.fromInt(item.quantity) * Decimal.fromInt(durationDays)).toStringAsFixed(0)}', style: const TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12)),
+                    ],
+                  ),
+                )).toList(),
+              ),
+            ),
             const SizedBox(height: 24),
 
             // 2. Preview Tiket (Dipertahankan)
@@ -137,21 +184,34 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                     child: const Icon(Icons.description, color: primaryColor),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Simaksi_Pendakian.pdf',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14)),
-                        Text('Terunggah',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12)),
+                        Text(simaksiPath != null ? simaksiPath.split('/').last : 'Belum Terlampir',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(simaksiPath != null ? 'Terunggah' : 'File Hilang',
+                            style: const TextStyle(color: Colors.grey, fontSize: 12)),
                       ],
                     ),
                   ),
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if (simaksiPath != null) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => Dialog(
+                              backgroundColor: Colors.transparent,
+                              insetPadding: const EdgeInsets.all(16),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.file(File(simaksiPath), fit: BoxFit.contain),
+                              ),
+                            ),
+                          );
+                        }
+                      },
                       child: const Text('Lihat',
                           style: TextStyle(
                               color: primaryColor,
@@ -194,7 +254,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                       decoration: BoxDecoration(
                           color: primaryColor.withOpacity(0.1),
                           shape: BoxShape.circle),
-                      child: Icon(Icons.account_balance_wallet,
+                      child: const Icon(Icons.account_balance_wallet,
                           color: primaryColor, size: 20),
                     ),
                     const SizedBox(width: 16),
@@ -217,15 +277,16 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
               ),
             ),
             const SizedBox(height: 32),
-
+            const _SectionTitle(title: 'RINCIAN BIAYA'),
+            const SizedBox(height: 12),
             // 6. Price Breakdown — 🔌 Injeksi: Dari cartTotalProvider
-            _buildPriceBreakdown(cartTotal, adminFee, grandTotal, primaryColor,
-                onSurfaceVariant),
+            _buildPriceBreakdown(rentalCost, adminFee, deliveryCost, grandTotal, primaryColor,
+                onSurfaceVariant, durationDays),
           ],
         ),
       ),
       // 🔥 CRITICAL: Sticky footer dengan createOrder()
-      bottomSheet: _buildStickyFooter(primaryColor, grandTotal),
+      bottomNavigationBar: _buildStickyFooter(primaryColor, grandTotal, deliveryCost, rentalStart, rentalEnd),
     );
   }
 
@@ -355,19 +416,24 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
     );
   }
 
-  Widget _buildPriceBreakdown(Decimal cartTotal, Decimal adminFee,
-      Decimal grandTotal, Color primary, Color variant) {
+  Widget _buildPriceBreakdown(Decimal rentalCost, Decimal adminFee,
+      Decimal deliveryCost, Decimal grandTotal, Color primary, Color variant, int durationDays) {
     return Column(
       children: [
         // 🔌 Injeksi: Harga sewa dari cartTotalProvider
         _PriceRow(
-            label: 'Harga Sewa',
-            value: 'Rp ${cartTotal.toStringAsFixed(0)}'),
+            label: 'Harga Sewa ($durationDays Hari)',
+            value: 'Rp ${rentalCost.toStringAsFixed(0)}'),
         const SizedBox(height: 8),
         // Biaya Admin flat Rp 5.000
         _PriceRow(
             label: 'Biaya Admin',
             value: 'Rp ${adminFee.toStringAsFixed(0)}'),
+        const SizedBox(height: 8),
+        // 🚀 Biaya Pengantaran
+        _PriceRow(
+            label: 'Biaya Pengantaran',
+            value: 'Rp ${deliveryCost.toStringAsFixed(0)}'),
         const Divider(height: 32),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -388,7 +454,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
   }
 
   // 🔥 CRITICAL: Footer dengan createOrder() logic
-  Widget _buildStickyFooter(Color primary, Decimal grandTotal) {
+  Widget _buildStickyFooter(Color primary, Decimal grandTotal, Decimal deliveryCost, DateTime rentalStart, DateTime rentalEnd) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -444,9 +510,9 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                               .read(orderProvider.notifier)
                               .createOrder(
                                 currentUser: currentUser,
-                                rentalStart: DateTime.now(),
-                                rentalEnd: DateTime.now()
-                                    .add(const Duration(days: 2)),
+                                rentalStart: rentalStart, // 🚀 Dari date picker checkout
+                                rentalEnd: rentalEnd, // 🚀 Dari date picker checkout
+                                deliveryCost: deliveryCost, // 🚀 SOLVED THE ERROR
                               );
 
                           // ⚠️ WAJIB: Cek mounted setelah async gap

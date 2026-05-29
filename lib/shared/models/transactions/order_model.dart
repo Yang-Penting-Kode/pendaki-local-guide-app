@@ -22,6 +22,7 @@ class OrderModel {
   final Decimal rentalCost;
   final Decimal depositCost;
   final Decimal platformServiceFee;
+  final Decimal deliveryCost; // 🚀 Injeksi Delivery Cost
   final Decimal netEarnings;
   final List<OrderItemModel> items;
   final DateTime createdAt;
@@ -40,6 +41,7 @@ class OrderModel {
     required this.rentalCost,
     required this.depositCost,
     required this.platformServiceFee,
+    required this.deliveryCost, // 🚀
     required this.netEarnings,
     required this.items,
     required this.createdAt,
@@ -66,6 +68,7 @@ class OrderModel {
       depositCost: Decimal.parse(json['deposit_cost']?.toString() ?? '0'),
       platformServiceFee:
           Decimal.parse(json['platform_service_fee']?.toString() ?? '0'),
+      deliveryCost: Decimal.parse(json['delivery_cost']?.toString() ?? '0'), // 🚀
       netEarnings: Decimal.parse(json['net_earnings']?.toString() ?? '0'),
       items: (json['items'] as List<dynamic>?)
               ?.map((e) =>
@@ -95,6 +98,7 @@ class OrderModel {
       'rental_cost': rentalCost.toString(),
       'deposit_cost': depositCost.toString(),
       'platform_service_fee': platformServiceFee.toString(),
+      'delivery_cost': deliveryCost.toString(), // 🚀
       'net_earnings': netEarnings.toString(),
       'items': items.map((e) => e.toJson()).toList(),
       'created_at': createdAt.toIso8601String(),
@@ -115,6 +119,7 @@ class OrderModel {
     Decimal? rentalCost,
     Decimal? depositCost,
     Decimal? platformServiceFee,
+    Decimal? deliveryCost, // 🚀
     Decimal? netEarnings,
     List<OrderItemModel>? items,
     DateTime? createdAt,
@@ -133,6 +138,7 @@ class OrderModel {
       rentalCost: rentalCost ?? this.rentalCost,
       depositCost: depositCost ?? this.depositCost,
       platformServiceFee: platformServiceFee ?? this.platformServiceFee,
+      deliveryCost: deliveryCost ?? this.deliveryCost, // 🚀
       netEarnings: netEarnings ?? this.netEarnings,
       items: items ?? this.items,
       createdAt: createdAt ?? this.createdAt,

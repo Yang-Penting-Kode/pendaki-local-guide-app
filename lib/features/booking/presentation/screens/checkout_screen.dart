@@ -9,8 +9,10 @@
 // ⚠️ WAJIB: userAgentPackageName di TileLayer agar tidak 403 Forbidden.
 // =============================================================================
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,22 +28,79 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   // Ephemeral state — tetap local, bukan bagian dari business logic
   DateTime _selectedDate = DateTime.now();
-  String _selectedDuration = '2 Hari';
-  int _unitCount = 1;
-  final TextEditingController _notesController = TextEditingController();
+  DateTime _selectedEndDate = DateTime.now().add(const Duration(days: 1)); // 🚀
+  int get durationDays => _selectedEndDate.difference(_selectedDate).inDays + 1; // 🚀
 
-  final List<String> _durations = [
-    '1 Hari',
-    '2 Hari',
-    '3 Hari',
-    '4 Hari',
-    '5 Hari'
-  ];
+  File? _simaksiFile; // 🚀 Simaksi Upload State
+  final TextEditingController _notesController = TextEditingController();
 
   @override
   void dispose() {
     _notesController.dispose();
     super.dispose();
+  }
+
+  // 🚀 Logic untuk DateRangePicker (Sewa & Kembali)
+  Future<void> _pickDateRange() async {
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 60)),
+      initialDateRange: DateTimeRange(start: _selectedDate, end: _selectedEndDate),
+      builder: (context, child) => Theme(
+        data: ThemeData.light().copyWith(
+          colorScheme: const ColorScheme.light(primary: Color(0xFF005F3F)),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked.start;
+        _selectedEndDate = picked.end;
+      });
+    }
+  }
+
+  // 🚀 Logic untuk unggah Simaksi
+  Future<void> _pickSimaksi() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() => _simaksiFile = File(pickedFile.path));
+    }
+  }
+
+  // 🚀 Logic modal info ongkir
+  void _showOngkirInfoModal() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Informasi Ongkos Kirim', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 16),
+            const Text('Ongkir dihitung berdasarkan jarak dari mitra ke basecamp dan jenis armada (kuantitas unit alat).'),
+            const SizedBox(height: 12),
+            const Text('• 1 - 4 Unit: Motor (Rp 20.000)'),
+            const Text('• Lebih dari 4 Unit: Mobil (Rp 50.000)'),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF005F3F), foregroundColor: Colors.white),
+                child: const Text('Mengerti'),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -53,10 +112,16 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     // 🔌 Injeksi: Total sewa dari cartProvider (sudah include markup Rp 1.000/item)
     final cartTotal = ref.watch(cartTotalProvider);
     final cartItems = ref.watch(cartProvider);
+    final totalQty = ref.watch(cartTotalQtyProvider); // 🚀 Injeksi Quantity Provider
 
-    // Hitung grand total: cart total + biaya admin flat Rp 5.000
+    // Hitung grand total
     final adminFee = Decimal.parse('5000');
-    final grandTotal = cartTotal + adminFee;
+    final deliveryCost = totalQty > 4 ? Decimal.parse('50000') : Decimal.parse('20000'); // 🚀 Logic Ongkir
+    final rentalCost = cartTotal * Decimal.fromInt(durationDays); // 🚀 Injeksi kalkulasi durasi
+    final grandTotal = rentalCost + adminFee + deliveryCost; // 🚀 Update Grand Total dengan rentalCost
+
+    // 🚀 Dinamisasi Basecamp (Mock sebelum Integrasi penuh)
+    final String selectedBasecamp = 'Gunung Gede - Jalur Cibodas';
 
     // Ambil item pertama untuk ditampilkan di Product Summary Card
     final firstItem = cartItems.isNotEmpty ? cartItems.first : null;
@@ -90,81 +155,68 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: Column(
           children: [
             // 2. Product Summary Card — 🔌 Injeksi: item pertama dari cartProvider
+            // 2. Daftar Alat Disewa — 🔌 Injeksi: List item dari cartProvider
             _buildSection(
-              child: firstItem == null
+              title: 'Daftar Alat Disewa',
+              child: cartItems.isEmpty
                   ? const Center(
                       child: Text('Keranjang kosong.',
                           style: TextStyle(color: Colors.grey)))
-                  : Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
-                            width: 96,
-                            height: 96,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              width: 96,
-                              height: 96,
-                              color: Colors.grey.shade200,
-                              child: const Center(
-                                child: Icon(Icons.broken_image,
-                                    color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // 🔌 Injeksi: Nama item dari cartProvider
-                              Text(
-                                cartItems.length == 1
-                                    ? firstItem.productName
-                                    : '${firstItem.productName} & ${cartItems.length - 1} item lainnya',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 16),
-                              ),
-                              // 🔌 Injeksi: Harga dari unitPrice (Decimal → String)
-                              RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                      color: primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                  children: [
-                                    TextSpan(
-                                        text:
-                                            'Rp ${firstItem.unitPrice.toStringAsFixed(0)}'),
-                                    const TextSpan(
-                                        text: '/hari',
-                                        style: TextStyle(
-                                            color: onSurfaceVariant,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.normal)),
-                                  ],
+                  : Column(
+                      children: cartItems.map((item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
+                                width: 64,
+                                height: 64,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                  width: 64,
+                                  height: 64,
+                                  color: Colors.grey.shade200,
+                                  child: const Center(
+                                    child: Icon(Icons.broken_image,
+                                        color: Colors.grey),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              const Row(
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.location_on,
-                                      size: 16, color: onSurfaceVariant),
-                                  SizedBox(width: 4),
-                                  Text('1.2 km dari lokasimu',
-                                      style: TextStyle(
-                                          color: onSurfaceVariant,
-                                          fontSize: 13)),
+                                  Text(
+                                    item.productName,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600, fontSize: 14),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${item.quantity} Unit x Rp ${item.unitPrice.toStringAsFixed(0)}',
+                                    style: TextStyle(
+                                        color: onSurfaceVariant,
+                                        fontSize: 12),
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                            Text(
+                              'Rp ${item.subtotal.toStringAsFixed(0)}',
+                              style: const TextStyle(
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
-                      ],
+                      )).toList(),
                     ),
             ),
 
@@ -179,19 +231,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         child: _buildFieldLabel(
                           'Tanggal Sewa',
                           child: InkWell(
-                            onTap: () async {
-                              final picked = await showDatePicker(
-                                context: context,
-                                initialDate: _selectedDate,
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now()
-                                    .add(const Duration(days: 60)),
-                              );
-                              if (picked != null) {
-                                setState(() => _selectedDate = picked);
-                              }
-                            },
+                            onTap: _pickDateRange,
                             child: Container(
+                              width: double.infinity,
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
                               decoration: BoxDecoration(
@@ -208,25 +250,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildFieldLabel(
-                          'Durasi Sewa',
-                          child: Container(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE2E2E2).withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: _selectedDuration,
-                                isExpanded: true,
-                                items: _durations
-                                    .map((d) => DropdownMenuItem(
-                                        value: d, child: Text(d)))
-                                    .toList(),
-                                onChanged: (val) => setState(
-                                    () => _selectedDuration = val!),
+                          'Tgl Kembali',
+                          child: InkWell(
+                            onTap: _pickDateRange,
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color:
+                                    const Color(0xFFE2E2E2).withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(16),
                               ),
+                              child: Text(
+                                  '${_selectedEndDate.day}/${_selectedEndDate.month}/${_selectedEndDate.year}'),
                             ),
                           ),
                         ),
@@ -234,34 +271,52 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  _buildFieldLabel(
-                    'Jumlah Unit',
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE2E2E2).withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(99),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildCounterBtn(
-                              Icons.remove,
-                              () => setState(() =>
-                                  _unitCount > 1 ? _unitCount-- : null)),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text('$_unitCount Unit',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600)),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildFieldLabel(
+                          'Durasi Sewa',
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE2E2E2).withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('$durationDays Hari',
+                                      style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.grey)),
+                                const Icon(Icons.lock, color: Colors.grey, size: 16)
+                              ],
+                            ),
                           ),
-                          _buildCounterBtn(Icons.add,
-                              () => setState(() => _unitCount++),
-                              isPrimary: true),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildFieldLabel(
+                          'Jumlah Unit',
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE2E2E2).withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('$totalQty Unit', // 🚀 Kuantitas disinkron & dikunci
+                                      style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.grey)),
+                                const Icon(Icons.lock, color: Colors.grey, size: 16)
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -270,34 +325,55 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             // 4. Document Upload Section — Dipertahankan
             _buildSection(
               title: 'Dokumen Pendukung',
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 32),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    const Icon(Icons.cloud_upload,
-                        color: primaryContainer, size: 48),
-                    const SizedBox(height: 12),
-                    const Text('Unggah Tiket Pendakian (Simaksi)',
-                        style: TextStyle(fontWeight: FontWeight.w600)),
-                    Text('Format JPG, PNG, atau PDF (Maks 5MB)',
-                        style: TextStyle(
-                            color: onSurfaceVariant, fontSize: 12)),
-                  ],
+              child: GestureDetector(
+                onTap: _pickSimaksi, // 🚀 Aksi Upload
+                child: Container(
+                  width: double.infinity,
+                  padding: _simaksiFile != null ? EdgeInsets.zero : const EdgeInsets.symmetric(vertical: 32),
+                  decoration: BoxDecoration(
+                    color: _simaksiFile != null ? Colors.transparent : Colors.white,
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: _simaksiFile != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.file(_simaksiFile!, height: 180, width: double.infinity, fit: BoxFit.cover),
+                        )
+                      : const Column(
+                          children: [
+                            Icon(Icons.cloud_upload,
+                                color: primaryContainer, size: 48),
+                            SizedBox(height: 12),
+                            Text('Unggah Tiket Pendakian (Simaksi)',
+                                style: TextStyle(fontWeight: FontWeight.w600)),
+                            Text('Format JPG, PNG, atau PDF (Maks 5MB)',
+                                style: TextStyle(
+                                    color: onSurfaceVariant, fontSize: 12)),
+                          ],
+                        ),
                 ),
               ),
             ),
 
             // 5. Map — ⚠️ WAJIB userAgentPackageName agar tidak 403 Forbidden
+            // 5. Map & Transport
             _buildSection(
-              title: 'Lokasi Pengiriman & Basecamp',
+              title: null, // Custom title logic below
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Lokasi Pengiriman & Basecamp', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      IconButton(
+                        icon: const Icon(Icons.info_outline, color: primaryColor),
+                        onPressed: _showOngkirInfoModal,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   Container(
                     height: 192,
                     decoration: BoxDecoration(
@@ -315,7 +391,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           TileLayer(
                             urlTemplate:
                                 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            // ⚠️ WAJIB — Tanpa ini map akan 403 Forbidden
                             userAgentPackageName: 'com.localguide.app',
                           ),
                           CircleLayer(circles: [
@@ -331,8 +406,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           const MarkerLayer(markers: [
                             Marker(
                               point: LatLng(-7.7000, 112.6333),
-                              child: Icon(Icons.location_on,
-                                  color: Colors.red, size: 36),
+                              child: Icon(Icons.location_on, color: Colors.red, size: 36),
                             ),
                           ]),
                         ],
@@ -340,9 +414,35 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Peralatan akan dikirimkan ke titik kumpul basecamp dalam radius layanan.',
-                    style: TextStyle(fontSize: 12, color: onSurfaceVariant),
+                  Text(
+                    'Peralatan akan dikirimkan ke $selectedBasecamp.',
+                    style: const TextStyle(fontSize: 12, color: onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 16),
+                  // 🚀 Injeksi Card Transportasi
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: primaryContainer.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: primaryContainer.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(totalQty > 4 ? Icons.directions_car : Icons.motorcycle, color: primaryContainer),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(totalQty > 4 ? 'Armada Mobil' : 'Armada Motor', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text('Estimasi biaya pengantaran ke $selectedBasecamp', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                            ],
+                          ),
+                        ),
+                        Text('Rp ${deliveryCost.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, color: primaryContainer)),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -374,16 +474,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
               child: Column(
                 children: [
-                  // 🔌 Injeksi: Harga Sewa dari cartTotalProvider
+                  // 🔌 Injeksi: Harga Sewa berdasar durasi
                   _PriceDetailRow(
-                      label: 'Harga Sewa (termasuk markup)',
-                      value: 'Rp ${cartTotal.toStringAsFixed(0)}'),
+                      label: 'Harga Sewa ($durationDays Hari)',
+                      value: 'Rp ${rentalCost.toStringAsFixed(0)}'),
                   const SizedBox(height: 12),
                   // Biaya Admin flat Rp 5.000
                   const _PriceDetailRow(
                       label: 'Biaya Admin', value: 'Rp 5.000'),
+                  const SizedBox(height: 12),
+                  // 🚀 Injeksi Delivery Cost
+                  _PriceDetailRow(
+                      label: 'Biaya Pengantaran', value: 'Rp ${deliveryCost.toStringAsFixed(0)}'),
                   const Divider(height: 32, color: primaryColor),
-                  // 🔌 Injeksi: Grand Total = cartTotal + adminFee
+                  // 🔌 Injeksi: Grand Total = cartTotal + adminFee + deliveryCost
                   _PriceDetailRow(
                       label: 'Total Biaya',
                       value: 'Rp ${grandTotal.toStringAsFixed(0)}',
@@ -402,7 +506,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           border: Border(top: BorderSide(color: Colors.grey.shade100)),
         ),
         child: ElevatedButton(
-          onPressed: () => Navigator.pushNamed(context, '/order-summary'),
+          onPressed: () {
+            // 🚀 Validasi Simaksi sebelum lanjut
+            if (_simaksiFile == null) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tolong unggah tiket pendakian (Simaksi) terlebih dahulu.'), backgroundColor: Colors.red));
+              return;
+            }
+            // 🚀 Oper Argument
+            Navigator.pushNamed(context, '/order-summary', arguments: {
+              'simaksiPath': _simaksiFile!.path,
+              'deliveryCost': deliveryCost,
+              'durationDays': durationDays,
+              'rentalStart': _selectedDate,
+              'rentalEnd': _selectedEndDate,
+            });
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
             foregroundColor: Colors.white,
