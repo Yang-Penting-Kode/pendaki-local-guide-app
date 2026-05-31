@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
-import '../../widgets/custom_image.dart'; // 🚀 Anti-lemot image loader
+import '../../../../widgets/custom_image.dart'; // 🚀 Anti-lemot image loader
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});

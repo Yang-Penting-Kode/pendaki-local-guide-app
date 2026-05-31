@@ -63,6 +63,26 @@ class StorageService {
     return _prefs?.getString(_registeredPasswordKey);
   }
 
+  static const String _wishlistKey = 'wishlist_ids';
+
+  static List<String> getWishlist() => _prefs?.getStringList(_wishlistKey) ?? [];
+
+  static Future<void> setWishlist(List<String> ids) async => await _prefs?.setStringList(_wishlistKey, ids);
+
+// START REPLACE
+  static Future<bool> toggleWishlist(String productId) async {
+    final list = getWishlist();
+    final isExist = list.contains(productId);
+    if (isExist) {
+      list.remove(productId);
+    } else {
+      list.add(productId);
+    }
+    await setWishlist(list);
+    return !isExist; // return true jika ditambah, false jika dihapus
+  }
+// END REPLACE
+
   static Future<void> clearAuthData() async {
     await _prefs?.remove(_authTokenKey);
     await _prefs?.remove(_isFirstTimeKey);

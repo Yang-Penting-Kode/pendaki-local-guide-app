@@ -12,6 +12,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui'; // ⚠️ WAJIB untuk BackdropFilter (glassmorphism footer)
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/cart_provider.dart';
 import 'package:pendaki_local_guide_app/shared/models/catalog/product_model.dart';
 import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
@@ -28,6 +29,27 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   bool _isWishlisted = false;
+
+// START REPLACE
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      String productId = '';
+      if (args is ProductModel) {
+        productId = args.id;
+      } else if (args is Map) {
+        productId = args['id']?.toString() ?? args['name']?.toString() ?? '';
+      }
+      if (productId.isNotEmpty) {
+        setState(() {
+          _isWishlisted = StorageService.getWishlist().contains(productId);
+        });
+      }
+    });
+  }
+// END REPLACE
 
   // Gambar fallback — dipakai kalau product.imageUrl kosong
   final List<String> _fallbackImages = [
@@ -83,7 +105,27 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           IconButton(
             icon: Icon(_isWishlisted ? Icons.favorite : Icons.favorite_border,
                 color: _isWishlisted ? Colors.red : Colors.grey),
-            onPressed: () => setState(() => _isWishlisted = !_isWishlisted),
+            onPressed: () async {
+              final args = ModalRoute.of(context)?.settings.arguments;
+              String productId = '';
+              if (args is ProductModel) {
+                productId = args.id;
+              } else if (args is Map) {
+                productId = args['id']?.toString() ?? args['name']?.toString() ?? '';
+              }
+              if (productId.isNotEmpty) {
+                final newValue = await StorageService.toggleWishlist(productId);
+                setState(() {
+                  _isWishlisted = newValue;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(newValue ? 'Ditambahkan ke Wishlist' : 'Dihapus dari Wishlist'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              }
+            },
           ),
           const SizedBox(width: 8),
         ],
