@@ -1,17 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart'; // 🚀 Import Lottie
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/local_storage/storage_services.dart'; // 🚀 Import StorageService
 import '../../../../widgets/custom_label.dart';
 import '../../../../widgets/custom_text_field.dart';
 import '../../../../widgets/primary_button.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final emailController = TextEditingController();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
 
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  // 🚀 Pindahkan controller ke State class agar tidak hilang saat rebuild
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  // --- INTERAKSI INTERAKTIF: Logic Validasi Email + Banner ---
+  // START REPLACE
+  void _handleSendInstruction() {
+    final inputEmail = _emailController.text.trim().toLowerCase();
+    final registeredEmail = StorageService.getRegisteredEmail();
+
+    // Validasi 1: Email kosong
+    if (inputEmail.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Masukkan email Anda terlebih dahulu'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+
+    // Validasi 2: Email tidak terdaftar di Mock DB
+    if (inputEmail != registeredEmail) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Email tidak terdaftar di sistem!'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+
+    // ✅ Email cocok — tampilkan MaterialBanner simulasi
+    ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        elevation: 0,
+        backgroundColor: AppColors.primary, // Hijau brand
+        content: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Silahkan cek akun gmail kamu!',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              Navigator.pushNamed(context, '/reset-password');
+            },
+            child: const Text(
+              'SIMULASI LINK',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.white),
+            onPressed: () =>
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
+          ),
+        ],
+      ),
+    );
+
+    // Auto-hide setelah 5 detik
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      }
+    });
+  }
+  // END REPLACE
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -52,7 +138,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // 2. Judul & Deskripsi - Dibungkus Center agar tetap di tengah[cite: 14]
+              // 2. Judul & Deskripsi - Dibungkus Center agar tetap di tengah
               const Center(
                 child: Column(
                   children: [
@@ -85,27 +171,26 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // 3. Form Section - Sekarang otomatis berada di kiri karena parent Column-nya 'start'[cite: 14]
-              const CustomLabel(
-                  text: 'Alamat Email'), // 🚀 Ini sekarang di kiri!
+              // 3. Form Section - Sekarang otomatis berada di kiri karena parent Column-nya 'start'
+              const CustomLabel(text: 'Alamat Email'), // 🚀 Ini sekarang di kiri!
               CustomTextField(
                 hint: 'nama@email.com',
-                controller: emailController,
+                controller: _emailController, // 🚀 Gunakan state-level controller
                 suffixIcon: Icons.mail_outline,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 32),
 
-              // 4. Button - Mengikuti lebar layar[cite: 14]
+              // 4. Button - Mengikuti lebar layar
               PrimaryButton(
                 text: 'Kirim Instruksi',
                 color: AppColors.primary,
-                onTap: () => _handleSendInstruction(context),
+                onTap: _handleSendInstruction, // 🚀 Tidak perlu pass context lagi
               ),
 
               const SizedBox(height: 48),
 
-              // 5. Footer - Dibungkus Center agar tetap di tengah[cite: 14]
+              // 5. Footer - Dibungkus Center agar tetap di tengah
               const Center(
                 child: Text(
                   'KEAMANAN TERJAMIN • Mountain Kit DESIGN',
@@ -126,58 +211,6 @@ class ForgotPasswordScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // --- INTERAKSI INTERAKTIF: Logic Banner ---
-  void _handleSendInstruction(BuildContext context) {
-    // 1. Bersihkan banner lama
-    ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-
-    // 2. Tampilkan Banner di ATAS (Interaksi Premium)[cite: 14]
-    ScaffoldMessenger.of(context).showMaterialBanner(
-      MaterialBanner(
-        elevation: 0,
-        backgroundColor: AppColors.primary, // Hijau brand[cite: 14]
-        content: const Row(
-          children: [
-            Icon(Icons.check_circle, color: Colors.white),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Silahkan cek akun gmail kamu!',
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-              Navigator.pushNamed(context, '/reset-password');
-            },
-            child: const Text(
-              'SIMULASI LINK',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () =>
-                ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
-          ),
-        ],
-      ),
-    );
-
-    // 3. Auto-hide setelah 5 detik
-    Future.delayed(const Duration(seconds: 5), () {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-      }
-    });
   }
 
   Widget _buildSupportCard() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart'; // 🚀 Import StorageService
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -10,6 +11,16 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  // 🚀 Controller untuk membaca nilai input password
+  final TextEditingController _newPwdController = TextEditingController();
+  final TextEditingController _confirmPwdController = TextEditingController();
+
+  @override
+  void dispose() {
+    _newPwdController.dispose();
+    _confirmPwdController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +89,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 isVisible: _isNewPasswordVisible,
                 onToggle: () => setState(
                     () => _isNewPasswordVisible = !_isNewPasswordVisible),
+                controller: _newPwdController, // 🚀 Inject controller
               ),
               const SizedBox(height: 32),
 
@@ -86,6 +98,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 isVisible: _isConfirmPasswordVisible,
                 onToggle: () => setState(() =>
                     _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                controller: _confirmPwdController, // 🚀 Inject controller
               ),
               const SizedBox(height: 24),
 
@@ -119,21 +132,45 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // 1. Munculkan feedback sukses
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                            'Kata sandi berhasil diperbarui! Silahkan masuk.'),
-                        backgroundColor: Color(0xFF006C0C),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                  // START REPLACE
+                  onPressed: () async {
+                    final newPwd = _newPwdController.text;
+                    final confirmPwd = _confirmPwdController.text;
 
-                    // 2. 🚀 Tendang balik ke Login dan hapus semua history navigasi
+                    // Validasi 1: Minimum 8 karakter
+                    if (newPwd.length < 8) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Kata sandi minimal 8 karakter!'),
+                        backgroundColor: Colors.red,
+                      ));
+                      return;
+                    }
+
+                    // Validasi 2: Konfirmasi harus cocok
+                    if (newPwd != confirmPwd) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Konfirmasi kata sandi tidak cocok!'),
+                        backgroundColor: Colors.red,
+                      ));
+                      return;
+                    }
+
+                    // ✅ Lolos validasi — simpan ke Mock DB
+                    final email = StorageService.getRegisteredEmail() ?? '';
+                    await StorageService.setRegisteredCredentials(email, newPwd);
+
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Kata sandi berhasil direset! Silakan login.'),
+                      backgroundColor: Color(0xFF006C0C),
+                      behavior: SnackBarBehavior.floating,
+                    ));
+
+                    // 🚀 Tendang balik ke Login dan hapus semua history navigasi
                     Navigator.pushNamedAndRemoveUntil(
                         context, '/login', (route) => false);
                   },
+                  // END REPLACE
                   style: ElevatedButton.styleFrom(
                     backgroundColor: secondaryColor,
                     shape: RoundedRectangleBorder(
@@ -192,8 +229,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   // Helper: Ghost Input Pattern
   Widget _buildPasswordField(
-      {required bool isVisible, required VoidCallback onToggle}) {
+      {required bool isVisible,
+      required VoidCallback onToggle,
+      required TextEditingController controller}) {
     return TextField(
+      controller: controller, // 🚀 Inject controller
       obscureText: !isVisible,
       decoration: InputDecoration(
         hintText: '********',

@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:decimal/decimal.dart';
+import 'dart:convert';
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pendaki_local_guide_app/features/auth/providers/auth_provider.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/cart_provider.dart';
@@ -514,6 +516,15 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                                 rentalEnd: rentalEnd, // 🚀 Dari date picker checkout
                                 deliveryCost: deliveryCost, // 🚀 SOLVED THE ERROR
                               );
+
+                          // START REPLACE
+                          final mockRentalData = jsonEncode({
+                            'id': orderId ?? 'ORD-${DateTime.now().millisecondsSinceEpoch}',
+                            'date': DateTime.now().toIso8601String(),
+                            'status': 'Sedang Disewa',
+                          });
+                          await StorageService.saveActiveRental(mockRentalData);
+                          // END REPLACE
 
                           // ⚠️ WAJIB: Cek mounted setelah async gap
                           if (!mounted) return;

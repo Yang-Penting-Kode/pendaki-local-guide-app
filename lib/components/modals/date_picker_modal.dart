@@ -170,26 +170,10 @@ class _DatePickerModalState extends State<DatePickerModal> {
   }
 
   void _navigateToPartners(BuildContext context) {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const BasecampPartnersScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: animation.drive(
-                  Tween(begin: const Offset(0.0, 0.1), end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeOutQuart))),
-              child: child,
-            ),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 600),
-      ),
-    );
+    Navigator.pop(context, {
+      'startDate': startDayIndex,
+      'endDate': endDayIndex,
+    });
   }
 }
 

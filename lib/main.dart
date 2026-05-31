@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // END REPLACE
 import 'package:pendaki_local_guide_app/core/constants/app_theme.dart';
-// START REPLACE
+import 'package:pendaki_local_guide_app/core/utils/geolocation_utils.dart'; // 🚀 Added import
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/auth_gate_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/login_email_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/register_screen.dart';
@@ -126,10 +126,28 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const ReturnSchedulesScreen(), settings: settings);
           case '/mountain-search':
             return _fadeRoute(const MountainSearchScreen(), settings: settings);
+          // START REPLACE
           case '/mountain-search-result':
-            final query = settings.arguments as String? ?? '';
-            return _fadeRoute(MountainSearchResultScreen(searchQuery: query),
-                settings: settings);
+            final rawArgs = settings.arguments;
+            MountainData? mountData;
+            
+            if (rawArgs is MountainData) {
+              mountData = rawArgs;
+            } else if (rawArgs is String) {
+              mountData = GeolocationUtils.mountainList.firstWhere(
+                (m) => m.name.toLowerCase().contains(rawArgs.toLowerCase()),
+                orElse: () => GeolocationUtils.mountainList.first,
+              );
+            } else {
+              mountData = GeolocationUtils.mountainList.first;
+            }
+            
+            // Lempar searchQuery berupa nama, tapi arguments bawaan berupa MountainData utuh
+            return _fadeRoute(
+              MountainSearchResultScreen(searchQuery: mountData.name),
+              settings: RouteSettings(name: settings.name, arguments: mountData),
+            );
+          // END REPLACE
           case '/mountain-detail':
             final args = settings.arguments as Map<String, dynamic>? ?? {};
             return _fadeRoute(

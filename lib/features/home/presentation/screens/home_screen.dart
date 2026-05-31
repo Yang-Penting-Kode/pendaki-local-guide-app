@@ -60,7 +60,9 @@ class HomeScreen extends ConsumerWidget {
               radius: 18,
               backgroundColor: Colors.grey.shade200,
               backgroundImage: const NetworkImage(
-                  'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=100'),
+                  // START REPLACE
+                  'https://picsum.photos/seed/hiker/100/100'),
+                  // END REPLACE
             ),
           ),
         ],
@@ -202,7 +204,7 @@ class HomeScreen extends ConsumerWidget {
                     rating: '4.8',
                     tag: 'Pemula',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=400',
+                        'https://picsum.photos/seed/prau/400/300',
                   ),
                   _buildMountainCard(
                     context,
@@ -215,7 +217,7 @@ class HomeScreen extends ConsumerWidget {
                     rating: '4.9',
                     tag: 'Wisata',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1588392382834-a8af9f50e869?q=80&w=400',
+                        'https://picsum.photos/seed/bromo/400/300',
                   ),
                 ],
               ),

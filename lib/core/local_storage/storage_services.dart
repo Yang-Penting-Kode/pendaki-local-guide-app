@@ -87,4 +87,16 @@ class StorageService {
     await _prefs?.remove(_authTokenKey);
     await _prefs?.remove(_isFirstTimeKey);
   }
+
+  // START REPLACE
+  static const String _activeRentalsKey = 'active_rentals';
+
+  static List<String> getActiveRentals() => _prefs?.getStringList(_activeRentalsKey) ?? [];
+   
+  static Future<void> saveActiveRental(String rentalJsonData) async {
+    final list = getActiveRentals();
+    list.add(rentalJsonData);
+    await _prefs?.setStringList(_activeRentalsKey, list);
+  }
+  // END REPLACE
 }

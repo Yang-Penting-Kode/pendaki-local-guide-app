@@ -84,18 +84,36 @@ class OrderTypeSheet extends StatelessWidget {
                 'Pesan perlengkapan untuk tanggal pendakian di masa depan.',
             iconBg: AppColors.secondary.withOpacity(0.1),
             iconColor: AppColors.secondary,
-            onTap: () {
+            onTap: () async {
               // 🚀 STEP 1: Tutup modal saat ini[cite: 12]
               Navigator.pop(context);
 
               // 🚀 STEP 2: Buka modal Pilih Tanggal dengan parentContext untuk menghindari stale context[cite: 12]
               final contextToUse = parentContext ?? context;
-              showModalBottomSheet(
+              final selectedDates = await showModalBottomSheet(
                 context: contextToUse,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
                 builder: (context) => const DatePickerModal(),
               );
+
+              // START REPLACE
+              if (selectedDates != null && selectedDates is Map) {
+                final parentArgs = parentContext != null 
+                    ? ModalRoute.of(parentContext!)?.settings.arguments as Map<String, dynamic>? 
+                    : null;
+                
+                Navigator.pushNamed(
+                  contextToUse, 
+                  '/basecamp-partners', 
+                  arguments: {
+                    'mountain': parentArgs?['mountain'], // Data gunung eksisting
+                    'startDate': selectedDates['startDate'],
+                    'endDate': selectedDates['endDate'],
+                  }
+                );
+              }
+              // END REPLACE
             },
           ),
           const SizedBox(height: 32),

@@ -32,8 +32,10 @@ class ProductRepository {
       name: 'Tenda Dome 2P Eiger Summit',
       description:
           'Tenda ringan 2 orang dengan desain dome aerodynamic. Cocok untuk pendakian Rinjani dan Semeru. Waterproof rating 3000mm.',
+      // START REPLACE
       imageUrl:
-          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600',
+          'https://picsum.photos/seed/tenda/400/300',
+      // END REPLACE
       weight: '1.8 kg',
       capacity: '2 orang',
       basePrice: Decimal.parse('150000'),
@@ -50,7 +52,7 @@ class ProductRepository {
       description:
           'Ransel gunung kapasitas besar 60L dengan frame alumunium dan hipbelt yang ergonomis. Ideal untuk pendakian multi-day.',
       imageUrl:
-          'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600',
+          'https://picsum.photos/seed/carrier/400/300',
       weight: '2.1 kg',
       capacity: '60 liter',
       basePrice: Decimal.parse('85000'),
@@ -67,7 +69,7 @@ class ProductRepository {
       description:
           'Sleeping bag suhu ekstrem hingga -5°C. Isian hollow fiber premium anti-lembab. Cocok untuk pendakian puncak tinggi.',
       imageUrl:
-          'https://images.unsplash.com/photo-1639628735078-ed2f038a193e?w=600',
+          'https://picsum.photos/seed/sleepingbag/400/300',
       weight: '1.2 kg',
       capacity: '1 orang',
       basePrice: Decimal.parse('65000'),
@@ -84,7 +86,7 @@ class ProductRepository {
       description:
           'Matras self-inflating ringan dan nyaman. R-value 2.1 untuk insulasi dari tanah dingin. Ukuran reguler.',
       imageUrl:
-          'https://images.unsplash.com/photo-1510672981848-a1c4f1cb5ccf?w=600',
+          'https://picsum.photos/seed/matras/400/300',
       weight: '0.7 kg',
       capacity: '1 orang',
       basePrice: Decimal.parse('35000'),
@@ -101,7 +103,7 @@ class ProductRepository {
       description:
           'Jaket waterproof & windproof berbahan Gore-Tex 3-layer. Seam-sealed sempurna. Untuk kondisi hujan & angin kencang.',
       imageUrl:
-          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600',
+          'https://picsum.photos/seed/jaket/400/300',
       weight: '0.6 kg',
       capacity: 'XS/S/M/L/XL',
       basePrice: Decimal.parse('55000'),
@@ -118,7 +120,7 @@ class ProductRepository {
       description:
           'Senter kepala dengan output 450 lumen. Baterai tahan hingga 160 jam. Tersedia mode merah untuk mode gelap.',
       imageUrl:
-          'https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?w=600',
+          'https://picsum.photos/seed/headlamp/400/300',
       weight: '85 gram',
       capacity: '1 unit',
       basePrice: Decimal.parse('25000'),
@@ -135,7 +137,7 @@ class ProductRepository {
       description:
           'Kompor ultralight gas titanium 115g. Piezo ignition. Kompatibel dengan canister gas standar EU/threaded.',
       imageUrl:
-          'https://images.unsplash.com/photo-1445264718414-cee29f7b6e07?w=600',
+          'https://picsum.photos/seed/kompor/400/300',
       weight: '0.4 kg',
       capacity: '1 unit + canister',
       basePrice: Decimal.parse('30000'),
@@ -152,7 +154,7 @@ class ProductRepository {
       description:
           'Tongkat pendakian alumunium 7075 3-section. Cork grip ergonomis. Cocok untuk medan berbatu dan salju.',
       imageUrl:
-          'https://images.unsplash.com/photo-1501554728187-ce583db33af7?w=600',
+          'https://picsum.photos/seed/trekkingpole/400/300',
       weight: '0.52 kg (sepasang)',
       capacity: '2 buah (1 pasang)',
       basePrice: Decimal.parse('40000'),

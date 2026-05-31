@@ -147,42 +147,42 @@ class _SearchScreenState extends State<SearchScreen> {
                     price: '40.000',
                     distance: '1.5 km',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400'),
+                        'https://picsum.photos/seed/gunung1/400/300'),
                 _buildProductCard(
                     context: context,
                     title: 'Carrier 60L Pro',
                     price: '35.000',
                     distance: '0.8 km',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400'),
+                        'https://picsum.photos/seed/gunung2/400/300'),
                 _buildProductCard(
                     context: context,
                     title: 'Sleeping Bag Zero',
                     price: '15.000',
                     distance: '2.1 km',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=400'),
+                        'https://picsum.photos/seed/gunung3/400/300'),
                 _buildProductCard(
                     context: context,
                     title: 'Cooking Set Ultralight',
                     price: '20.000',
                     distance: '1.2 km',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400'),
+                        'https://picsum.photos/seed/gunung4/400/300'),
                 _buildProductCard(
                     context: context,
                     title: 'Headlamp 300 Lumens',
                     price: '10.000',
                     distance: '3.4 km',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1508672019048-805c876b67e2?q=80&w=400'),
+                        'https://picsum.photos/seed/gunung5/400/300'),
                 _buildProductCard(
                     context: context,
                     title: 'Matras Alumunium',
                     price: '5.000',
                     distance: '1.9 km',
                     imageUrl:
-                        'https://images.unsplash.com/photo-1525811902-f23426213fd0?q=80&w=400'),
+                        'https://picsum.photos/seed/gunung6/400/300'),
               ],
             ),
           ),
