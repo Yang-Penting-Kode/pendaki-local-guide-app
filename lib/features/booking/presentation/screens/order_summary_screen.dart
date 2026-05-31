@@ -468,7 +468,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                           final mockRentalData = jsonEncode({
                             'id': orderId ?? 'ORD-${DateTime.now().millisecondsSinceEpoch}',
                             'date': DateTime.now().toIso8601String(),
-                            'status': 'Sedang Disewa',
+                            'status': 'active_rental',
                             'itemName': cartItems.isNotEmpty ? cartItems.first.productName : 'Paket Tenda & Alat',
                             'imageUrl': 'https://picsum.photos/seed/rental${DateTime.now().millisecond}/200/200',
                             'rentalStart': rentalStart.toIso8601String(),

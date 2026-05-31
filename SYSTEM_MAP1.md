@@ -224,7 +224,7 @@ DashboardScreen (IndexedStack, 5 tabs)
 
 | # | File | Masalah |
 |---|---|---|
-| **R12** | `date_picker_modal.dart` | Calendar grid hardcoded "Oktober 2023" — tidak dinamis |
+| **R12** | `date_picker_modal.dart` | Calendar grid hardcoded "Juni 2026" — tidak dinamis |
 | **R13** | `catalog_screen.dart` | `GridView.count(childAspectRatio: 0.65)` — di layar lebar, card terlalu tinggi/stretch |
 | **R14** | `basecamp_partners_screen.dart` | Semua data partner hardcoded (jumlah, nama, rating, jarak) |
 | **R15** | `main.dart` | `startRoute` dihitung tapi tidak dipakai — `initialRoute` selalu `'/'` |

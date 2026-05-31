@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
+import 'package:pendaki_local_guide_app/shared/models/enums/app_enums.dart';
 
 class ReturnSchedulesScreen extends StatefulWidget {
   const ReturnSchedulesScreen({super.key});
@@ -30,9 +31,10 @@ class _ReturnSchedulesScreenState extends State<ReturnSchedulesScreen> {
 
     setState(() {
       // Hanya tampilkan yang masih aktif/sedang disewa
-      _rentals = parsed
-          .where((r) => r['status'] == 'Sedang Disewa')
-          .toList();
+      _rentals = parsed.where((r) {
+        final statusEnum = OrderStatus.fromJson(r['status'] as String?);
+        return statusEnum == OrderStatus.activeRental;
+      }).toList();
     });
   }
 

@@ -5,7 +5,7 @@ extension LegacyOrderModelGetters on OrderModel {
   String get mainImageUrl => 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=200';
   String get dateRangeDisplay {
     final diff = rentalEndDate.difference(rentalStartDate).inDays;
-    return '${rentalStartDate.day} Okt - ${rentalEndDate.day} Okt 2023 (${diff == 0 ? 1 : diff} Hari)';
+    return '${rentalStartDate.day} Mei - ${rentalEndDate.day} Juni 2026 (${diff == 0 ? 1 : diff} Hari)';
   }
   String get totalGrossPriceDisplay => 'Rp ${totalGrossPrice.toString()}';
   String get rentalCostDisplay => 'Rp ${rentalCost.toString()}';

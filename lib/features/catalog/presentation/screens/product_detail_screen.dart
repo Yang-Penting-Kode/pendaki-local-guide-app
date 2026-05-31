@@ -15,7 +15,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/cart_provider.dart';
 import 'package:pendaki_local_guide_app/shared/models/catalog/product_model.dart';
+import 'package:pendaki_local_guide_app/shared/models/enums/app_enums.dart';
 import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
+import 'package:decimal/decimal.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   const ProductDetailScreen({super.key});
@@ -53,9 +55,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // Gambar fallback — dipakai kalau product.imageUrl kosong
   final List<String> _fallbackImages = [
-    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800',
-    'https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=800',
-    'https://images.unsplash.com/photo-1537225228614-56cc3556d7ed?q=80&w=800',
+    'https://picsum.photos/seed/detail1/400/300',
+    'https://picsum.photos/seed/detail2/400/300',
+    'https://picsum.photos/seed/detail3/400/300',
   ];
 
   @override
@@ -64,8 +66,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     const Color onSurfaceVariant = Color(0xFF3E4942);
 
     // 🔌 Injeksi: Terima ProductModel dari route arguments
-    final product =
-        ModalRoute.of(context)?.settings.arguments as ProductModel?;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    ProductModel? product;
+
+    if (args is ProductModel) {
+      product = args;
+    } else if (args is Map) {
+      product = ProductModel(
+        id: args['id']?.toString() ?? args['title']?.toString() ?? 'unknown',
+        storeId: args['storeId']?.toString() ?? 'unknown',
+        name: args['title']?.toString() ?? 'Produk',
+        basePrice: Decimal.tryParse(args['price']?.toString().replaceAll('.', '') ?? '0') ?? Decimal.zero,
+        imageUrl: args['imageUrl']?.toString(),
+        categoryId: '',
+        stock: 0,
+        status: ProductStatus.active,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+    }
 
     // Guard: Jika tidak ada arguments (navigasi langsung), tampilkan error
     if (product == null) {
@@ -118,6 +137,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 setState(() {
                   _isWishlisted = newValue;
                 });
+                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(newValue ? 'Ditambahkan ke Wishlist' : 'Dihapus dari Wishlist'),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
+import 'package:pendaki_local_guide_app/shared/models/enums/app_enums.dart';
 
 // START REPLACE
 class ActiveRentalsScreen extends StatefulWidget {
@@ -30,7 +31,10 @@ class _ActiveRentalsScreenState extends State<ActiveRentalsScreen> {
     }).where((m) => m.isNotEmpty).toList();
 
     setState(() {
-      _rentals = parsed;
+      _rentals = parsed.where((r) {
+        final statusEnum = OrderStatus.fromJson(r['status'] as String?);
+        return statusEnum == OrderStatus.activeRental;
+      }).toList();
     });
   }
 
@@ -349,7 +353,8 @@ class _ActiveRentalsScreenState extends State<ActiveRentalsScreen> {
                                   const Icon(Icons.calendar_today,
                                       size: 14, color: Color(0xFF3E4942)),
                                   const SizedBox(width: 6),
-                                  Expanded(
+// START REPLACE
+                                  Flexible(
                                     child: Text(
                                       dateRange,
                                       style: const TextStyle(
@@ -359,8 +364,10 @@ class _ActiveRentalsScreenState extends State<ActiveRentalsScreen> {
                                         color: Color(0xFF3E4942),
                                       ),
                                       overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
                                     ),
                                   ),
+// END REPLACE
                                 ],
                               ),
                             ],

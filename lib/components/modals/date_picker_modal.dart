@@ -32,7 +32,7 @@ class _DatePickerModalState extends State<DatePickerModal> {
   String _formatDisplayDate(int? index) {
     if (index == null) return "-";
     int day = index - 3;
-    return "$day Okt 2023";
+    return "$day Jun 2026";
   }
 
   @override
@@ -86,7 +86,7 @@ class _DatePickerModalState extends State<DatePickerModal> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  const _CalendarHeader(month: 'Oktober 2023'),
+                  const _CalendarHeader(month: 'Juni 2026'),
                   const SizedBox(height: 24),
                   _buildCalendarGrid(),
                   const SizedBox(height: 40),

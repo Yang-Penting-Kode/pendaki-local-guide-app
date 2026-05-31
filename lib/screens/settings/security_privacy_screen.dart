@@ -67,7 +67,7 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
                       letterSpacing: -0.5)),
               const SizedBox(height: 12),
               const Text(
-                  'Gunakan sidik jari atau pengenalan wajah untuk akses yang lebih cepat dan aman ke akun LocalGuide Anda.',
+                  'Gunakan sidik jari atau pengenalan wajah untuk akses yang lebih cepat dan aman ke akun MountainKit Anda.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Color(0xFF3F4A3B), fontSize: 14, height: 1.5)),
@@ -146,7 +146,7 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
                         fontWeight: FontWeight.w800)),
                 const SizedBox(height: 12),
                 const Text(
-                    'Masukkan kata sandi akun LocalGuide Anda untuk melanjutkan pengaktifan login biometrik.',
+                    'Masukkan kata sandi akun MountainKit Anda untuk melanjutkan pengaktifan login biometrik.',
                     style: TextStyle(
                         color: Color(0xFF3F4A3B), fontSize: 14, height: 1.5)),
                 const SizedBox(height: 32),
@@ -222,7 +222,7 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
                 const Center(
                   child: Column(
                     children: [
-                      Text('LocalGuide',
+                      Text('MountainKit',
                           style: TextStyle(
                               fontFamily: 'Manrope',
                               fontWeight: FontWeight.bold,
@@ -355,7 +355,7 @@ class _SecurityPrivacyScreenState extends State<SecurityPrivacyScreen> {
                         fontFamily: 'Manrope')),
                 SizedBox(height: 4),
                 Text(
-                    'Privasi Anda adalah prioritas utama kami. LocalGuide menggunakan enkripsi tingkat lanjut.',
+                    'Privasi Anda adalah prioritas utama kami. MountainKit menggunakan enkripsi tingkat lanjut.',
                     style: TextStyle(color: Colors.white70, fontSize: 12)),
               ])),
         ],
