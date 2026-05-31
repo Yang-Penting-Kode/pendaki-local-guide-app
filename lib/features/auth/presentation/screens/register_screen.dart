@@ -1,4 +1,5 @@
 // START REPLACE
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,11 +31,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>(); // 🚀 Injeksi GlobalKey
   String? _selectedGender;
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+  String _passwordText = '';
   File? _ktpImage;
   File? _profileImage; // 🚀 Injeksi Profile Image
+  bool _isOtpSent = false;
+  final _otpController = TextEditingController();
+  int _emailResendTimer = 0;
+  Timer? _timer;
 
   @override
   void dispose() {
+    _timer?.cancel();
+    _otpController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -91,9 +101,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. Profile Avatar (Menggantikan Hero Image)
-                  _buildProfileAvatar(),
-                const SizedBox(height: 24),
+                  // 1. Header Text
                 const Text(
                   'Sewa Alat &\nCari Guide Lokal.',
                   style: TextStyle(
@@ -110,13 +118,44 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
 
-// START REPLACE
+                const CustomLabel(text: 'Upload Foto Profil'),
+                _buildProfileAvatar(),
+                const SizedBox(height: 20),
+
                 const CustomLabel(text: 'Alamat Email'),
                 CustomTextField(
                     hint: 'customer@gmail.com', 
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) => value == null || value.isEmpty ? 'Wajib diisi' : null,
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (_emailResendTimer > 0) return;
+                      setState(() => _emailResendTimer = 60);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tautan Verifikasi Email Telah Terkirim')));
+                      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                        if (_emailResendTimer == 0) {
+                          timer.cancel();
+                        } else {
+                          setState(() => _emailResendTimer--);
+                        }
+                      });
+                    },
+                    child: Text(
+                      _emailResendTimer > 0 
+                          ? 'Kirim ulang tautan dalam 00:${_emailResendTimer.toString().padLeft(2, '0')}'
+                          : 'Kirim Tautan Verifikasi',
+                      style: TextStyle(
+                        color: _emailResendTimer > 0 ? Colors.grey : AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 20),
 
@@ -125,8 +164,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     hint: 'secret#123', 
                     controller: _passwordController, 
                     isPassword: true,
+                    obscureText: !_isPasswordVisible,
+                    suffixIcon: _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    onSuffixTap: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                    onChanged: (value) => setState(() => _passwordText = value),
                     validator: (value) => value == null || value.isEmpty ? 'Wajib diisi' : null,
                 ),
+                _buildPasswordValidator(), // 🚀 INJEKSI REGEX UI
                 const SizedBox(height: 20),
 
                 const CustomLabel(text: 'Konfirmasi Password'),
@@ -134,6 +178,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     hint: 'secret#123', 
                     controller: _confirmPasswordController, 
                     isPassword: true,
+                    obscureText: !_isConfirmPasswordVisible,
+                    suffixIcon: _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    onSuffixTap: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
                     validator: (value) => value == null || value.isEmpty ? 'Wajib diisi' : null,
                 ),
                 const SizedBox(height: 20),
@@ -146,6 +193,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   keyboardType: TextInputType.phone,
                   validator: (value) => value == null || value.isEmpty ? 'Wajib diisi' : null,
                 ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() => _isOtpSent = true);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Simulasi OTP WA Anda: 1234')));
+                    },
+                    child: const Text('Kirim OTP WhatsApp', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                if (_isOtpSent) ...[
+                  const SizedBox(height: 12),
+                  const CustomLabel(text: 'Masukkan OTP'),
+                  CustomTextField(
+                    hint: '1234',
+                    controller: _otpController,
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
                 const SizedBox(height: 20),
 
                 const CustomLabel(text: 'Upload Foto KTP'),
@@ -243,11 +309,29 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 text: 'Daftar Sekarang',
                 color: AppColors.primary, // Warna Orange untuk pendaftaran
                 isLoading: _isLoading,
-                onTap: () {
+                onTap: () async {
                   // 🚀 START REPLACE (Validasi & Auth)
                   if (!_formKey.currentState!.validate()) return;
                   
+                  final hasMinLength = _passwordText.length >= 8;
+                  final hasUpper = _passwordText.contains(RegExp(r'[A-Z]'));
+                  final hasNumber = _passwordText.contains(RegExp(r'[0-9]'));
+                  final hasSpecial = _passwordText.contains(RegExp(r'[^a-zA-Z0-9]'));
+                  
+                  if (!hasMinLength || !hasUpper || !hasNumber || !hasSpecial) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Password belum memenuhi syarat!'), backgroundColor: Colors.red),
+                    );
+                    return;
+                  }
+
                   if (_isLoading) return;
+
+                  if (!_isOtpSent || _otpController.text != '1234') {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('OTP belum dikirim atau salah!'), backgroundColor: Colors.red));
+                    return;
+                  }
+
                   setState(() => _isLoading = true);
 
                   final result = ref.read(authProvider.notifier).register(
@@ -289,34 +373,35 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   // --- UI HELPERS (Hanya yang sangat spesifik) ---
 
+// START REPLACE
   Widget _buildProfileAvatar() {
-    return Center(
-      child: GestureDetector(
-        onTap: _pickProfileImage,
-        child: Container(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.primary.withOpacity(0.05),
-            border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 2),
-          ),
-          child: _profileImage != null
-              ? ClipOval(
-                  child: Image.file(_profileImage!, fit: BoxFit.cover, width: 120, height: 120),
-                )
-              : const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.camera_alt, color: AppColors.primary, size: 32),
-                    SizedBox(height: 4),
-                    Text('Upload\nAvatar', textAlign: TextAlign.center, style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.bold)),
-                  ],
-                ),
+    return GestureDetector(
+      onTap: _pickProfileImage,
+      child: Container(
+        height: 150,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.primary.withOpacity(0.3), style: BorderStyle.solid),
         ),
+        child: _profileImage != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(_profileImage!, fit: BoxFit.cover),
+              )
+            : const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.camera_alt, color: AppColors.primary, size: 40),
+                  SizedBox(height: 8),
+                  Text('Tap untuk upload foto Profil', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                ],
+              ),
       ),
     );
   }
+// END REPLACE
 
   Widget _buildSecurityInfo() {
     return Container(
@@ -335,6 +420,38 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               style: TextStyle(fontSize: 11, color: AppColors.primary),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildValidationItem(String text, bool isValid) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(isValid ? Icons.check_circle : Icons.cancel, color: isValid ? Colors.green : Colors.grey.shade400, size: 14),
+        const SizedBox(width: 6),
+        Text(text, style: TextStyle(color: isValid ? Colors.green : Colors.grey.shade600, fontSize: 12)),
+      ],
+    );
+  }
+
+  Widget _buildPasswordValidator() {
+    final hasMinLength = _passwordText.length >= 8;
+    final hasUpper = _passwordText.contains(RegExp(r'[A-Z]'));
+    final hasNumber = _passwordText.contains(RegExp(r'[0-9]'));
+    final hasSpecial = _passwordText.contains(RegExp(r'[^a-zA-Z0-9]'));
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          _buildValidationItem('Min. 8 Karakter', hasMinLength),
+          _buildValidationItem('Huruf Besar', hasUpper),
+          _buildValidationItem('Angka', hasNumber),
+          _buildValidationItem('Simbol', hasSpecial),
         ],
       ),
     );

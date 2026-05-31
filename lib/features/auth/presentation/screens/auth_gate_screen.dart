@@ -12,9 +12,8 @@ class AuthGateScreen extends ConsumerWidget {
 // START REPLACE
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 🚀 Redirect otomatis jika sudah login
     ref.listen<bool>(isLoggedInProvider, (previous, isLoggedIn) {
-      if (isLoggedIn) {
+      if (isLoggedIn && ModalRoute.of(context)?.isCurrent == true) {
         Navigator.pushReplacementNamed(context, '/dashboard');
       }
     });
