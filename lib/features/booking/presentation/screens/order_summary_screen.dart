@@ -98,7 +98,6 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
     final grandTotal = rentalCost + adminFee + deliveryCost; // 🚀 Injeksi Ongkir & Rental
 
     // Item pertama untuk display card
-    final firstItem = cartItems.isNotEmpty ? cartItems.first : null;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -153,7 +152,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                           children: [
                             Text(item.productName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 4),
-                            Text('${item.quantity} Unit x Rp ${item.unitPrice.toStringAsFixed(0)}', style: TextStyle(color: onSurfaceVariant, fontSize: 12)),
+                            Text('${item.quantity} Unit x Rp ${item.unitPrice.toStringAsFixed(0)}', style: const TextStyle(color: Color(0xFF3E4942), fontSize: 12)),
                           ],
                         ),
                       ),
@@ -293,59 +292,6 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
   }
 
   // --- WIDGET BUILDERS ---
-
-  Widget _buildOrderCard(String productName, Decimal cartTotal, Color primary,
-      Color variant) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: 80,
-                height: 80,
-                color: Colors.grey.shade200,
-                child: const Center(
-                    child: Icon(Icons.broken_image, color: Colors.grey)),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 🔌 Injeksi: Nama produk dari cartProvider
-                Text(productName,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16)),
-                Text('Tanggal: ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
-                    style: TextStyle(color: variant, fontSize: 12)),
-                const SizedBox(height: 8),
-                // 🔌 Injeksi: Total dari cartTotal
-                Text('Rp ${cartTotal.toStringAsFixed(0)}',
-                    style: TextStyle(
-                        color: primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildPenaltyInfo(Color primary) {
     return Container(
@@ -518,10 +464,15 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                               );
 
                           // START REPLACE
+                          final cartItems = ref.read(cartProvider); // Fix for cartItems undefined
                           final mockRentalData = jsonEncode({
                             'id': orderId ?? 'ORD-${DateTime.now().millisecondsSinceEpoch}',
                             'date': DateTime.now().toIso8601String(),
                             'status': 'Sedang Disewa',
+                            'itemName': cartItems.isNotEmpty ? cartItems.first.productName : 'Paket Tenda & Alat',
+                            'imageUrl': 'https://picsum.photos/seed/rental${DateTime.now().millisecond}/200/200',
+                            'rentalStart': rentalStart.toIso8601String(),
+                            'rentalEnd': rentalEnd.toIso8601String(),
                           });
                           await StorageService.saveActiveRental(mockRentalData);
                           // END REPLACE

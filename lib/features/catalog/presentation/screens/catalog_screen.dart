@@ -26,9 +26,25 @@ class CatalogScreen extends ConsumerStatefulWidget {
 class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   // Search & Filter State — Ephemeral, tetap local
   String _activeCategory = 'Semua Alat';
+  bool _isFirstLoad = true;
 
   @override
   Widget build(BuildContext context) {
+    if (_isFirstLoad) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final initialCategory = args?['category'] as String?;
+      if (initialCategory != null) {
+        _activeCategory = initialCategory;
+      }
+      // Panggil method untuk filter data di provider jika menggunakan argumen
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (initialCategory != null && initialCategory != 'Semua Alat') {
+           ref.read(searchQueryProvider.notifier).state = initialCategory; // update the provider
+        }
+      });
+      _isFirstLoad = false;
+    }
+
     const Color primaryColor = Color(0xFF005F3F);
 
     // 🔌 Injeksi: Badge keranjang dari cartCountProvider (real-time)
@@ -240,7 +256,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   Widget _buildTab(String label, {required bool isActive}) {
     const Color primaryColor = Color(0xFF005F3F);
     return GestureDetector(
-      onTap: () => setState(() => _activeCategory = label),
+      onTap: () {
+        setState(() => _activeCategory = label);
+        ref.read(searchQueryProvider.notifier).state = label == 'Semua Alat' ? '' : label;
+      },
       child: Container(
         margin: const EdgeInsets.only(right: 24),
         padding: const EdgeInsets.only(bottom: 12),

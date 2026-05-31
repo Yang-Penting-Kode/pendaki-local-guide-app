@@ -67,10 +67,17 @@ class OrderTypeSheet extends StatelessWidget {
             iconBg: AppColors.primaryContainer.withOpacity(0.2),
             iconColor: AppColors.primary,
             onTap: () {
-              Navigator.pop(context); // Tutup sheet ini
-              // Navigasi langsung ke list partner dengan radius dekat
-              Navigator.pushNamed(context, '/basecamp-partners',
-                  arguments: 2000.0);
+              Navigator.pop(context);
+              final contextToUse = parentContext ?? context;
+              final parentArgs = parentContext != null 
+                  ? ModalRoute.of(parentContext!)?.settings.arguments as Map<String, dynamic>? 
+                  : null;
+              
+              Navigator.pushNamed(contextToUse, '/basecamp-partners', arguments: {
+                'mountain': parentArgs?['mountain'],
+                'startDate': DateTime.now(),
+                'endDate': DateTime.now().add(const Duration(days: 1)), // Default 1 hari
+              });
             },
           ),
           const SizedBox(height: 16),

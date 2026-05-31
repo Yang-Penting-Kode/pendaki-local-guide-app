@@ -23,6 +23,8 @@ class BasecampPartnersScreen extends StatelessWidget {
     final args = ModalRoute.of(context)?.settings.arguments;
     double radiusValue = 5000.0; // Default
     MountainData? mountain;
+    DateTime? startDate;
+    DateTime? endDate;
 
     if (args is MountainData) {
       mountain = args;
@@ -30,6 +32,9 @@ class BasecampPartnersScreen extends StatelessWidget {
       radiusValue = args;
     } else if (args is Map) {
       radiusValue = (args['radius'] as num?)?.toDouble() ?? 5000.0;
+      mountain = args['mountain'] as MountainData?;
+      startDate = args['startDate'] as DateTime?;
+      endDate = args['endDate'] as DateTime?;
     }
 
     // 🚀 Koordinat peta mengikuti gunung yang dipilih, fallback ke Tretes
@@ -173,6 +178,18 @@ class BasecampPartnersScreen extends StatelessWidget {
                                             color: AppColors.primary,
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold)),
+                                    if (startDate != null && endDate != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Text(
+                                          '${startDate.day}/${startDate.month}/${startDate.year} - ${endDate.day}/${endDate.month}/${endDate.year}',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                                 IconButton(
