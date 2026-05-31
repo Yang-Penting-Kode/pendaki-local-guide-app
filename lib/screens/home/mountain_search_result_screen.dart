@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pendaki_local_guide_app/core/utils/geolocation_utils.dart';
 import '../../core/constants/app_colors.dart';
 import '../../widgets/custom_text_field.dart';
 
@@ -43,6 +44,20 @@ class _MountainSearchResultScreenState
 
   @override
   Widget build(BuildContext context) {
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    MountainData? mountain;
+    
+    if (rawArgs is MountainData) {
+      mountain = rawArgs;
+    } else if (rawArgs is String) {
+      mountain = GeolocationUtils.mountainList.firstWhere(
+        (m) => m.name.toLowerCase().contains(rawArgs.toLowerCase()),
+        orElse: () => GeolocationUtils.mountainList.first,
+      );
+    } else {
+      mountain = GeolocationUtils.mountainList.first; // Fallback absolut
+    }
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -76,33 +91,13 @@ class _MountainSearchResultScreenState
             const SizedBox(height: 24),
             _buildMountainResultCard(
               context,
-              title: 'Gunung Arjuno via Tretes',
-              location: 'Pasuruan, Jawa Timur',
-              elevation: '3.339 mdpl',
-              difficulty: 'SULIT',
+              mountain: mountain,
+              title: mountain?.name ?? 'Gunung Arjuno via Tretes',
+              location: mountain?.location ?? 'Pasuruan, Jawa Timur',
+              elevation: mountain?.elevation ?? '3.339 mdpl',
+              difficulty: mountain?.difficulty ?? 'SULIT',
               rentalCount: 12,
-              imageUrl:
-                  'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=400',
-            ),
-            // Tambahkan hasil lainnya di sini...
-            _buildMountainResultCard(
-              context,
-              title: 'Gunung Arjuno via Purwosari',
-              location: 'Pasuruan, Jawa Timur',
-              elevation: '3.339 mdpl',
-              difficulty: 'SULIT',
-              rentalCount: 12,
-              imageUrl:
-                  'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=400',
-            ),
-            _buildMountainResultCard(
-              context,
-              title: 'Gunung Arjuno via Sumber Brantas(Batu)',
-              location: 'Pasuruan, Jawa Timur',
-              elevation: '3.339 mdpl',
-              difficulty: 'SULIT',
-              rentalCount: 12,
-              imageUrl:
+              imageUrl: mountain?.imageUrl ??
                   'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=400',
             ),
           ],
@@ -135,6 +130,7 @@ class _MountainSearchResultScreenState
 
   Widget _buildMountainResultCard(
     BuildContext context, {
+    MountainData? mountain,
     required String title,
     required String location,
     required String elevation,
@@ -147,6 +143,7 @@ class _MountainSearchResultScreenState
         'title': title,
         'location': location,
         'imageUrl': imageUrl,
+        'mountain': mountain, // 🚀 Sertakan objek mountain ke detail
       }),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -196,17 +193,22 @@ class _MountainSearchResultScreenState
               ],
             ),
             const Divider(height: 32),
-            Row(
-              children: [
-                const Icon(Icons.storefront_outlined,
-                    size: 16, color: AppColors.primary),
-                const SizedBox(width: 8),
-                Text('$rentalCount Mitra Rental di sekitar basecamp',
-                    style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold)),
-              ],
+            GestureDetector(
+              onTap: () => Navigator.pushNamed(context, '/basecamp-partners', arguments: mountain),
+              child: Row(
+                children: [
+                  const Icon(Icons.storefront_outlined,
+                      size: 16, color: AppColors.primary),
+                  const SizedBox(width: 8),
+                  Text('$rentalCount Mitra Rental di sekitar basecamp',
+                      style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold)),
+                  const Spacer(),
+                  const Icon(Icons.chevron_right, size: 16, color: AppColors.primary),
+                ],
+              ),
             ),
           ],
         ),

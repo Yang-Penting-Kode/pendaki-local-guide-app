@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:pendaki_local_guide_app/core/utils/geolocation_utils.dart';
 import '../../core/constants/app_colors.dart'; // 🚀 Pastikan sinkron dengan AppColors
 import '../../components/modals/filter_modal.dart';
 
@@ -18,26 +19,34 @@ class BasecampPartnersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🚀 FIX NULL CHECK: Tangkap argumen secara aman (Bisa double atau Map)
+    // 🚀 FIX NULL CHECK: Tangkap argumen secara aman (MountainData, double, atau Map)
     final args = ModalRoute.of(context)?.settings.arguments;
-    double radiusValue = 5000.0; // Default[cite: 8]
+    double radiusValue = 5000.0; // Default
+    MountainData? mountain;
 
-    if (args is double) {
+    if (args is MountainData) {
+      mountain = args;
+    } else if (args is double) {
       radiusValue = args;
     } else if (args is Map) {
       radiusValue = (args['radius'] as num?)?.toDouble() ?? 5000.0;
     }
 
-    final LatLng basecampLocation = const LatLng(-7.7000, 112.6333);
+    // 🚀 Koordinat peta mengikuti gunung yang dipilih, fallback ke Tretes
+    final mapCenter = mountain != null
+        ? LatLng(mountain.lat, mountain.lng)
+        : const LatLng(-7.7000, 112.6333);
+    
+    final appBarTitle = mountain?.name ?? 'Mitra Basecamp';
 
     return Scaffold(
       body: Stack(
         children: [
-          // 1. Interactive Map Area[cite: 8]
+          // 1. Interactive Map Area
           Positioned.fill(
             child: FlutterMap(
               options: MapOptions(
-                initialCenter: basecampLocation,
+                initialCenter: mapCenter,
                 initialZoom: 14.0,
               ),
               children: [
@@ -48,7 +57,7 @@ class BasecampPartnersScreen extends StatelessWidget {
                 CircleLayer(
                   circles: [
                     CircleMarker(
-                      point: basecampLocation,
+                      point: mapCenter,
                       radius: radiusValue,
                       useRadiusInMeter: true,
                       color: AppColors.primary.withOpacity(0.1),
@@ -60,12 +69,12 @@ class BasecampPartnersScreen extends StatelessWidget {
                 MarkerLayer(
                   markers: [
                     Marker(
-                      point: basecampLocation,
+                      point: mapCenter,
                       width: 80,
                       height: 80,
                       child: _buildLocationPin(
                           icon: Icons.home,
-                          label: 'Basecamp Tretes',
+                          label: mountain?.name ?? 'Basecamp',
                           color: Colors.red),
                     ),
                   ],
@@ -159,10 +168,10 @@ class BasecampPartnersScreen extends StatelessWidget {
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold)),
                                     Text(
-                                        'Radius ${(radiusValue / 1000).toStringAsFixed(0)} km',
+                                        'Radius ${(radiusValue / 1000).toStringAsFixed(0)} km — ${appBarTitle}',
                                         style: const TextStyle(
                                             color: AppColors.primary,
-                                            fontSize: 16,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold)),
                                   ],
                                 ),
@@ -186,13 +195,29 @@ class BasecampPartnersScreen extends StatelessWidget {
                           horizontal: 24, vertical: 8),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
-                          (context, index) => _buildPartnerCard(
-                            context,
-                            'Tretes Gear Hub #$index',
-                            '4.9',
-                            '${(index + 1) * 0.5} km',
-                            'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
-                          ),
+                          (context, index) {
+// START REPLACE
+                            // 🚀 Koordinat dummy mitra (bergeser dari pusat gunung berdasarkan index)
+                            final partnerLat = mapCenter.latitude + (index * 0.005) + 0.002;
+                            final partnerLng = mapCenter.longitude + (index * 0.005) + 0.002;
+
+                            // 🚀 Eksekusi Haversine Formula
+                            final distKm = GeolocationUtils.calculateDistance(
+                              mapCenter.latitude, mapCenter.longitude,
+                              partnerLat, partnerLng,
+                            );
+                            final distStr = distKm < 1
+                                ? '${(distKm * 1000).toInt()} m'
+                                : '${distKm.toStringAsFixed(1)} km';
+// END REPLACE
+                            return _buildPartnerCard(
+                              context,
+                              'Tretes Gear Hub #$index',
+                              '4.9',
+                              distStr, // 🚀 Jarak nyata dari Haversine
+                              'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
+                            );
+                          },
                           childCount: 10,
                         ),
                       ),

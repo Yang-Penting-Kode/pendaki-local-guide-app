@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pendaki_local_guide_app/core/utils/geolocation_utils.dart';
 import '../../core/constants/app_colors.dart';
 import '../../components/modals/filter_modal.dart';
 import '../../widgets/custom_text_field.dart';
@@ -12,9 +14,12 @@ class MountainSearchScreen extends StatefulWidget {
 
 class _MountainSearchScreenState extends State<MountainSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
+  List<MountainData> _searchResults = [];
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -35,7 +40,11 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
     if (query.toLowerCase() == 'kosong') {
       Navigator.pushNamed(context, '/search-empty');
     } else {
-      Navigator.pushNamed(context, '/mountain-search-result', arguments: query);
+      final found = GeolocationUtils.mountainList.firstWhere(
+        (m) => m.name.toLowerCase().contains(query.toLowerCase()),
+        orElse: () => GeolocationUtils.mountainList.first,
+      );
+      Navigator.pushNamed(context, '/mountain-search-result', arguments: found);
     }
   }
 
@@ -73,7 +82,16 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
                       // 🚀 FIX: Padding dikurangi agar teks tidak "terhimpit" vertikal
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
-                      onChanged: (value) => setState(() {}),
+// START REPLACE
+                      onChanged: (value) {
+                        if (_debounce?.isActive ?? false) _debounce!.cancel();
+                        _debounce = Timer(const Duration(milliseconds: 300), () {
+                          setState(() {
+                            _searchResults = GeolocationUtils.search(value);
+                          });
+                        });
+                      },
+// END REPLACE
                       onSubmitted: _handleSearch,
                       // Logika ikon hapus (X) di kanan
                       suffixIcon: _searchController.text.isNotEmpty
@@ -81,8 +99,9 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
                           : null,
                       onSuffixTap: () {
                         _searchController.clear();
-                        setState(
-                            () {}); // 👈 Refresh UI agar ikon X langsung hilang
+                        setState(() {
+                           _searchResults = [];
+                        }); // 👈 Refresh UI agar ikon X langsung hilang
                       },
                     ),
                   ),
@@ -108,8 +127,39 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
+      body: _searchResults.isNotEmpty
+          ? ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              itemCount: _searchResults.length,
+              itemBuilder: (context, index) {
+                final m = _searchResults[index];
+                return Card(
+                  elevation: 0.5,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(8),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(m.imageUrl, width: 56, height: 56, fit: BoxFit.cover,
+                        errorBuilder: (_,__,___) => Container(width: 56, height: 56, color: Colors.grey.shade200, child: const Icon(Icons.image_not_supported))),
+                    ),
+                    title: Text(m.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Manrope')),
+                    subtitle: Text('${m.location} • ${m.elevation}', style: const TextStyle(fontSize: 12)),
+                    trailing: const Icon(Icons.north_west_rounded, size: 14, color: AppColors.primary),
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context, 
+                        '/mountain-search-result', 
+                        arguments: m,
+                      );
+                    },
+                  ),
+                );
+              },
+            )
+          : SingleChildScrollView(
+              child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
@@ -170,8 +220,11 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
   Widget _buildHistoryItem(String text) {
     return InkWell(
       onTap: () {
-        _searchController.text = text;
-        setState(() {});
+        final found = GeolocationUtils.mountainList.firstWhere(
+          (m) => m.name.toLowerCase().contains(text.toLowerCase()),
+          orElse: () => GeolocationUtils.mountainList.first,
+        );
+        Navigator.pushNamed(context, '/mountain-search-result', arguments: found);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -193,22 +246,31 @@ class _MountainSearchScreenState extends State<MountainSearchScreen> {
 
   Widget _buildPopularChip(IconData icon, String label,
       {Color iconColor = AppColors.outline}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: AppColors.outline.withOpacity(0.1)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: iconColor),
-          const SizedBox(width: 8),
-          Text(label,
-              style:
-                  const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-        ],
+    return GestureDetector(
+      onTap: () {
+        final found = GeolocationUtils.mountainList.firstWhere(
+          (m) => m.name.toLowerCase().contains(label.toLowerCase()),
+          orElse: () => GeolocationUtils.mountainList.first,
+        );
+        Navigator.pushNamed(context, '/mountain-search-result', arguments: found);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(99),
+          border: Border.all(color: AppColors.outline.withOpacity(0.1)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: iconColor),
+            const SizedBox(width: 8),
+            Text(label,
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+          ],
+        ),
       ),
     );
   }
