@@ -3,8 +3,25 @@ import 'package:lottie/lottie.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../widgets/primary_button.dart';
 
-class RegistrationSuccessScreen extends StatelessWidget {
+class RegistrationSuccessScreen extends StatefulWidget {
   const RegistrationSuccessScreen({super.key});
+
+  @override
+  State<RegistrationSuccessScreen> createState() => _RegistrationSuccessScreenState();
+}
+
+class _RegistrationSuccessScreenState extends State<RegistrationSuccessScreen> {
+// START REPLACE
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/tutorial');
+      }
+    });
+  }
+// END REPLACE
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +98,7 @@ class RegistrationSuccessScreen extends StatelessWidget {
             // 4. Primary CTA (Bouncy Button Global)[cite: 14]
             PrimaryButton(
               text: 'Tutorial Dulu',
-              onTap: () => Navigator.pushNamed(context, '/tutorial'),
+              onTap: () => Navigator.pushReplacementNamed(context, '/tutorial'),
             ),
 
             const SizedBox(height: 24),

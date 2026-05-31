@@ -50,7 +50,14 @@ class _SplashScreenState extends State<SplashScreen>
         final bool seenOnboarding = StorageService.hasSeenOnboarding();
 
         // Tentukan route tujuan
-        final String nextRoute = seenOnboarding ? '/login' : '/onboarding';
+        final String nextRoute;
+        if (StorageService.getAuthToken() != null) {
+          nextRoute = '/dashboard';
+        } else if (StorageService.hasSeenOnboarding()) {
+          nextRoute = '/login';
+        } else {
+          nextRoute = '/onboarding';
+        }
 
         Navigator.pushReplacementNamed(context, nextRoute);
       }

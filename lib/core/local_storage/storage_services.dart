@@ -27,4 +27,44 @@ class StorageService {
   static bool hasSeenOnboarding() {
     return _prefs?.getBool(_onboardingKey) ?? false;
   }
+
+  static const String _authTokenKey = 'auth_token';
+  static const String _isFirstTimeKey = 'is_first_time_login';
+
+  static Future<void> setAuthToken(String token) async {
+    await _prefs?.setString(_authTokenKey, token);
+  }
+
+  static String? getAuthToken() {
+    return _prefs?.getString(_authTokenKey);
+  }
+
+  static Future<void> setIsFirstTimeLogin(bool isFirstTime) async {
+    await _prefs?.setBool(_isFirstTimeKey, isFirstTime);
+  }
+
+  static bool? getIsFirstTimeLogin() {
+    return _prefs?.getBool(_isFirstTimeKey);
+  }
+
+  static const String _registeredEmailKey = 'registered_email';
+  static const String _registeredPasswordKey = 'registered_password';
+
+  static Future<void> setRegisteredCredentials(String email, String password) async {
+    await _prefs?.setString(_registeredEmailKey, email.trim().toLowerCase());
+    await _prefs?.setString(_registeredPasswordKey, password);
+  }
+
+  static String? getRegisteredEmail() {
+    return _prefs?.getString(_registeredEmailKey);
+  }
+
+  static String? getRegisteredPassword() {
+    return _prefs?.getString(_registeredPasswordKey);
+  }
+
+  static Future<void> clearAuthData() async {
+    await _prefs?.remove(_authTokenKey);
+    await _prefs?.remove(_isFirstTimeKey);
+  }
 }

@@ -13,6 +13,7 @@
 
 // START REPLACE
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pendaki_local_guide_app/core/local_storage/storage_services.dart';
 import 'package:pendaki_local_guide_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:pendaki_local_guide_app/shared/models/auth/user_model.dart';
 
@@ -46,8 +47,19 @@ class AuthNotifier extends Notifier<UserModel?> {
 
   @override
   UserModel? build() {
+    // Membaca token dari StorageService untuk bypass AuthGate (Backend Ready)
+    final token = StorageService.getAuthToken();
+    if (token != null) {
+      // In-Memory: return mock UserModel karena token ditemukan
+      return UserModel(
+        id: 'mock_user_123',
+        fullName: 'Pendaki Terdaftar',
+        email: 'user@example.com',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+    }
     // State awal: null (belum login)
-    // In-Memory: tidak ada persist session antar app restart (Survival Mode)
     return null;
   }
 
@@ -64,18 +76,35 @@ class AuthNotifier extends Notifier<UserModel?> {
       );
     }
 
-    final user = _repo.login(email, password);
+// START REPLACE
+    final savedEmail = StorageService.getRegisteredEmail();
+    final savedPassword = StorageService.getRegisteredPassword();
+    
+    final isRegisteredUser = savedEmail != null && email.trim().toLowerCase() == savedEmail && password == savedPassword;
+    final isGlobalDemoUser = email.trim().toLowerCase() == 'pendaki@demo.com' && password == 'demo123';
 
-    if (user == null) {
+    if (!isRegisteredUser && !isGlobalDemoUser) {
       return const AuthResult(
         status: AuthResultStatus.invalidCredential,
-        message: 'Email atau password salah. Coba lagi.',
+        message: 'Email atau Password tidak terdaftar.',
       );
     }
 
-    // ✅ Login berhasil — update state Riverpod
-    // Context7: "state = newValue" untuk mutasi di Notifier
-    state = user;
+    // MVP Lokal: Bypass validasi repository, buat mock user langsung
+    final mockUser = UserModel(
+      id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
+      fullName: isGlobalDemoUser ? 'Andi Surya Pendaki' : email.split('@').first,
+      email: email.trim().toLowerCase(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    state = mockUser;
+// END REPLACE
+    
+    // Simpan token dan set isFirstTimeLogin false
+    StorageService.setAuthToken('mock_token_123');
+    StorageService.setIsFirstTimeLogin(false);
 
     return const AuthResult(status: AuthResultStatus.success);
   }
@@ -120,20 +149,29 @@ class AuthNotifier extends Notifier<UserModel?> {
     }
 
     try {
-      final newUser = _repo.register(
-        fullName: fullName,
-        email: email,
-        password: password,
-        phoneNumber: phoneNumber,
+      // MVP Lokal: Bypass repository, langsung simpan kredensial ke disk
+      final mockUser = UserModel(
+        id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
+        fullName: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        phoneNumber: phoneNumber?.trim(),
         gender: gender,
         ktpPhotoUrl: ktpPhotoUrl,
         profilePhotoUrl: profilePhotoUrl,
-        emergencyName: emergencyName,
-        emergencyPhone: emergencyPhone,
+        emergencyName: emergencyName?.trim(),
+        emergencyPhone: emergencyPhone?.trim(),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
+      StorageService.setRegisteredCredentials(email, password);
+
       // Auto-login setelah register berhasil
-      state = newUser;
+      state = mockUser;
+      
+      // Simpan token dan set isFirstTimeLogin true
+      StorageService.setAuthToken('mock_token_123');
+      StorageService.setIsFirstTimeLogin(true);
 
       return const AuthResult(status: AuthResultStatus.success);
     } on AuthException catch (e) {
@@ -154,6 +192,8 @@ class AuthNotifier extends Notifier<UserModel?> {
   // Reset state ke null — UI akan redirect ke LoginScreen
   // ---------------------------------------------------------------------------
   void logout() {
+    // Hapus data token dari storage
+    StorageService.clearAuthData();
     state = null;
   }
 

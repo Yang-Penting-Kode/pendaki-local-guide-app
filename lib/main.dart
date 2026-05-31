@@ -7,6 +7,7 @@ import 'package:pendaki_local_guide_app/core/constants/app_theme.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/auth_gate_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/login_email_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/register_screen.dart';
+import 'package:pendaki_local_guide_app/features/auth/presentation/screens/tutorial_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/email_verification_screen.dart';
 import 'package:pendaki_local_guide_app/features/auth/presentation/screens/registration_success_screen.dart';
@@ -79,8 +80,14 @@ class LocalGuideApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String startRoute =
-        StorageService.hasSeenOnboarding() ? '/login' : '/onboarding';
+    final String startRoute;
+    if (StorageService.getAuthToken() != null) {
+      startRoute = '/dashboard';
+    } else if (StorageService.hasSeenOnboarding()) {
+      startRoute = '/login';
+    } else {
+      startRoute = '/onboarding';
+    }
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -95,6 +102,9 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const OnboardingScreen(), settings: settings);
           case '/login':
             return _fadeRoute(const AuthGateScreen(), settings: settings);
+// START REPLACE
+          case '/tutorial':
+            return _fadeRoute(const TutorialScreen(), settings: settings);
 // START REPLACE
           case '/register':
             return _fadeRoute(const RegisterScreen(), settings: settings);

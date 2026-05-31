@@ -277,7 +277,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
 
             const SizedBox(height: 32),
-            _buildLogoutButton(context, errorColor),
+            _buildLogoutButton(context, ref, errorColor),
           ],
         ),
       ),
@@ -528,13 +528,15 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context, Color errorColor) {
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref, Color errorColor) {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: OutlinedButton.icon(
-        onPressed: () =>
-            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
+        onPressed: () {
+            ref.read(authProvider.notifier).logout();
+            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+        },
         icon: const Icon(Icons.logout, size: 20),
         label: const Text('Keluar Sesi',
             style: TextStyle(fontWeight: FontWeight.bold)),

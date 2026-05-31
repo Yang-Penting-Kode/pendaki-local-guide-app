@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_image.dart';
+import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
 
 class TutorialScreen extends StatefulWidget {
   const TutorialScreen({super.key});

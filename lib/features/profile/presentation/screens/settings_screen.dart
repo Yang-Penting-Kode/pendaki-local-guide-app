@@ -264,8 +264,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       width: double.infinity,
       height: 56,
       child: ElevatedButton.icon(
-        onPressed: () =>
-            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
+        onPressed: () {
+          ref.read(authProvider.notifier).logout();
+          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+        },
         icon: const Icon(Icons.logout, size: 20),
         label: const Text('Keluar',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

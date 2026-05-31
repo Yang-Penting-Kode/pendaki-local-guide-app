@@ -266,7 +266,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   setState(() => _isLoading = false);
 
                   if (result.isSuccess) {
-                    Navigator.pushReplacementNamed(context, '/dashboard');
+                    Navigator.pushNamedAndRemoveUntil(
+                      context, 
+                      '/registration-success', 
+                      (route) => false,
+                    );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(result.message ?? 'Gagal mendaftar'), backgroundColor: Colors.red),
