@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pendaki_local_guide_app/components/modals/filter_modal.dart';
 import 'package:pendaki_local_guide_app/core/constants/app_colors.dart';
 import 'package:pendaki_local_guide_app/widgets/custom_text_field.dart';
+import 'package:pendaki_local_guide_app/core/utils/geolocation_utils.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -12,6 +13,58 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  MountainData? _selectedMountain;
+
+  void _showMountainPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('Pilih Gunung Tujuan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: GeolocationUtils.mountainList.length,
+                    itemBuilder: (context, index) {
+                      final mountain = GeolocationUtils.mountainList[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(mountain.imageUrl),
+                        ),
+                        title: Text(mountain.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(mountain.location),
+                        onTap: () {
+                          setState(() {
+                            _selectedMountain = mountain;
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -115,7 +168,62 @@ class _SearchScreenState extends State<SearchScreen> {
         // 🚀 FIX: Paksa kategori dan grid melebar penuh layar VIVO
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 16),
+// 🚀 JANGKAR LOKASI: Card Pilih Gunung
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: InkWell(
+              onTap: _showMountainPicker,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _selectedMountain != null ? AppColors.primary.withOpacity(0.05) : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _selectedMountain != null ? AppColors.primary : AppColors.outline.withOpacity(0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: _selectedMountain != null ? AppColors.primary : AppColors.surfaceContainerLow,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.terrain, 
+                        color: _selectedMountain != null ? Colors.white : AppColors.primary, 
+                        size: 20
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _selectedMountain != null ? 'Gunung Tujuan:' : 'Mau mendaki ke mana?',
+                            style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            _selectedMountain != null ? _selectedMountain!.name : 'Pilih Gunung & Basecamp',
+                            style: TextStyle(
+                              fontSize: 14, 
+                              fontWeight: FontWeight.bold,
+                              color: _selectedMountain != null ? AppColors.primary : AppColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.keyboard_arrow_down, color: AppColors.outline.withOpacity(0.5)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           // Tab Kategori Horizontal
           SizedBox(
             height: 40,

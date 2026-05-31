@@ -114,7 +114,7 @@ class HomeScreen extends ConsumerWidget {
                   _buildStatusCard(
                     icon: Icons.shopping_bag,
                     title: 'Sedang Disewa',
-                    subtitle: '1 Alat Aktif',
+                    subtitle: 'Alat Aktif',
                     iconColor: primaryColor,
                     bgColor: primaryColor.withOpacity(0.1),
                     onTap: () => Navigator.pushNamed(context, '/active-rentals'),
