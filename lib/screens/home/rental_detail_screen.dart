@@ -119,7 +119,7 @@ class RentalDetailScreen extends StatelessWidget {
                         ),
                         child: ClipOval(
                           child: Image.network(
-                            'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=200',
+                            'https://picsum.photos/seed/j049jn/600/400',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 const Icon(Icons.storefront,

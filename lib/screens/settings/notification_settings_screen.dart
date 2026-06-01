@@ -154,7 +154,7 @@ class _NotificationSettingsScreenState
           const Positioned.fill(
             child: CustomNetworkImage(
               imageUrl:
-                  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000',
+                  'https://picsum.photos/seed/kjljhk/600/400',
               fit: BoxFit.cover,
             ),
           ),

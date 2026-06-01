@@ -20,7 +20,7 @@ final List<OnboardingModel> mitraOnboardingPages = [
     title: 'Terima Pesanan dengan Mudah',
     description: 'Dapatkan pesanan langsung dari pendaki di seluruh Indonesia.',
     image:
-        'https://images.unsplash.com/photo-1512428559083-a400a3b8463e?q=80&w=600',
+        'https://picsum.photos/seed/xe6615/600/400',
     overlayIcon: Icons.notifications_active,
   ),
   OnboardingModel(
@@ -28,7 +28,7 @@ final List<OnboardingModel> mitraOnboardingPages = [
     description:
         'Bergabunglah sebagai mitra dan jangkau ribuan pendaki yang membutuhkan perlengkapan outdoor berkualitas.',
     image:
-        'https://images.unsplash.com/photo-1523381235208-25924b12c4e8?q=80&w=600',
+        'https://picsum.photos/seed/78wso2/600/400',
     overlayIcon: Icons.inventory_2,
   ),
   OnboardingModel(
@@ -36,7 +36,7 @@ final List<OnboardingModel> mitraOnboardingPages = [
     description:
         'Pantau saldo dan tarik dana langsung ke rekening Anda kapan saja dengan proses transparan.',
     image:
-        'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=600',
+        'https://picsum.photos/seed/jvsy38/600/400',
     overlayIcon: Icons.trending_up,
   ),
   OnboardingModel(
@@ -44,7 +44,7 @@ final List<OnboardingModel> mitraOnboardingPages = [
     description:
         'Tim kami siap membantu Anda kapanpun dan di manapun. Keamanan mitra adalah prioritas utama.',
     image:
-        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600',
+        'https://picsum.photos/seed/wq13hy/600/400',
     overlayIcon: Icons.support_agent,
   ),
 ];

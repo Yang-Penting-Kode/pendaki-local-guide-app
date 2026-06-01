@@ -161,7 +161,7 @@ class TrackLocationScreen extends StatelessWidget {
                         const CircleAvatar(
                           radius: 28,
                           backgroundImage: NetworkImage(
-                              'https://images.unsplash.com/photo-1551632811-561732d1e306'),
+                              'https://picsum.photos/seed/jcdwg9/600/400'),
                         ),
                         const SizedBox(width: 16),
                         const Expanded(

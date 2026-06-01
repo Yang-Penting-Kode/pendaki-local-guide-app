@@ -45,7 +45,7 @@ class ActiveRentalsScreen extends ConsumerWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Rented Equipment',
+          'Alat Aktif Disewa',
           style: TextStyle(
             color: primaryColor,
             fontFamily: 'Manrope',

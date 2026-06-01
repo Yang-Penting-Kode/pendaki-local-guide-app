@@ -10,7 +10,7 @@ class OnboardingProvider extends ChangeNotifier {
       subtitle:
           'Sewa perlengkapan pendakian berkualitas tinggi dari mitra lokal kami yang berada dekat dengan basecamp tujuan Anda.',
       image:
-          'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1000',
+          'https://picsum.photos/seed/yg6gar/600/400',
       badge: 'Sewa Peralatan',
     ),
     OnboardingModel(
@@ -18,7 +18,7 @@ class OnboardingProvider extends ChangeNotifier {
       subtitle:
           'Dilengkapi dengan sistem tracking dan peta offline untuk memastikan keamanan pendakian Anda di medan manapun.',
       image:
-          'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&q=80&w=1000',
+          'https://picsum.photos/seed/g9s9bm/600/400',
       badge: 'Live Tracking',
     ),
     OnboardingModel(
@@ -26,7 +26,7 @@ class OnboardingProvider extends ChangeNotifier {
       subtitle:
           'Sewa berbagai perlengkapan mendaki gunung berkualitas dari mitra lokal terpercaya dengan mudah dan cepat.',
       image:
-          'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&q=80&w=1000',
+          'https://picsum.photos/seed/5nuuy6/600/400',
       badge: 'Mitra Lokal',
     ),
   ];

@@ -71,7 +71,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen>
               store: order.storeId,
               totalPrice: order.totalGrossPrice.toStringAsFixed(0),
               buttonLabel: (order.status == OrderStatus.completed && order.rating != null) ? 'Lihat Review' : 'Detail',
-              imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+              imageUrl: 'https://picsum.photos/seed/1hk1t7/600/400',
               onCardTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order.id),
               onButtonTap: () {
                 if (order.status == OrderStatus.completed && order.rating != null) {

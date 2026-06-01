@@ -131,7 +131,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                     child: const ClipOval(
                       child: CustomNetworkImage(
                         imageUrl:
-                            'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=200',
+                            'https://picsum.photos/seed/sgefmf/600/400',
                       ),
                     ),
                   ),

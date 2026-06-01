@@ -170,7 +170,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ? Image.file(_imageFile!, fit: BoxFit.cover, width: 128, height: 128)
                     : const CustomNetworkImage(
                         imageUrl:
-                            'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
+                            'https://picsum.photos/seed/h6agzg/600/400',
                       ),
               ),
             ),

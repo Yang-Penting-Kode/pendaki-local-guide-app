@@ -17,8 +17,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   final List<String> _productImages = [
     'https://lh3.googleusercontent.com/aida-public/AB6AXuA50SYWomaWs3kn8LOjDY8eA7P175MyayGISgtIUf8Duf-fCzqUymvow8pXqzCBlDVDdLByogMCSkjSk-5DuAVPqKIkKNseCKPSu24dIoqMfLLO9_5n5iHblfElIL02Bh1qqtE-eBmAkSDShTrpPHPHdHxnuYWk322jltXUfLa_UHUhOG8EEFv0ebXLekkPY4t5QuXSuh4lXqSYv_BRcjElgqYg1YXXV033nyLTXqyRYvdv2Dr3bnTydQhNSrfpYVLB5BfYktfd93uD',
-    'https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=800',
-    'https://images.unsplash.com/photo-1537225228614-56cc3556d7ed?q=80&w=800',
+    'https://picsum.photos/seed/djmaqx/600/400',
+    'https://picsum.photos/seed/e8pfoz/600/400',
   ];
 
   @override
@@ -237,7 +237,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           const CircleAvatar(
               radius: 24,
               backgroundImage: NetworkImage(
-                  'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=200')),
+                  'https://picsum.photos/seed/43aujc/600/400')),
           const SizedBox(width: 16),
           const Expanded(
             child: Column(

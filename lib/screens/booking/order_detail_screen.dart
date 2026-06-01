@@ -69,7 +69,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 item.productName,
                 'ALAT',
                 order.storeId,
-                'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+                'https://picsum.photos/seed/8mjgop/600/400',
               ),
             )).toList(),
             const SizedBox(height: 32),

@@ -135,7 +135,7 @@ class LiveTrackingScreen extends StatelessWidget {
                       const CircleAvatar(
                         radius: 28,
                         backgroundImage: NetworkImage(
-                            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200'),
+                            'https://picsum.photos/seed/55teso/600/400'),
                       ),
                       const SizedBox(width: 16),
                       Expanded(

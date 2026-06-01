@@ -106,7 +106,7 @@ class SearchNotFoundScreen extends StatelessWidget {
               opacity: 0.6,
               child: CustomNetworkImage(
                 imageUrl:
-                    'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400',
+                    'https://picsum.photos/seed/var3ll/600/400',
                 width: 192,
                 height: 192,
               ),

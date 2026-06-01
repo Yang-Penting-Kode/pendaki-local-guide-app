@@ -136,7 +136,7 @@ class _ProductSearchResultScreenState extends State<ProductSearchResultScreen> {
               rating: '4.8',
               reviewCount: 120,
               imageUrl:
-                  'https://images.unsplash.com/photo-1515408320194-59643816c5b2?q=80&w=400',
+                  'https://picsum.photos/seed/anurku/600/400',
               isAvailable: true,
             ),
             _buildGearCard(
@@ -147,7 +147,7 @@ class _ProductSearchResultScreenState extends State<ProductSearchResultScreen> {
               rating: '4.9',
               reviewCount: 85,
               imageUrl:
-                  'https://images.unsplash.com/photo-1621072156002-e2fcced0b170?q=80&w=400',
+                  'https://picsum.photos/seed/2f8skm/600/400',
               isAvailable: true,
             ),
             _buildGearCard(
@@ -158,7 +158,7 @@ class _ProductSearchResultScreenState extends State<ProductSearchResultScreen> {
               rating: '4.7',
               reviewCount: 64,
               imageUrl:
-                  'https://images.unsplash.com/photo-1533632359083-0185df1be85d?q=80&w=400',
+                  'https://picsum.photos/seed/rktwlu/600/400',
               isAvailable: false,
             ),
           ],

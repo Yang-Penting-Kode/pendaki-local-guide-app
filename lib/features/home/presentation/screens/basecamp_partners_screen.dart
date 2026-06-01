@@ -232,7 +232,7 @@ class BasecampPartnersScreen extends StatelessWidget {
                               'Tretes Gear Hub #$index',
                               '4.9',
                               distStr, // 🚀 Jarak nyata dari Haversine
-                              'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
+                              'https://picsum.photos/seed/ixq57o/600/400',
                             );
                           },
                           childCount: 10,

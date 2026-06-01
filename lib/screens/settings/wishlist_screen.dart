@@ -127,9 +127,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
               child: ListView(
                 children: [
                   _buildCartItem('Tenda Eiger 4P', 'Rp 50.000',
-                      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=200'),
+                      'https://picsum.photos/seed/quyg4d/600/400'),
                   _buildCartItem('Matras Ultralight', 'Rp 15.000',
-                      'https://images.unsplash.com/photo-1596751303362-78d1fe9007aa?q=80&w=200'),
+                      'https://picsum.photos/seed/l2h96q/600/400'),
                 ],
               ),
             ),
@@ -233,7 +233,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 '4.8',
                 '128',
                 '50.000',
-                'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+                'https://picsum.photos/seed/8bohvd/600/400',
                 primaryColor,
                 id,
             )),

@@ -280,7 +280,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen>
     final priceStr = "Rp ${order.totalGrossPrice.toStringAsFixed(0)}";
     
     // Fallback imageUrl
-    const fallbackImage = 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400';
+    const fallbackImage = 'https://picsum.photos/seed/zi2xub/600/400';
     
     VoidCallback? action;
     if (order.status == OrderStatus.awaitingConfirmation || order.status == OrderStatus.activeRental) {

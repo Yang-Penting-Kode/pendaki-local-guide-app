@@ -257,7 +257,7 @@ class _OrdersScreenState extends State<OrdersScreen>
           location: 'Basecamp Semeru',
           price: 'Rp 100.000',
           imageUrl:
-              'https://images.unsplash.com/photo-1510672396124-801347d9260e?q=80&w=400',
+              'https://picsum.photos/seed/p0qffl/600/400',
           statusColor: const Color(0xFF006C0C),
           buttonText: 'Detail',
           isGradientButton: true,
@@ -271,7 +271,7 @@ class _OrdersScreenState extends State<OrdersScreen>
           location: 'Dikirim Kurir',
           price: 'Rp 120.000',
           imageUrl:
-              'https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400',
+              'https://picsum.photos/seed/f8ra1w/600/400',
           statusColor: Colors.blue.shade700,
           buttonText: 'Lacak',
           isGradientButton: false,

@@ -2,7 +2,7 @@ import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.d
 
 extension LegacyOrderModelGetters on OrderModel {
   String get mainTitle => items.isNotEmpty ? items.first.productName : 'Pesanan Tanpa Alat';
-  String get mainImageUrl => 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=200';
+  String get mainImageUrl => 'https://picsum.photos/seed/0zk4wt/600/400';
   String get dateRangeDisplay {
     final diff = rentalEndDate.difference(rentalStartDate).inDays;
     return '${rentalStartDate.day} Mei - ${rentalEndDate.day} Juni 2026 (${diff == 0 ? 1 : diff} Hari)';

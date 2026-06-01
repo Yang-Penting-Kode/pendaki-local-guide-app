@@ -168,7 +168,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             borderRadius: BorderRadius.circular(8),
             child: CustomNetworkImage(
               imageUrl:
-                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=200',
+                  'https://picsum.photos/seed/z41jvl/600/400',
               width: 70,
               height: 70,
             ),

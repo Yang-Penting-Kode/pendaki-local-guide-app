@@ -209,7 +209,7 @@ class HelpCenterScreen extends StatelessWidget {
           const Positioned.fill(
             child: CustomNetworkImage(
               imageUrl:
-                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
+                  'https://picsum.photos/seed/ghjil1/600/400',
               fit: BoxFit.cover,
             ),
           ),

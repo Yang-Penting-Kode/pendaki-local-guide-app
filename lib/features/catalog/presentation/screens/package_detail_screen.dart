@@ -175,7 +175,7 @@ class PackageDetailScreen extends ConsumerWidget {
                     ? Image.file(File(package.imageUrl!), fit: BoxFit.cover)
                     : Image.network(package.imageUrl!, fit: BoxFit.cover))
                 : Image.network(
-                    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
+                    'https://picsum.photos/seed/qmenqu/600/400',
                     fit: BoxFit.cover,
                   ),
           ),

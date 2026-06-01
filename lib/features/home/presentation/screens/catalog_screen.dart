@@ -101,7 +101,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     child: const ClipOval(
                       child: CustomNetworkImage(
                         imageUrl:
-                            'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=200',
+                            'https://picsum.photos/seed/tzjz23/600/400',
                       ),
                     ),
                   ),
@@ -178,25 +178,25 @@ class _CatalogScreenState extends State<CatalogScreen> {
               childAspectRatio: 0.65,
               children: [
                 _buildProductCard(context, 'Tenda Eiger 4P', '50.000', '3',
-                    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4'),
+                    'https://picsum.photos/seed/uuc3jk/600/400'),
                 _buildProductCard(
                     context,
                     'Tenda Consina Magnum 4',
                     '45.000',
                     '1',
-                    'https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7'),
+                    'https://picsum.photos/seed/gx81kh/600/400'),
                 _buildProductCard(
                     context,
                     'Tenda Great Outdoor 6P',
                     '75.000',
                     '5',
-                    'https://images.unsplash.com/photo-1537225228614-56cc3556d7ed'),
+                    'https://picsum.photos/seed/dksv4g/600/400'),
                 _buildProductCard(
                     context,
                     'Tenda Naturehike Cloud Up 2',
                     '60.000',
                     '2',
-                    'https://images.unsplash.com/photo-1517824806704-9040b037703b'),
+                    'https://picsum.photos/seed/mzedes/600/400'),
               ],
             ),
           ],

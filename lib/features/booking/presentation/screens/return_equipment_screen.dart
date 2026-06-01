@@ -131,7 +131,7 @@ class _ReturnEquipmentScreenState extends ConsumerState<ReturnEquipmentScreen> {
                 _buildGearItem(
                   item.productName,
                   'Rp ${item.unitPrice.toStringAsFixed(0)}',
-                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+                  'https://picsum.photos/seed/ewa91x/600/400',
                   item.quantity
                 ),
                 const SizedBox(height: 12),

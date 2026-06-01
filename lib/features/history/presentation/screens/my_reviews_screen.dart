@@ -73,7 +73,7 @@ class MyReviewsScreen extends ConsumerWidget {
                           date: DateFormat('dd MMM yyyy').format(order.updatedAt),
                           content: order.reviewText ?? '',
                           rating: order.rating?.toInt() ?? 0,
-                          imageUrl: item != null ? 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4' : '',
+                          imageUrl: item != null ? 'https://picsum.photos/seed/7wzqc3/600/400' : '',
                           primary: primaryColor,
                           orderId: order.id,
                         ),

@@ -67,21 +67,21 @@ class TrackingOrderScreen extends ConsumerWidget {
             timeAndDesc: '11:15 WIB - Tim logistik mengemas perlengkapan ekspedisi.',
             status: TrackingStatus.completed,
             hasProof: true,
-            proofImageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400',
+            proofImageUrl: 'https://picsum.photos/seed/gag4x1/600/400',
           ),
           const TrackingStageModel(
             title: 'Dalam Pengantaran',
             timeAndDesc: '13:45 WIB - Kurir menuju lokasi pengiriman Anda.',
             status: TrackingStatus.current,
             hasProof: true,
-            proofImageUrl: 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=400',
+            proofImageUrl: 'https://picsum.photos/seed/r3sfet/600/400',
           ),
           const TrackingStageModel(
             title: 'Tiba di Lokasi',
             timeAndDesc: 'Estimasi kedatangan: 14:30 WIB.',
             status: TrackingStatus.pending,
             hasProof: true,
-            proofImageUrl: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=400',
+            proofImageUrl: 'https://picsum.photos/seed/m4kwl5/600/400',
           ),
         ];
         return Scaffold(
@@ -379,7 +379,7 @@ class TrackingOrderScreen extends ConsumerWidget {
                   child: ClipOval(
                     child: CustomNetworkImage(
                       imageUrl:
-                          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200',
+                          'https://picsum.photos/seed/wdachr/600/400',
                     ),
                   ),
                 ),

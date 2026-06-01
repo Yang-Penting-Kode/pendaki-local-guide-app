@@ -138,7 +138,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
-                          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
+                          'https://picsum.photos/seed/cesi6g/600/400',
                           width: 56,
                           height: 56,
                           fit: BoxFit.cover,

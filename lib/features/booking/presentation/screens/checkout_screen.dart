@@ -170,7 +170,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
-                                'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
+                                'https://picsum.photos/seed/wrrt6e/600/400',
                                 width: 64,
                                 height: 64,
                                 fit: BoxFit.cover,

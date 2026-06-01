@@ -78,7 +78,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 aspectRatio: 21 / 9,
                 child: CustomNetworkImage(
                   imageUrl:
-                      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=1000',
+                      'https://picsum.photos/seed/a6ags6/600/400',
                   fit: BoxFit.cover,
                 ),
               ),

@@ -122,7 +122,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             // 🚀 PERBAIKAN: Gunakan CustomNetworkImage
             child: const CustomNetworkImage(
               imageUrl:
-                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
+                  'https://picsum.photos/seed/8y7gtr/600/400',
               width: 64,
               height: 64,
             ),

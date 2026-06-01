@@ -64,7 +64,7 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
             child: CircleAvatar(
               radius: 18,
               backgroundImage: NetworkImage(
-                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100'),
+                  'https://picsum.photos/seed/6bzl1a/600/400'),
             ),
           ),
         ],
@@ -192,7 +192,7 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
                 opacity: 0.4,
                 child: const CustomNetworkImage(
                   imageUrl:
-                      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
+                      'https://picsum.photos/seed/oxst6w/600/400',
                   width: double.infinity,
                   height: double.infinity,
                 ),

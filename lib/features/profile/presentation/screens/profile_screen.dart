@@ -311,7 +311,7 @@ class ProfileScreen extends ConsumerWidget {
                     ? Image.file(File(user!.profilePhotoUrl!), fit: BoxFit.cover, width: 120, height: 120)
                     : const CustomNetworkImage(
                         imageUrl:
-                            'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=400',
+                            'https://picsum.photos/seed/gd4fom/600/400',
                       ),
               ),
             ),

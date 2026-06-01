@@ -43,7 +43,7 @@ class DeliveryArrivedScreen extends StatelessWidget {
               children: [
                 const CustomNetworkImage(
                   imageUrl:
-                      'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=1000',
+                      'https://picsum.photos/seed/xj6y33/600/400',
                   width: double.infinity,
                   height: double.infinity,
                 ),
@@ -172,7 +172,7 @@ class DeliveryArrivedScreen extends StatelessWidget {
                         const CircleAvatar(
                           radius: 28,
                           backgroundImage: NetworkImage(
-                              'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200'),
+                              'https://picsum.photos/seed/gk0o9k/600/400'),
                         ),
                         const SizedBox(width: 16),
                         const Expanded(
@@ -214,7 +214,7 @@ class DeliveryArrivedScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           child: const CustomNetworkImage(
                             imageUrl:
-                                'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=200',
+                                'https://picsum.photos/seed/z94yix/600/400',
                             width: 64,
                             height: 64,
                           ),

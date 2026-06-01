@@ -18,7 +18,7 @@ class PackageRemoteDatasourceImpl implements PackageRemoteDatasource {
         storeId: 'store1',
         name: 'Paket Pemula Hemat',
         description: 'Paket lengkap untuk pendaki pemula 2 hari 1 malam.',
-        imageUrl: 'https://images.unsplash.com/photo-1534889156217-d643df14f14a?q=80&w=400',
+        imageUrl: 'https://picsum.photos/seed/7hqkdg/600/400',
         price: Decimal.parse('150000'),
         stock: 5,
         items: const [
@@ -33,7 +33,7 @@ class PackageRemoteDatasourceImpl implements PackageRemoteDatasource {
         storeId: 'store1',
         name: 'Paket VIP Ekspedisi',
         description: 'Paket premium dengan tenda 4 musim dan kompor portabel.',
-        imageUrl: 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=400',
+        imageUrl: 'https://picsum.photos/seed/re0zy6/600/400',
         price: Decimal.parse('350000'),
         stock: 2,
         items: const [

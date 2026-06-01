@@ -241,7 +241,7 @@ class ReturnConfirmationScreen extends ConsumerWidget {
                   item.productName,
                   'Rp ${item.unitPrice.toStringAsFixed(0)}',
                   '${item.quantity}x',
-                  'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4',
+                  'https://picsum.photos/seed/mi1d36/600/400',
                   bg,
                   primary),
               if (item != items.last) const Divider(height: 1),

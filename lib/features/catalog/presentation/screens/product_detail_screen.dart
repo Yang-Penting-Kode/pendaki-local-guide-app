@@ -33,7 +33,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         product = args;
       }
       if (product != null) {
-        _activeHeroImage = product.imageUrl ?? 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400';
+        _activeHeroImage = product.imageUrl ?? 'https://picsum.photos/seed/1xxf0h/600/400';
         _productImages = [_activeHeroImage];
         _isWishlisted = StorageService.getWishlist().contains(product.id);
       }

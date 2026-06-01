@@ -25,7 +25,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
       'desc':
           'Pesan perlengkapan mendaki dari mitra lokal di sekitar basecamp. Aman, praktis, dan terpercaya.',
       'image':
-          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
+          'https://picsum.photos/seed/n3kcen/600/400',
       'icon': 'backpack',
     },
     {
@@ -33,7 +33,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
       'desc':
           'Atur jadwal, pilih rute, dan koordinasi dengan tim dalam satu aplikasi yang terintegrasi.',
       'image':
-          'https://images.unsplash.com/photo-1515408320194-59643816c5b2?q=80&w=600',
+          'https://picsum.photos/seed/j6nj7i/600/400',
       'icon': 'terrain',
     },
     {
@@ -41,7 +41,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
       'desc':
           'Temukan guide lokal terpercaya. Dilengkapi fitur pantau posisi real-time dan SOS darurat bahkan saat offline.',
       'image':
-          'https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=600',
+          'https://picsum.photos/seed/mqxwyc/600/400',
       'icon': 'emergency',
     },
   ];

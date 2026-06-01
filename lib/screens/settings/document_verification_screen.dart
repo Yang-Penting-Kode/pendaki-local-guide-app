@@ -68,14 +68,14 @@ class DocumentVerificationScreen extends StatelessWidget {
                 _buildDocumentCard(
                   'Kartu Identitas (KTP)',
                   'ktp_adi_chandra_2026.jpg',
-                  'https://images.unsplash.com/photo-1589330694653-ded6df03f754?q=80&w=400',
+                  'https://picsum.photos/seed/fljpe3/600/400',
                   primaryColor,
                 ),
                 const SizedBox(height: 16),
                 // _buildDocumentCard(
                 //   'Surat Keterangan Sehat',
                 //   'surat_dokter_terbaru.pdf',
-                //   'https://images.unsplash.com/photo-1583521214690-73421a1829a9?q=80&w=400',
+                //   'https://picsum.photos/seed/6k01jy/600/400',
                 //   primaryColor,
                 // ),
 

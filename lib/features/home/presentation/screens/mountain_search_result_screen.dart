@@ -98,7 +98,7 @@ class _MountainSearchResultScreenState
               difficulty: mountain?.difficulty ?? 'SULIT',
               rentalCount: 12,
               imageUrl: mountain?.imageUrl ??
-                  'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?q=80&w=400',
+                  'https://picsum.photos/seed/axrbmh/600/400',
             ),
           ],
         ),
