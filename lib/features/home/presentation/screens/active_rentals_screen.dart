@@ -58,7 +58,7 @@ class ActiveRentalsScreen extends ConsumerWidget {
       ),
       body: ordersAsync.when(
         data: (orders) {
-          final activeOrders = orders.where((o) => o.status == OrderStatus.activeRental).toList();
+          final activeOrders = orders.where((o) => o.status == OrderStatus.activeRental || o.status == OrderStatus.awaitingConfirmation).toList();
 
           if (activeOrders.isEmpty) {
             return _buildEmptyState(context, primaryColor);

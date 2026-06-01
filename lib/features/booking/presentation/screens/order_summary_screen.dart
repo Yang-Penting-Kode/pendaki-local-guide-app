@@ -85,18 +85,27 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
     final cartTotal = ref.watch(cartTotalProvider);
 
     // 🚀 Tangkap operan dari CheckoutScreen
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String? simaksiPath = args?['simaksiPath'];
-    final Decimal deliveryCost = args?['deliveryCost'] as Decimal? ?? Decimal.zero;
+    final Decimal deliveryCost =
+        args?['deliveryCost'] as Decimal? ?? Decimal.zero;
     final int durationDays = args?['durationDays'] as int? ?? 1; // 🚀
-    final DateTime rentalStart = args?['rentalStart'] as DateTime? ?? DateTime.now(); // 🚀
-    final DateTime rentalEnd = args?['rentalEnd'] as DateTime? ?? DateTime.now().add(const Duration(days: 1)); // 🚀
+    final DateTime rentalStart =
+        args?['rentalStart'] as DateTime? ?? DateTime.now(); // 🚀
+    final DateTime rentalEnd = args?['rentalEnd'] as DateTime? ??
+        DateTime.now().add(const Duration(days: 1)); // 🚀
 
     final adminFee = Decimal.parse('5000');
-    final rentalCost = cartTotal * Decimal.fromInt(durationDays); // 🚀 Rental calculation
+    final rentalCost =
+        cartTotal * Decimal.fromInt(durationDays); // 🚀 Rental calculation
     final taxAmount = rentalCost * Decimal.parse('0.11'); // 🚀 PPN 11%
     final paymentMethodFee = Decimal.parse('2500'); // 🚀 Biaya Pembayaran
-    final grandTotal = rentalCost + adminFee + deliveryCost + taxAmount + paymentMethodFee; // 🚀 Injeksi Ongkir, Rental, Tax, Fee
+    final grandTotal = rentalCost +
+        adminFee +
+        deliveryCost +
+        taxAmount +
+        paymentMethodFee; // 🚀 Injeksi Ongkir, Rental, Tax, Fee
 
     // Item pertama untuk display card
 
@@ -116,7 +125,8 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                 fontSize: 18)),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 32), // 🚀 HOTFIX: Padding disesuaikan
+        padding: const EdgeInsets.fromLTRB(
+            16, 20, 16, 32), // 🚀 HOTFIX: Padding disesuaikan
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -131,36 +141,57 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: Column(
-                children: cartItems.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          'https://picsum.photos/seed/cesi6g/600/400',
-                          width: 56,
-                          height: 56,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(width: 56, height: 56, color: Colors.grey.shade200, child: const Icon(Icons.broken_image, color: Colors.grey, size: 24)),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item.productName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
-                            const SizedBox(height: 4),
-                            Text('${item.quantity} Unit x Rp ${item.unitPrice.toStringAsFixed(0)}', style: const TextStyle(color: Color(0xFF3E4942), fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      Text('Rp ${(item.unitPrice * Decimal.fromInt(item.quantity) * Decimal.fromInt(durationDays)).toStringAsFixed(0)}', style: const TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12)),
-                    ],
-                  ),
-                )).toList(),
+                children: cartItems
+                    .map((item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  'https://picsum.photos/seed/cesi6g/600/400',
+                                  width: 56,
+                                  height: 56,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                          width: 56,
+                                          height: 56,
+                                          color: Colors.grey.shade200,
+                                          child: const Icon(Icons.broken_image,
+                                              color: Colors.grey, size: 24)),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(item.productName,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                        '${item.quantity} Unit x Rp ${item.unitPrice.toStringAsFixed(0)}',
+                                        style: const TextStyle(
+                                            color: Color(0xFF3E4942),
+                                            fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                  'Rp ${(item.unitPrice * Decimal.fromInt(item.quantity) * Decimal.fromInt(durationDays)).toStringAsFixed(0)}',
+                                  style: const TextStyle(
+                                      color: primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12)),
+                            ],
+                          ),
+                        ))
+                    .toList(),
               ),
             ),
             const SizedBox(height: 24),
@@ -190,11 +221,17 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(simaksiPath != null ? simaksiPath.split('/').last : 'Belum Terlampir',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(
+                            simaksiPath != null
+                                ? simaksiPath.split('/').last
+                                : 'Belum Terlampir',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
                         Text(simaksiPath != null ? 'Terunggah' : 'File Hilang',
-                            style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12)),
                       ],
                     ),
                   ),
@@ -208,7 +245,8 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                               insetPadding: const EdgeInsets.all(16),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
-                                child: Image.file(File(simaksiPath), fit: BoxFit.contain),
+                                child: Image.file(File(simaksiPath),
+                                    fit: BoxFit.contain),
                               ),
                             ),
                           );
@@ -265,8 +303,8 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text('Pilih Metode Pembayaran',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey)),
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey)),
                           Text(_selectedPayment,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15)),
@@ -282,13 +320,22 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
             const _SectionTitle(title: 'RINCIAN BIAYA'),
             const SizedBox(height: 12),
             // 6. Price Breakdown — 🔌 Injeksi: Dari cartTotalProvider
-            _buildPriceBreakdown(rentalCost, adminFee, deliveryCost, taxAmount, paymentMethodFee, grandTotal, primaryColor,
-                onSurfaceVariant, durationDays),
+            _buildPriceBreakdown(
+                rentalCost,
+                adminFee,
+                deliveryCost,
+                taxAmount,
+                paymentMethodFee,
+                grandTotal,
+                primaryColor,
+                onSurfaceVariant,
+                durationDays),
           ],
         ),
       ),
       // 🔥 CRITICAL: Sticky footer dengan createOrder()
-      bottomNavigationBar: _buildStickyFooter(primaryColor, grandTotal, deliveryCost, taxAmount, paymentMethodFee, rentalStart, rentalEnd),
+      bottomNavigationBar: _buildStickyFooter(primaryColor, grandTotal,
+          deliveryCost, taxAmount, paymentMethodFee, rentalStart, rentalEnd),
     );
   }
 
@@ -335,16 +382,15 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                   initialCenter: LatLng(-6.7725, 106.9489), initialZoom: 15),
               children: [
                 TileLayer(
-                  urlTemplate:
-                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   // ⚠️ WAJIB — Tanpa ini map akan 403 Forbidden
                   userAgentPackageName: 'com.localguide.app',
                 ),
                 const MarkerLayer(markers: [
                   Marker(
                       point: LatLng(-6.7725, 106.9489),
-                      child: Icon(Icons.location_on,
-                          color: Colors.red, size: 36)),
+                      child:
+                          Icon(Icons.location_on, color: Colors.red, size: 36)),
                 ]),
               ],
             ),
@@ -353,20 +399,25 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             color: const Color(0xFFF3F3F3),
-            child: Text(
-                '"Peralatan akan diantar ke titik kumpul basecamp."',
+            child: Text('"Peralatan akan diantar ke titik kumpul basecamp."',
                 style: TextStyle(
-                    color: variant,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic)),
+                    color: variant, fontSize: 12, fontStyle: FontStyle.italic)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPriceBreakdown(Decimal rentalCost, Decimal adminFee,
-      Decimal deliveryCost, Decimal taxAmount, Decimal paymentMethodFee, Decimal grandTotal, Color primary, Color variant, int durationDays) {
+  Widget _buildPriceBreakdown(
+      Decimal rentalCost,
+      Decimal adminFee,
+      Decimal deliveryCost,
+      Decimal taxAmount,
+      Decimal paymentMethodFee,
+      Decimal grandTotal,
+      Color primary,
+      Color variant,
+      int durationDays) {
     return Column(
       children: [
         // 🔌 Injeksi: Harga sewa dari cartTotalProvider
@@ -376,8 +427,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
         const SizedBox(height: 8),
         // Biaya Admin flat Rp 5.000
         _PriceRow(
-            label: 'Biaya Admin',
-            value: 'Rp ${adminFee.toStringAsFixed(0)}'),
+            label: 'Biaya Admin', value: 'Rp ${adminFee.toStringAsFixed(0)}'),
         const SizedBox(height: 8),
         // 🚀 Biaya Pengantaran
         _PriceRow(
@@ -386,8 +436,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
         const SizedBox(height: 8),
         // 🚀 PPN
         _PriceRow(
-            label: 'PPN 11%',
-            value: 'Rp ${taxAmount.toStringAsFixed(0)}'),
+            label: 'PPN 11%', value: 'Rp ${taxAmount.toStringAsFixed(0)}'),
         const SizedBox(height: 8),
         // 🚀 Biaya Pembayaran
         _PriceRow(
@@ -398,14 +447,11 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Total Tagihan',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             // 🔌 Injeksi: Grand total = cartTotal + adminFee
             Text('Rp ${grandTotal.toStringAsFixed(0)}',
                 style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20,
-                    color: primary)),
+                    fontWeight: FontWeight.w900, fontSize: 20, color: primary)),
           ],
         ),
       ],
@@ -413,7 +459,14 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
   }
 
   // 🔥 CRITICAL: Footer dengan createOrder() logic
-  Widget _buildStickyFooter(Color primary, Decimal grandTotal, Decimal deliveryCost, Decimal taxAmount, Decimal paymentMethodFee, DateTime rentalStart, DateTime rentalEnd) {
+  Widget _buildStickyFooter(
+      Color primary,
+      Decimal grandTotal,
+      Decimal deliveryCost,
+      Decimal taxAmount,
+      Decimal paymentMethodFee,
+      DateTime rentalStart,
+      DateTime rentalEnd) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -441,84 +494,73 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
             height: 56,
             child: ElevatedButton.icon(
               // Disabled jika: pembayaran belum dipilih ATAU sedang processing
-              onPressed:
-                  (_selectedPayment == 'Belum Dipilih' || _isProcessing)
-                      ? null
-                      : () async {
-                          // Ambil user yang sedang login dari authProvider
-                          final currentUser = ref.read(authProvider);
+              onPressed: (_selectedPayment == 'Belum Dipilih' || _isProcessing)
+                  ? null
+                  : () async {
+                      // Ambil user yang sedang login dari authProvider
+                      final currentUser = ref.read(authProvider);
 
-                          // Guard: Tidak mungkin masuk sini tanpa login,
-                          // tapi tetap defensif
-                          if (currentUser == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    'Sesi login habis. Silakan login ulang.'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return;
-                          }
+                      // Guard: Tidak mungkin masuk sini tanpa login,
+                      // tapi tetap defensif
+                      if (currentUser == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Sesi login habis. Silakan login ulang.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
 
-                          // Set loading state — cegah double-tap
-                          setState(() => _isProcessing = true);
+                      // Set loading state — cegah double-tap
+                      setState(() => _isProcessing = true);
 
-                          // 🔥 INJEKSI: Panggil createOrder via orderProvider.notifier
-                          final orderId = await ref
-                              .read(orderProvider.notifier)
-                              .createOrder(
-                                currentUser: currentUser,
-                                rentalStart: rentalStart, // 🚀 Dari date picker checkout
-                                rentalEnd: rentalEnd, // 🚀 Dari date picker checkout
-                                deliveryCost: deliveryCost, // 🚀 SOLVED THE ERROR
-                                taxAmount: taxAmount,
-                                paymentMethodFee: paymentMethodFee,
-                                paymentMethod: _selectedPayment,
-                              );
+                      // 🔥 INJEKSI: Panggil createOrder via orderProvider.notifier
+                      final orderId = await ref
+                          .read(orderProvider.notifier)
+                          .createOrder(
+                            currentUser: currentUser,
+                            rentalStart:
+                                rentalStart, // 🚀 Dari date picker checkout
+                            rentalEnd:
+                                rentalEnd, // 🚀 Dari date picker checkout
+                            deliveryCost: deliveryCost, // 🚀 SOLVED THE ERROR
+                            taxAmount: taxAmount,
+                            paymentMethodFee: paymentMethodFee,
+                            paymentMethod: _selectedPayment,
+                          );
 
-                          // START REPLACE
-                          final cartItems = ref.read(cartProvider); // Fix for cartItems undefined
-                          final mockRentalData = jsonEncode({
-                            'id': orderId ?? 'ORD-${DateTime.now().millisecondsSinceEpoch}',
-                            'date': DateTime.now().toIso8601String(),
-                            'status': 'active_rental',
-                            'itemName': cartItems.isNotEmpty ? cartItems.first.productName : 'Paket Tenda & Alat',
-                            'imageUrl': 'https://picsum.photos/seed/rental${DateTime.now().millisecond}/200/200',
-                            'rentalStart': rentalStart.toIso8601String(),
-                            'rentalEnd': rentalEnd.toIso8601String(),
-                          });
-                          await StorageService.saveActiveRental(mockRentalData);
-                          // END REPLACE
+                      // 🚀 FIX: Legacy StorageService.saveActiveRental dihapus karena kita
+                      // sekarang menggunakan orderProvider sepenuhnya.
 
-                          // ⚠️ WAJIB: Cek mounted setelah async gap
-                          if (!mounted) return;
+                      // ⚠️ WAJIB: Cek mounted setelah async gap
+                      if (!mounted) return;
 
-                          setState(() => _isProcessing = false);
+                      setState(() => _isProcessing = false);
 
-                          if (orderId != null) {
-                            // 🎯 Navigasi ke /transaction-success
-                            // pushNamedAndRemoveUntil → bersihkan stack sampai /dashboard
-                            // arguments: orderId → ditampilkan di success screen
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              '/transaction-success',
-                              (route) =>
-                                  route.settings.name == '/dashboard',
-                              arguments: orderId,
-                            );
-                          } else {
-                            // Order gagal dibuat (keranjang kosong?)
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    'Gagal membuat pesanan. Pastikan keranjang tidak kosong.'),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          }
-                        },
+                      if (orderId != null) {
+                        // 🎯 Navigasi ke /transaction-success
+                        // pushNamedAndRemoveUntil → bersihkan stack sampai /dashboard
+                        // arguments: orderId → ditampilkan di success screen
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/transaction-success',
+                          (route) => route.settings.name == '/dashboard',
+                          arguments: orderId,
+                        );
+                      } else {
+                        // Order gagal dibuat (keranjang kosong?)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Gagal membuat pesanan. Pastikan keranjang tidak kosong.'),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    },
               icon: _isProcessing
                   ? const SizedBox(
                       width: 18,
@@ -526,8 +568,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                       child: CircularProgressIndicator(
                           color: Colors.white, strokeWidth: 2))
                   : const Icon(Icons.lock, size: 18),
-              label: Text(
-                  _isProcessing ? 'Memproses...' : 'Bayar Sekarang',
+              label: Text(_isProcessing ? 'Memproses...' : 'Bayar Sekarang',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF007A52),
@@ -553,15 +594,13 @@ class _PriceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13)),
-              Text(value,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w600, fontSize: 13)),
-            ]),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+          Text(value,
+              style:
+                  const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+        ]),
       );
 }
 

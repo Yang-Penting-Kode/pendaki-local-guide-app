@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pendaki_local_guide_app/features/booking/data/repositories/order_repository.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/cart_provider.dart';
 import 'package:pendaki_local_guide_app/shared/models/auth/user_model.dart';
+import 'package:pendaki_local_guide_app/features/auth/providers/auth_provider.dart';
 import 'package:pendaki_local_guide_app/shared/models/enums/app_enums.dart';
 import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
 
@@ -39,7 +40,11 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
 
   @override
   Future<List<OrderModel>> build() async {
-    // In-Memory: mulai dari list kosong, akan diisi saat checkout
+    // 🚀 FIX: Langsung fetch dari repository saat inisialisasi agar state tidak kosong
+    final user = ref.watch(authProvider);
+    if (user != null) {
+      return await _repo.getOrdersByCustomerId(user.id);
+    }
     return [];
   }
 
