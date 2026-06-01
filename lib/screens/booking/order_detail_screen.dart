@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:decimal/decimal.dart';
 import 'package:intl/intl.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/order_provider.dart';
 import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
@@ -75,7 +76,7 @@ class OrderDetailScreen extends ConsumerWidget {
 
             // 3. Rincian Pembayaran
             _buildPaymentDetail(order),
-            const SizedBox(height: 100), // Spacer untuk footer
+            const SizedBox(height: 175), // Spacer untuk footer
           ],
         ),
       ),
@@ -209,18 +210,31 @@ class OrderDetailScreen extends ConsumerWidget {
           _buildPriceRow('Subtotal Sewa', 'Rp ${order.rentalCost.toStringAsFixed(0)}'),
           _buildPriceRow('Biaya Layanan', 'Rp ${order.platformServiceFee.toStringAsFixed(0)}'),
           _buildPriceRow('Biaya Pengantaran', 'Rp ${order.deliveryCost.toStringAsFixed(0)}'),
+          _buildPriceRow('PPN 11%', 'Rp ${(order.taxAmount ?? Decimal.zero).toStringAsFixed(0)}'),
+          _buildPriceRow('Biaya Penanganan', 'Rp ${(order.paymentMethodFee ?? Decimal.zero).toStringAsFixed(0)}'),
+          _buildPriceRow('Metode Pembayaran', order.paymentMethod ?? 'Tidak diketahui'),
           const Divider(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Total Pembayaran',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              Text(
-                'Rp ${order.totalGrossPrice.toStringAsFixed(0)}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
+              const Flexible(
+                child: Text('Total Pembayaran',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  'Rp ${order.totalGrossPrice.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -236,7 +250,15 @@ class OrderDetailScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.grey)),
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.grey),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
           Text(
             price,
             style: TextStyle(

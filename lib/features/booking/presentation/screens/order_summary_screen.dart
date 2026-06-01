@@ -92,10 +92,11 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
     final DateTime rentalStart = args?['rentalStart'] as DateTime? ?? DateTime.now(); // 🚀
     final DateTime rentalEnd = args?['rentalEnd'] as DateTime? ?? DateTime.now().add(const Duration(days: 1)); // 🚀
 
-    // Kalkulasi biaya admin flat
     final adminFee = Decimal.parse('5000');
     final rentalCost = cartTotal * Decimal.fromInt(durationDays); // 🚀 Rental calculation
-    final grandTotal = rentalCost + adminFee + deliveryCost; // 🚀 Injeksi Ongkir & Rental
+    final taxAmount = rentalCost * Decimal.parse('0.11'); // 🚀 PPN 11%
+    final paymentMethodFee = Decimal.parse('2500'); // 🚀 Biaya Pembayaran
+    final grandTotal = rentalCost + adminFee + deliveryCost + taxAmount + paymentMethodFee; // 🚀 Injeksi Ongkir, Rental, Tax, Fee
 
     // Item pertama untuk display card
 
@@ -281,13 +282,13 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
             const _SectionTitle(title: 'RINCIAN BIAYA'),
             const SizedBox(height: 12),
             // 6. Price Breakdown — 🔌 Injeksi: Dari cartTotalProvider
-            _buildPriceBreakdown(rentalCost, adminFee, deliveryCost, grandTotal, primaryColor,
+            _buildPriceBreakdown(rentalCost, adminFee, deliveryCost, taxAmount, paymentMethodFee, grandTotal, primaryColor,
                 onSurfaceVariant, durationDays),
           ],
         ),
       ),
       // 🔥 CRITICAL: Sticky footer dengan createOrder()
-      bottomNavigationBar: _buildStickyFooter(primaryColor, grandTotal, deliveryCost, rentalStart, rentalEnd),
+      bottomNavigationBar: _buildStickyFooter(primaryColor, grandTotal, deliveryCost, taxAmount, paymentMethodFee, rentalStart, rentalEnd),
     );
   }
 
@@ -365,7 +366,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
   }
 
   Widget _buildPriceBreakdown(Decimal rentalCost, Decimal adminFee,
-      Decimal deliveryCost, Decimal grandTotal, Color primary, Color variant, int durationDays) {
+      Decimal deliveryCost, Decimal taxAmount, Decimal paymentMethodFee, Decimal grandTotal, Color primary, Color variant, int durationDays) {
     return Column(
       children: [
         // 🔌 Injeksi: Harga sewa dari cartTotalProvider
@@ -382,6 +383,16 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
         _PriceRow(
             label: 'Biaya Pengantaran',
             value: 'Rp ${deliveryCost.toStringAsFixed(0)}'),
+        const SizedBox(height: 8),
+        // 🚀 PPN
+        _PriceRow(
+            label: 'PPN 11%',
+            value: 'Rp ${taxAmount.toStringAsFixed(0)}'),
+        const SizedBox(height: 8),
+        // 🚀 Biaya Pembayaran
+        _PriceRow(
+            label: 'Biaya Penanganan',
+            value: 'Rp ${paymentMethodFee.toStringAsFixed(0)}'),
         const Divider(height: 32),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -402,7 +413,7 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
   }
 
   // 🔥 CRITICAL: Footer dengan createOrder() logic
-  Widget _buildStickyFooter(Color primary, Decimal grandTotal, Decimal deliveryCost, DateTime rentalStart, DateTime rentalEnd) {
+  Widget _buildStickyFooter(Color primary, Decimal grandTotal, Decimal deliveryCost, Decimal taxAmount, Decimal paymentMethodFee, DateTime rentalStart, DateTime rentalEnd) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -461,6 +472,9 @@ class _OrderSummaryScreenState extends ConsumerState<OrderSummaryScreen> {
                                 rentalStart: rentalStart, // 🚀 Dari date picker checkout
                                 rentalEnd: rentalEnd, // 🚀 Dari date picker checkout
                                 deliveryCost: deliveryCost, // 🚀 SOLVED THE ERROR
+                                taxAmount: taxAmount,
+                                paymentMethodFee: paymentMethodFee,
+                                paymentMethod: _selectedPayment,
                               );
 
                           // START REPLACE

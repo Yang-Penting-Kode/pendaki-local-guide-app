@@ -23,6 +23,9 @@ class OrderModel {
   final Decimal depositCost;
   final Decimal platformServiceFee;
   final Decimal deliveryCost; // 🚀 Injeksi Delivery Cost
+  final Decimal? taxAmount; // 🚀 PPN
+  final Decimal? paymentMethodFee; // 🚀 Biaya Metode Pembayaran
+  final String? paymentMethod; // 🚀 Nama Metode Pembayaran
   final Decimal netEarnings;
   final List<OrderItemModel> items;
   final DateTime createdAt;
@@ -45,6 +48,9 @@ class OrderModel {
     required this.depositCost,
     required this.platformServiceFee,
     required this.deliveryCost, // 🚀
+    this.taxAmount,
+    this.paymentMethodFee,
+    this.paymentMethod,
     required this.netEarnings,
     required this.items,
     required this.createdAt,
@@ -75,6 +81,9 @@ class OrderModel {
       platformServiceFee:
           Decimal.parse(json['platform_service_fee']?.toString() ?? '0'),
       deliveryCost: Decimal.parse(json['delivery_cost']?.toString() ?? '0'), // 🚀
+      taxAmount: json['tax_amount'] != null ? Decimal.parse(json['tax_amount'].toString()) : Decimal.zero,
+      paymentMethodFee: json['payment_method_fee'] != null ? Decimal.parse(json['payment_method_fee'].toString()) : Decimal.zero,
+      paymentMethod: json['payment_method']?.toString(),
       netEarnings: Decimal.parse(json['net_earnings']?.toString() ?? '0'),
       items: (json['items'] as List<dynamic>?)
               ?.map((e) =>
@@ -108,6 +117,9 @@ class OrderModel {
       'deposit_cost': depositCost.toString(),
       'platform_service_fee': platformServiceFee.toString(),
       'delivery_cost': deliveryCost.toString(), // 🚀
+      'tax_amount': taxAmount?.toString() ?? '0',
+      'payment_method_fee': paymentMethodFee?.toString() ?? '0',
+      'payment_method': paymentMethod,
       'net_earnings': netEarnings.toString(),
       'items': items.map((e) => e.toJson()).toList(),
       'created_at': createdAt.toIso8601String(),
@@ -132,6 +144,9 @@ class OrderModel {
     Decimal? depositCost,
     Decimal? platformServiceFee,
     Decimal? deliveryCost, // 🚀
+    Decimal? taxAmount,
+    Decimal? paymentMethodFee,
+    String? paymentMethod,
     Decimal? netEarnings,
     List<OrderItemModel>? items,
     DateTime? createdAt,
@@ -154,6 +169,9 @@ class OrderModel {
       depositCost: depositCost ?? this.depositCost,
       platformServiceFee: platformServiceFee ?? this.platformServiceFee,
       deliveryCost: deliveryCost ?? this.deliveryCost, // 🚀
+      taxAmount: taxAmount ?? this.taxAmount,
+      paymentMethodFee: paymentMethodFee ?? this.paymentMethodFee,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
       netEarnings: netEarnings ?? this.netEarnings,
       items: items ?? this.items,
       createdAt: createdAt ?? this.createdAt,
@@ -179,6 +197,8 @@ class OrderItemModel {
   final String productName;
   final int quantity;
   final Decimal unitPrice;
+  final String? variantName;
+  final Decimal? variantPrice;
   final Decimal subtotal;
 
   const OrderItemModel({
@@ -186,6 +206,8 @@ class OrderItemModel {
     required this.productName,
     required this.quantity,
     required this.unitPrice,
+    this.variantName,
+    this.variantPrice,
     required this.subtotal,
   });
 
@@ -195,6 +217,8 @@ class OrderItemModel {
       productName: json['product_name'] ?? '',
       quantity: json['quantity'] ?? 0,
       unitPrice: Decimal.parse(json['unit_price']?.toString() ?? '0'),
+      variantName: json['variant_name']?.toString(),
+      variantPrice: json['variant_price'] != null ? Decimal.parse(json['variant_price'].toString()) : null,
       subtotal: Decimal.parse(json['subtotal']?.toString() ?? '0'),
     );
   }
@@ -205,6 +229,8 @@ class OrderItemModel {
       'product_name': productName,
       'quantity': quantity,
       'unit_price': unitPrice.toString(),
+      'variant_name': variantName,
+      'variant_price': variantPrice?.toString(),
       'subtotal': subtotal.toString(),
     };
   }
@@ -214,6 +240,8 @@ class OrderItemModel {
     String? productName,
     int? quantity,
     Decimal? unitPrice,
+    String? variantName,
+    Decimal? variantPrice,
     Decimal? subtotal,
   }) {
     return OrderItemModel(
@@ -221,6 +249,8 @@ class OrderItemModel {
       productName: productName ?? this.productName,
       quantity: quantity ?? this.quantity,
       unitPrice: unitPrice ?? this.unitPrice,
+      variantName: variantName ?? this.variantName,
+      variantPrice: variantPrice ?? this.variantPrice,
       subtotal: subtotal ?? this.subtotal,
     );
   }

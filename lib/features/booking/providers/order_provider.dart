@@ -65,6 +65,9 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
     required DateTime rentalStart,
     required DateTime rentalEnd,
     required Decimal deliveryCost, // 🚀 Injeksi Biaya Ongkir
+    Decimal? taxAmount,
+    Decimal? paymentMethodFee,
+    String? paymentMethod,
   }) async {
     // Ambil item keranjang dari cartProvider
     final cartItems = ref.read(cartProvider);
@@ -87,8 +90,8 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
     // Deposit dihapus sesuai aturan bisnis baru
     final depositCost = Decimal.zero;
 
-    // Total gross = Total Cart + Admin Fee + Delivery Cost (Ongkir)
-    final totalGrossPrice = rentalCost + platformFee + deliveryCost; // 🚀 Kalkulasi ulang
+    // Total gross = Total Cart + Admin Fee + Delivery Cost (Ongkir) + Tax + Payment Fee
+    final totalGrossPrice = rentalCost + platformFee + deliveryCost + (taxAmount ?? Decimal.zero) + (paymentMethodFee ?? Decimal.zero); // 🚀 Kalkulasi ulang
     
     // Net earnings (hanya untuk referensi internal, diabaikan di UI consumer)
     // Sebenarnya net earnings harus dikurangi markup per item, tapi demi kesederhanaan model:
@@ -111,6 +114,9 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
       depositCost: depositCost,
       platformServiceFee: platformFee,
       deliveryCost: deliveryCost, // 🚀 Masukkan Delivery Cost ke Model
+      taxAmount: taxAmount,
+      paymentMethodFee: paymentMethodFee,
+      paymentMethod: paymentMethod,
       netEarnings: netEarnings,
       items: cartItems, // Langsung dari cart — single source of truth
       createdAt: DateTime.now(),

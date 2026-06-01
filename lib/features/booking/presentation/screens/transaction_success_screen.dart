@@ -156,7 +156,7 @@ class TransactionSuccessScreen extends ConsumerWidget {
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.pushNamed(
                   context,
-                  '/qr-generator',
+                  '/order-detail',
                   arguments: orderId,
                 ),
                 style: ElevatedButton.styleFrom(
@@ -166,9 +166,9 @@ class TransactionSuccessScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(99)),
                   elevation: 0,
                 ),
-                icon: const Icon(Icons.qr_code, size: 24),
+                icon: const Icon(Icons.receipt_long, size: 24),
                 label: const Text(
-                  'Tampilkan QR Code',
+                  'Detail Pesanan',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
@@ -182,7 +182,7 @@ class TransactionSuccessScreen extends ConsumerWidget {
                     height: 50,
                     child: OutlinedButton(
                       onPressed: () =>
-                          Navigator.pushNamed(context, '/order-detail', arguments: orderId),
+                          Navigator.pushNamed(context, '/tracking-order', arguments: orderId),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: primaryColor,
                         side: const BorderSide(color: primaryColor),
@@ -190,7 +190,7 @@ class TransactionSuccessScreen extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(99)),
                       ),
                       child: const Text(
-                        'Detail Pesanan',
+                        'Lacak Pesanan',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 14),
                       ),
