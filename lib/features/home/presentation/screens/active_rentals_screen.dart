@@ -159,7 +159,7 @@ class ActiveRentalsScreen extends ConsumerWidget {
     Color onBackground,
   ) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order),
+      onTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order.id),
       child: Container(
         margin: const EdgeInsets.only(bottom: 24),
         decoration: BoxDecoration(
@@ -183,7 +183,7 @@ class ActiveRentalsScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: surfaceContainerLow,
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-                border: Border(bottom: BorderSide(color: outlineVariant.withOpacity(0.3))),
+                border: Border.all(color: outlineVariant.withOpacity(0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

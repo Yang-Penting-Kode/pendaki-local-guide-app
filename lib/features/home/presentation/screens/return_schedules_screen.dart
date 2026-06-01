@@ -71,7 +71,7 @@ class ReturnSchedulesScreen extends ConsumerWidget {
       body: ordersAsync.when(
         data: (orders) {
           final returnOrders = orders.where((o) => 
-            o.status == OrderStatus.activeRental || o.status == OrderStatus.readyForReturn
+            o.status == OrderStatus.activeRental || o.status == OrderStatus.readyForReturn || o.status == OrderStatus.awaitingConfirmation
           ).toList();
           
           returnOrders.sort((a, b) => a.rentalEndDate.compareTo(b.rentalEndDate));
@@ -201,7 +201,7 @@ class ReturnSchedulesScreen extends ConsumerWidget {
     final status = urgent ? 'Segera Dikembalikan' : 'Menunggu Pengembalian';
     
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order),
+      onTap: () => Navigator.pushNamed(context, '/order-detail', arguments: order.id),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
@@ -225,7 +225,7 @@ class ReturnSchedulesScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: urgent ? const Color(0xFFFFF5F5) : surfaceContainerLow,
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-                border: Border(bottom: BorderSide(color: urgent ? Colors.red.withOpacity(0.1) : outlineVariant.withOpacity(0.3))),
+                border: Border.all(color: urgent ? Colors.red.withOpacity(0.1) : outlineVariant.withOpacity(0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
