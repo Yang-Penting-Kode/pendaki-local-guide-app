@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 // START REPLACE
 // [LOCAL MODEL] TrackingStageModel & TrackingStatus didefinisikan lokal karena
 // ini adalah model presentasi (UI-only) yang hanya dipakai di screen ini.
@@ -96,6 +99,38 @@ class TrackingOrderScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                       _buildScreenHeader(order.id),
+                      const SizedBox(height: 24),
+                      // TODO: Ganti koordinat statis ini dengan Live Data (WebSocket/Laravel) via OrderRemoteDatasource
+                      Container(
+                        height: 220,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                        child: FlutterMap(
+                          options: const MapOptions(
+                            initialCenter: LatLng(-7.9400, 112.6200), // Dummy: Basecamp / Store
+                            initialZoom: 14.0,
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'com.mountainkit.app',
+                            ),
+                            const MarkerLayer(
+                              markers: [
+                                Marker(
+                                  point: LatLng(-7.9400, 112.6200),
+                                  width: 40,
+                                  height: 40,
+                                  child: Icon(Icons.location_on, color: AppColors.primary, size: 40),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 40),
                       _buildVerticalTimeline(context, stages),
                   ],
@@ -382,9 +417,29 @@ class TrackingOrderScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                _smallCourierActionBtn(Icons.chat_bubble_outline_rounded),
+                _smallCourierActionBtn(
+                  Icons.chat_bubble_outline_rounded,
+                  onTap: () async {
+                    const url = 'https://wa.me/6281234567890?text=Halo,%20saya%20ingin%20menanyakan%20pesanan%20saya';
+                    try {
+                      await launchUrlString(url);
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
+                  },
+                ),
                 const SizedBox(width: 10),
-                _smallCourierActionBtn(Icons.phone_in_talk_outlined),
+                _smallCourierActionBtn(
+                  Icons.phone_in_talk_outlined,
+                  onTap: () async {
+                    const url = 'tel:+6281234567890';
+                    try {
+                      await launchUrlString(url);
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -402,7 +457,7 @@ class TrackingOrderScreen extends ConsumerWidget {
     );
   }
 
-  Widget _smallCourierActionBtn(IconData icon) {
+  Widget _smallCourierActionBtn(IconData icon, {VoidCallback? onTap}) {
     return Container(
       width: 42,
       height: 42,
@@ -411,7 +466,7 @@ class TrackingOrderScreen extends ConsumerWidget {
         shape: BoxShape.circle,
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap ?? () {},
         customBorder: const CircleBorder(),
         child: Icon(icon, size: 18, color: const Color(0xFF3E4942)),
       ),
