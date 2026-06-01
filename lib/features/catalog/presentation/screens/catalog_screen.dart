@@ -12,6 +12,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pendaki_local_guide_app/features/catalog/providers/catalog_provider.dart';
+import 'package:pendaki_local_guide_app/features/catalog/providers/package_provider.dart';
+import 'package:pendaki_local_guide_app/shared/models/catalog/package_model.dart';
 import 'package:pendaki_local_guide_app/features/booking/providers/cart_provider.dart';
 import 'package:pendaki_local_guide_app/shared/models/catalog/product_model.dart';
 import 'package:pendaki_local_guide_app/widgets/custom_image.dart';
@@ -52,6 +54,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
 
     // 🔌 Injeksi: Data produk dari productProvider (AsyncNotifier)
     final productsAsync = ref.watch(filteredProductsProvider);
+    
+    // 🔌 Injeksi: Data paket bundling dari packageProvider
+    final packagesAsync = ref.watch(packageProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
@@ -193,6 +198,104 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: 24),
+
+            // START REPLACE
+            // 🔌 Injeksi: Section Paket Bundling Hemat
+            packagesAsync.when(
+              loading: () => const SizedBox(),
+              error: (err, stack) => const SizedBox(),
+              data: (packages) {
+                if (packages.isEmpty) return const SizedBox();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Paket Bundling Hemat',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 140,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: packages.length,
+                        itemBuilder: (context, index) {
+                          final package = packages[index];
+                          return GestureDetector(
+                            onTap: () => Navigator.pushNamed(context, '/package-detail', arguments: package),
+                            child: Container(
+                              width: 240,
+                              margin: const EdgeInsets.only(right: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade200),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black.withOpacity(0.03),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4))
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+                                    child: CustomNetworkImage(
+                                      imageUrl: package.imageUrl ?? 'https://picsum.photos/seed/${package.id}/200/200',
+                                      width: 100,
+                                      height: 140,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            package.name,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold, fontSize: 13),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Rp ${package.price.toStringAsFixed(0)} /hari',
+                                            style: const TextStyle(
+                                                color: Color(0xFF005F3F),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                );
+              }
+            ),
+            // END REPLACE
 
             // 4. Product Grid — 🔌 Injeksi: AsyncValue dari productProvider
             productsAsync.when(

@@ -39,6 +39,7 @@ import 'package:pendaki_local_guide_app/features/dashboard/presentation/screens/
 // import 'package:pendaki_local_guide_app/screens/history/my_reviews_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/basecamp_partners_screen.dart';
 import 'package:pendaki_local_guide_app/features/catalog/presentation/screens/catalog_screen.dart';
+import 'package:pendaki_local_guide_app/features/catalog/presentation/screens/package_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/mountain_detail_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/mountain_search_result_screen.dart';
 import 'package:pendaki_local_guide_app/screens/home/mountain_search_screen.dart';
@@ -169,6 +170,10 @@ class LocalGuideApp extends StatelessWidget {
             return _fadeRoute(const CatalogScreen(), settings: settings);
           case '/product-detail':
             return _fadeRoute(ProductDetailScreen(), settings: settings);
+          // START REPLACE
+          case '/package-detail':
+            return _fadeRoute(const PackageDetailScreen(), settings: settings);
+          // END REPLACE
           case '/cart':
             return _fadeRoute(const CartScreen(), settings: settings);
           case '/checkout':

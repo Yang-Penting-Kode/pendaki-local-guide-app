@@ -39,6 +39,10 @@ class ProductRepository {
       weight: '1.8 kg',
       capacity: '2 orang',
       basePrice: Decimal.parse('150000'),
+      variants: [
+        ProductVariantModel(name: 'Standar', stock: 5, additionalPrice: Decimal.zero),
+        ProductVariantModel(name: 'Premium (+Matras)', stock: 3, additionalPrice: Decimal.parse('20000')),
+      ],
       stock: 5,
       status: ProductStatus.active,
       createdAt: DateTime(2024, 1, 1),

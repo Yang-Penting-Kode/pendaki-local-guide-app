@@ -17,6 +17,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pendaki_local_guide_app/shared/models/catalog/product_model.dart';
+import 'package:pendaki_local_guide_app/shared/models/catalog/package_model.dart';
 import 'package:pendaki_local_guide_app/shared/models/transactions/order_model.dart';
 
 // ---------------------------------------------------------------------------
@@ -35,9 +36,11 @@ class CartNotifier extends Notifier<List<OrderItemModel>> {
   // Jika belum → tambahkan sebagai item baru (quantity = 1).
   // Menggunakan spread operator immutable sesuai Riverpod best practice.
   // ---------------------------------------------------------------------------
-  void addItem(ProductModel product) {
+  void addItem(ProductModel product, {ProductVariantModel? variant}) {
+    // Gunakan productId kombinasi jika ada varian, agar produk beda varian jadi item beda
+    final uniqueId = variant != null ? '${product.id}_${variant.name}' : product.id;
     final existingIndex =
-        state.indexWhere((item) => item.productId == product.id);
+        state.indexWhere((item) => item.productId == uniqueId);
 
     if (existingIndex >= 0) {
       // Produk sudah ada → increment quantity & recalculate subtotal
@@ -55,18 +58,52 @@ class CartNotifier extends Notifier<List<OrderItemModel>> {
             state[i],
       ];
     } else {
-      // Produk baru → tambahkan ke keranjang dengan markup Rp 1.000
+      // Produk baru → tambahkan ke keranjang dengan markup Rp 1.000 + additional price
       final markup = Decimal.parse('1000');
-      final sellingPrice = product.basePrice + markup;
+      final sellingPrice = product.basePrice + markup + (variant?.additionalPrice ?? Decimal.zero);
 
       state = [
         ...state,
         OrderItemModel(
-          productId: product.id,
+          productId: uniqueId,
           productName: product.name,
           quantity: 1,
           unitPrice: sellingPrice,
+          variantName: variant?.name,
+          variantPrice: variant?.additionalPrice,
           subtotal: sellingPrice, // qty=1, subtotal=sellingPrice
+        ),
+      ];
+    }
+  }
+
+  void addPackage(PackageModel package) {
+    final existingIndex = state.indexWhere((item) => item.productId == package.id);
+
+    if (existingIndex >= 0) {
+      final existing = state[existingIndex];
+      final newQuantity = existing.quantity + 1;
+      state = [
+        for (int i = 0; i < state.length; i++)
+          if (i == existingIndex)
+            existing.copyWith(
+              quantity: newQuantity,
+              subtotal: existing.unitPrice * Decimal.fromInt(newQuantity),
+            )
+          else
+            state[i],
+      ];
+    } else {
+      final markup = Decimal.parse('1000');
+      final sellingPrice = package.price + markup;
+      state = [
+        ...state,
+        OrderItemModel(
+          productId: package.id,
+          productName: package.name,
+          quantity: 1,
+          unitPrice: sellingPrice,
+          subtotal: sellingPrice,
         ),
       ];
     }
